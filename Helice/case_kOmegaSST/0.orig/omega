@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// omega0 derive de epsilon0/k0 du cas kEpsilon via epsilon = Cmu*k*omega (Cmu=0.09)
+// omega0 = 0.0495 / (0.09 * 0.06) = 9.1667  -- meme intensite turbulente que case_kEpsilon
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform 9.1667;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    wall
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+    }
+}
+
+
+// ************************************************************************* //

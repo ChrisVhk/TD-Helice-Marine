@@ -1,0 +1,15 @@
+# Artefacts générés par OpenFOAM (par cas)
+*/[0-9]*
+*/[0-9]*.[0-9]*
+!*/0.orig
+*/processor*
+*/postProcessing/
+*/constant/polyMesh/
+*/constant/extendedFeatureEdgeMesh/*.eMesh
+*/constant/triSurface/
+*/dynamicCode/
+*/log.*
+*/*.foam
+
+# Python
+scripts/__pycache__/
