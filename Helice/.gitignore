@@ -5,7 +5,7 @@
 */processor*
 */postProcessing/
 */constant/polyMesh/
-*/constant/extendedFeatureEdgeMesh/*.eMesh
+*/constant/extendedFeatureEdgeMesh/
 */constant/triSurface/
 */dynamicCode/
 */log.*
