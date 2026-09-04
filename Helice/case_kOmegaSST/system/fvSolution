@@ -41,7 +41,7 @@ solvers
         relTol          0;
     }
 
-    "(U|k|epsilon)"
+    "(U|k|epsilon|omega)"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
@@ -49,7 +49,7 @@ solvers
         relTol          0.1;
     }
 
-    "(U|k|epsilon)Final"
+    "(U|k|epsilon|omega)Final"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
@@ -68,7 +68,7 @@ PIMPLE
 
 relaxationFactors
 {
-    "(U|k|epsilon).*"   1;
+    "(U|k|epsilon|omega).*"   1;
 }
 
 cache
