@@ -1,2 +1,7 @@
-_Setup/outils/generer_controle_G1.py
-_Setup/outils/generer_deck_seance1.py
+# Outils référençant le noyau ENSM par chemin absolu (~/ENSM-Enseignement/_Setup/,
+# jamais copié ici, cf. docstrings) : gitignorés par défaut plutôt qu'un motif par
+# fichier à chaque script ajouté (audit charte 08/09 -- l'accumulation fichier par
+# fichier est ce qui fabrique les oublis). Un générateur SANS dépendance au noyau
+# (figures matplotlib, post-traitement) se déclare explicitement en exception.
+_Setup/outils/generer_*.py
+!_Setup/outils/generer_figure_*.py
