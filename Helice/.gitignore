@@ -1,15 +1,54 @@
-# Artefacts générés par OpenFOAM (par cas)
-*/[0-9]*
-*/[0-9]*.[0-9]*
-!*/0.orig
-*/processor*
-*/postProcessing/
-*/constant/polyMesh/
-*/constant/extendedFeatureEdgeMesh/
-*/constant/triSurface/
-*/dynamicCode/
-*/log.*
-*/*.foam
+# Artefacts générés par OpenFOAM — ANCRÉS aux dossiers de cas (case_*/) uniquement.
+# NE PAS utiliser de motif nu comme "*/[0-9]*" : il capturerait aussi docs/02_*.md,
+# docs/03_*.md … (tout fichier commençant par un chiffre).
+case_*/[0-9]*
+case_*/[0-9]*.[0-9]*
+!case_*/0.orig
+!case_*/0.orig/**
+case_*/processor*
+case_*/**/[0-9]*
+!case_*/**/0.orig
+case_*/postProcessing/
+case_*/constant/polyMesh/
+case_*/constant/extendedFeatureEdgeMesh/
+case_*/constant/triSurface/
+case_*/dynamicCode/
+case_*/log.*
+case_*/*.foam
+
+# Sauvegardes de session : pas de temps corrompus déplacés + sorties de run temporaires.
+# Les SCRIPTS de reprise, eux, sont versionnés (scripts/reprise_cas.sh) — un outil qui
+# produit un résultat traverse le dépôt (INV-11). L'ancien _resume_kOmegaSST.sh est gardé
+# comme trace de la reprise qui a mené 0,034 → 0,055.
+_corrupt_backup/
+_resume_*.out
 
 # Python
 scripts/__pycache__/
+
+# Sorties de post-traitement (régénérables via scripts/bilan_helice.py)
+Results/
+
+# Kit de données étudiant : les CSV (data/perf_*.csv) SONT versionnés (petits, distribués) ;
+# le kit de champs ParaView (~1 Go) est régénérable par scripts/extraire_kit_donnees.py --champs
+data/paraview_kit/
+
+# Figures — régime manuel (_Methodo/CONSIGNE_FIGURES_a_traiter.md, 01/09) : la page source PDF
+# rendue va dans Images/_a_traiter/, gitignorée (ce sont des pages d'un support tiers). Ce qui
+# traverse : la ligne de REGISTRE_FIGURES.md et l'image RECADRÉE déposée directement dans Images/.
+Images/_a_traiter/
+
+# supports binaires -> Vega, jamais dans le depot public
+*.docx
+*.pdf
+*.pptx
+
+# documents enseignant (corriges, fiches) : jamais dans le depot public
+/docs/*ENSEIGNANT*
+
+# versant enseignant : registres, statut, notes de preparation, outillage
+/Images/REGISTRE_FIGURES.md
+/docs/STATUT.md
+/docs/MATERIAU-INTRO_TD-Helice.md
+/_resume_*.sh
+/MATIERE_EXTERNE.md

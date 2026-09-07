@@ -14,21 +14,40 @@ CASES = ["case_kEpsilon", "case_kOmegaSST", "case_laminar"]
 COLUMNS = ["time", "n", "URef", "J", "KT", "10KQ", "eta0"]
 
 
-def find_performance_file(case_dir: Path) -> Path | None:
+def find_performance_files(case_dir: Path) -> list[Path]:
     pp = case_dir / "postProcessing" / "propellerInfo1"
     if not pp.is_dir():
-        return None
-    # Le sous-dossier est nommé par le temps de démarrage de la fonction (souvent "0")
-    candidates = sorted(pp.glob("*/propellerPerformance.dat"))
-    return candidates[-1] if candidates else None
+        return []
+    # Un cas repris crée un sous-dossier par temps de redémarrage (0/, 0.022/, 0.034/…).
+    # On les prend TOUS et on recoud la série (cf. STATUT.md) — ne pas se contenter du dernier.
+    # Tri par temps de démarrage CROISSANT (numérique, pas lexical) : un segment repris
+    # plus tard doit être lu après le segment d'origine pour l'écraser sur les temps communs.
+    def start_time(p: Path) -> float:
+        try:
+            return float(p.parent.name)
+        except ValueError:
+            return -1.0
+    return sorted(pp.glob("*/propellerPerformance.dat"), key=start_time)
 
 
-def read_rows(path: Path) -> list[dict]:
-    with open(path) as f:
-        lines = [l for l in f if not l.startswith("#") and l.strip()]
-    if not lines:
-        raise ValueError(f"Aucune donnée dans {path}")
-    return [dict(zip(COLUMNS, l.split())) for l in lines]
+def read_rows(paths: list[Path]) -> list[dict]:
+    if not paths:
+        raise ValueError("Aucun fichier propellerPerformance.dat")
+    merged: dict[float, dict] = {}
+    for path in paths:
+        with open(path) as f:
+            for l in f:
+                if l.startswith("#") or not l.strip():
+                    continue
+                parts = l.split()
+                if len(parts) < len(COLUMNS):
+                    continue
+                row = dict(zip(COLUMNS, parts))
+                # un segment plus récent écrase un temps déjà vu (reprise après pas corrompu)
+                merged[round(float(row["time"]), 9)] = row
+    if not merged:
+        raise ValueError(f"Aucune donnée dans {[str(p) for p in paths]}")
+    return [merged[t] for t in sorted(merged)]
 
 
 def average_last_revolution(rows: list[dict]) -> dict:
@@ -54,12 +73,12 @@ def main() -> int:
     missing = []
     for case in CASES:
         case_dir = root / case
-        perf_file = find_performance_file(case_dir)
-        if perf_file is None:
+        perf_files = find_performance_files(case_dir)
+        if not perf_files:
             missing.append(case)
             print(f"{case:<15} {'—':>8} {'—':>8} {'—':>10} {'—':>10} {'—':>8}  (non calculé)")
             continue
-        rows = read_rows(perf_file)
+        rows = read_rows(perf_files)
         avg = average_last_revolution(rows)
         flag = "" if avg["period_covered"] else "  ⚠ < 1 tour écoulé, moyenne partielle"
         print(
