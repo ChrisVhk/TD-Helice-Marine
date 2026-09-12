@@ -46,6 +46,12 @@ Images/_a_traiter/
 # documents enseignant (corriges, fiches) : jamais dans le depot public
 /docs/*ENSEIGNANT*
 
+# corriges etudiants : retires du depot avant la seance 2 (LOT I, decision enseignant
+# 12/09) -- la seance 2 demande de decouvrir ce que ces fichiers donnent en reponse.
+# L'enseignant depose les corrections sur Vega lui-meme, hors de ce depot.
+/docs/08_CORRIGE_QCM.md
+/docs/10_CORRIGE_ETUDIANT_DETAILLE.md
+
 # versant enseignant : registres, statut, notes de preparation, outillage
 /Images/REGISTRE_FIGURES.md
 /docs/STATUT.md
