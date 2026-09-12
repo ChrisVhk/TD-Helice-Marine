@@ -1,7 +1,10 @@
-# Outils référençant le noyau ENSM par chemin absolu (~/ENSM-Enseignement/_Setup/,
-# jamais copié ici, cf. docstrings) : gitignorés par défaut plutôt qu'un motif par
-# fichier à chaque script ajouté (audit charte 08/09 -- l'accumulation fichier par
-# fichier est ce qui fabrique les oublis). Un générateur SANS dépendance au noyau
-# (figures matplotlib, post-traitement) se déclare explicitement en exception.
-_Setup/outils/generer_*.py
+# _Setup/ est depuis le LOT I (audit charte 12/09) une COPIE SYNCHRONISEE du noyau
+# partage ENSM-Enseignement (_Setup/SYNCHRONISER.md, chaine S5) -- jamais committee,
+# resynchronisee au besoin. Ignoree en bloc (motif */ pas / : la negation ci-dessous a
+# besoin que le dossier lui-meme reste visible a git, seul son contenu est filtre) sauf
+# les generateurs SANS dependance au noyau que ce depot garde suivis (figures
+# matplotlib, post-traitement -- audit charte 08/09, meme motif qu'avant le LOT I).
+_Setup/*
+!_Setup/outils/
+_Setup/outils/*
 !_Setup/outils/generer_figure_*.py
