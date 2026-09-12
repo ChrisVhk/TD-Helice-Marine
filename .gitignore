@@ -8,3 +8,9 @@ _Setup/*
 !_Setup/outils/
 _Setup/outils/*
 !_Setup/outils/generer_figure_*.py
+
+# Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx) : regenerables,
+# jamais commitees -- meme regime que Helice/*.pptx (LOT I, deck vers Vega, pas vers
+# git). Le rendu de controle (_rendu/) est local, jamais versionne non plus.
+Seances/*.pptx
+Seances/_rendu/
