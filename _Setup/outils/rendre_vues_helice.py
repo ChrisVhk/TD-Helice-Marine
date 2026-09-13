@@ -118,6 +118,148 @@ def save(view_or_layout, path, size=VIEW_SIZE):
     print(f"  ecrit : {path}")
 
 
+_REAL_SAVE = save  # snapshot pris avant toute pollution possible -- voir _restore_builtins()
+
+
+def _restore_builtins():
+    """BUG VTK/ParaView confirme le 14/09 : importer
+    vtk.numpy_interface.dataset_adapter (directement, ou via un
+    ProgrammableFilter dont le script partage nos globals -- pvbatch execute
+    ce fichier comme __main__) REMPLACE min/max/sum/abs des BUILTINS du
+    process entier, ET ECRASE aussi nos PROPRES noms de fonctions qui
+    collisionnent avec des symboles numpy (notre `save` <-> `numpy.save`).
+    TypeError totalement sans rapport apparent avec l'appel qui echoue.
+    A appeler apres CHAQUE usage de dataset_adapter/sm.Fetch, ou juste avant
+    tout min()/max()/save() qui suit un tel usage dans la meme fonction.
+    """
+    import builtins as _b
+    g = globals()
+    g["min"], g["max"], g["sum"], g["abs"] = _b.min, _b.max, _b.sum, _b.abs
+    g["save"] = _REAL_SAVE
+
+
+def interpolate_to_points(source):
+    """CellDataToPoint : donnees OpenFOAM natives en CELL DATA -> POINT DATA.
+
+    Sans ca, ColorBy(('CELLS', champ)) peint chaque maille d'une seule teinte
+    plate : rendu en blocs rectangulaires, jamais lisse (constate le 14/09 sur
+    05/07/08). Colorer ensuite par ('POINTS', champ), jamais par CELLS.
+    """
+    interp = CellDatatoPointData(Input=source)
+    interp.UpdatePipeline()
+    return interp
+
+
+def style_scalarbar(sb, title, location="Lower Right Corner", length=0.35, font=12):
+    """Barre DANS le cadre (emplacements ancres ParaView, jamais rognes),
+    graduee, avec titre/unite lisibles sur fond blanc."""
+    sb.Title = title
+    sb.ComponentTitle = ""
+    sb.WindowLocation = location
+    sb.ScalarBarLength = length
+    sb.TitleFontSize = font
+    sb.LabelFontSize = max(font - 2, 9)
+    sb.AutomaticLabelFormat = 0
+    sb.RangeLabelFormat = "%-#5.2g"
+    sb.TitleColor = [0.0, 0.0, 0.0]
+    sb.LabelColor = [0.0, 0.0, 0.0]
+    sb.DrawBackground = 1
+    sb.BackgroundColor = [1.0, 1.0, 1.0, 0.75]
+
+
+def solid_body(source, view, color=(0.55, 0.55, 0.58), edge=(0.15, 0.15, 0.15)):
+    """Corps solide grise avec contour sombre -- JAMAIS blanc sur fond blanc
+    (defaut constate le 14/09 : un solide non colore se lit comme un trou).
+    """
+    rep = Show(source, view)
+    rep.Representation = "Surface With Edges"
+    solid_color(rep, color)
+    rep.EdgeColor = list(edge)
+    rep.LineWidth = 0.6
+    return rep
+
+
+def clip_box(source, bounds):
+    """Decoupe la geometrie AFFICHEE a l'echelle du cadrage voulu.
+
+    Necessaire des qu'on zoome fort : verifie le 13/09 sur l'image des couches
+    -- si la donnee montree deborde largement le cadrage camera, Render()
+    detecte un ratio near/far degenere et REINITIALISE la camera de lui-meme,
+    silencieusement. Le Clip evite le probleme a la racine.
+    """
+    xmin, xmax, ymin, ymax, zmin, zmax = bounds
+    clip = Clip(Input=source)
+    clip.ClipType = "Box"
+    clip.ClipType.Position = [xmin, ymin, zmin]
+    clip.ClipType.Length = [xmax - xmin, ymax - ymin, zmax - zmin]
+    clip.Invert = 1
+    clip.UpdatePipeline()
+    return clip
+
+
+def add_flow_arrow(view, bounds, color=(0.05, 0.05, 0.55), subject_bounds=None):
+    """Repere d'ecoulement : segment + cone, le long de l'axe reel de
+    l'ecoulement (-Y, inlet -> outlet). Objet 3D (pas une simple etiquette) :
+    il projette correctement quel que soit l'angle de camera choisi.
+
+    Dimensionne et centre sur `subject_bounds` (l'objet d'interet, par
+    defaut `bounds`) selon X/Z, PAS sur l'etendue Y complete du cadrage :
+    celle-ci porte souvent une marge de sillage tres allongee (voir
+    propeller_zoom_bounds) qui detacherait sinon la fleche de l'objet.
+    """
+    sb = subject_bounds if subject_bounds is not None else bounds
+    xmin, xmax, _, _, zmin, zmax = sb
+    _, _, ymin, ymax, _, _ = bounds
+    cx = (xmin + xmax) / 2.0
+    cy = (ymin + ymax) / 2.0
+    span = max(xmax - xmin, zmax - zmin, 1e-6)
+    z0 = zmax + span * 0.35
+    length = span * 0.7
+    y_top = cy + length / 2.0
+    p1 = [cx, y_top, z0]
+    p2 = [cx, y_top - length, z0]
+    shaft = Line(Point1=p1, Point2=p2)
+    srep = Show(shaft, view)
+    srep.LineWidth = 5
+    srep.AmbientColor = list(color)
+    srep.DiffuseColor = list(color)
+    cone = Cone(Center=[p2[0], p2[1] - length * 0.05, p2[2]], Direction=[0.0, -1.0, 0.0],
+                Radius=length * 0.12, Height=length * 0.28, Resolution=14)
+    crep = Show(cone, view)
+    solid_color(crep, color)
+    label = Text()
+    label.Text = "ecoulement"
+    d = Show(label, view)
+    d.WindowLocation = "Upper Center"
+    d.FontSize = 10
+    d.Color = list(color)
+    return shaft, cone
+
+
+def add_scale_bar(view, bounds, length_m, color=(0.05, 0.05, 0.05)):
+    """Barre d'echelle graphique (segment 3D dans le plan de coupe) + son
+    libelle en mm. Placee pres du coin bas-gauche des donnees affichees.
+    """
+    xmin, xmax, ymin, ymax, zmin, zmax = bounds
+    x0 = xmin + (xmax - xmin) * 0.06
+    y0 = ymin + (ymax - ymin) * 0.08
+    z0 = zmin + (zmax - zmin) * 0.5
+    p1 = [x0, y0, z0]
+    p2 = [x0 + length_m, y0, z0]
+    line = Line(Point1=p1, Point2=p2)
+    rep = Show(line, view)
+    rep.LineWidth = 4
+    rep.AmbientColor = list(color)
+    rep.DiffuseColor = list(color)
+    label = Text()
+    label.Text = f"echelle : {length_m * 1000:.0f} mm"
+    d = Show(label, view)
+    d.WindowLocation = "Lower Left Corner"
+    d.FontSize = 10
+    d.Color = list(color)
+    return line
+
+
 def percentile_range(source, array_name, association="CELLS", lo=5, hi=95):
     """Plage [percentile lo, percentile hi] d'un champ, PAS le min/max brut.
 
@@ -147,6 +289,8 @@ def percentile_range(source, array_name, association="CELLS", lo=5, hi=95):
     except Exception as exc:  # defensif : jamais bloquant pour une image
         print(f"  percentile_range({array_name}) a echoue ({exc}) -- repli min/max")
         return None
+    finally:
+        _restore_builtins()
 
 
 MODELE_NOM = {
@@ -181,14 +325,21 @@ def image_01(args):
     )
     view = new_view()
     rep = Show(reader, view)
-    rep.Representation = "Surface"
+    rep.Representation = "Surface With Edges"
     solid_color(rep, (0.55, 0.58, 0.62))
+    rep.EdgeColor = [0.12, 0.12, 0.14]
+    rep.LineWidth = 0.4
     bounds = reader.GetDataInformation().GetBounds()
     # Vue quasi axiale (le long de l'axe Y) legerement inclinee : c'est ce qui
     # permet de compter les 4 pales autour du moyeu -- une vraie vue "trois
     # quarts" (perpendiculaire a l'axe) les mettrait en majorite de profil.
     frame_camera(view, bounds, direction=(0.32, 0.82, 0.42), up=(0.0, 0.0, 1.0), zoom=2.3)
-    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO))
+    # D mesure sur cette geometrie (LOT 1, 14/09) = 0,227 m, PAS 0,2 m
+    # (documente dans propellerInfo/MATERIAU-INTRO, non arbitre) -- la barre
+    # d'echelle utilise la mesure directe, pas la valeur documentee.
+    add_scale_bar(view, bounds, 0.05)
+    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
+                   + " -- D mesure ~0,227 m (non 0,2 m documente, non arbitre)")
     Render(view)
     save(view, os.path.join(args.out_dir, "01_geometrie.png"))
 
@@ -211,8 +362,10 @@ def image_02(args):
 
     view = new_view()
     rep_prop = Show(prop, view)
-    rep_prop.Representation = "Surface"
+    rep_prop.Representation = "Surface With Edges"
     solid_color(rep_prop, (0.55, 0.58, 0.62))
+    rep_prop.EdgeColor = [0.12, 0.12, 0.14]
+    rep_prop.LineWidth = 0.4
 
     rep_outer = Show(outer, view)
     rep_outer.Representation = "Surface"
@@ -247,15 +400,43 @@ def image_02(args):
 # Image 3 -- coupe du maillage volumique
 # --------------------------------------------------------------------------- #
 
+def propeller_zoom_bounds(prop_bounds, wake_margin=2.2, radial_margin=1.8):
+    """Cadrage resserre sur l'helice + sillage proche (defaut constate le
+    14/09 : l'helice n'occupait que ~5% de l'image sur les bornes du domaine
+    complet). radial_margin/wake_margin sont des facteurs sur le rayon max ;
+    l'ecoulement va de l'inlet (+Y) vers l'outlet (-Y) -- le sillage proche
+    est donc du cote -Y (Ymin), pas +Y.
+    """
+    xmin, xmax, ymin, ymax, zmin, zmax = prop_bounds
+    r = max(xmax - xmin, zmax - zmin) / 2.0
+    cx, cz = (xmin + xmax) / 2.0, (zmin + zmax) / 2.0
+    return (
+        cx - r * radial_margin, cx + r * radial_margin,
+        ymin - r * wake_margin, ymax + r * wake_margin * 0.4,
+        cz - r * radial_margin, cz + r * radial_margin,
+    )
+
+
 def image_03(args):
     case_dir = f"Helice/{args.cas}"
     reader = make_reader(case_dir, ["internalMesh"], [], args.time)
+    prop = make_reader(
+        case_dir,
+        ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"],
+        [], args.time,
+    )
+    prop_bounds = prop.GetDataInformation().GetBounds()
+    zoom_bounds = propeller_zoom_bounds(prop_bounds)
 
-    sl = Slice(Input=reader)
-    sl.SliceType = "Plane"
-    sl.SliceType.Origin = [0.0, 0.0, 0.0]
-    sl.SliceType.Normal = [0.0, 0.0, 1.0]
-    sl.UpdatePipeline(time=args.time)
+    sl_full = Slice(Input=reader)
+    sl_full.SliceType = "Plane"
+    sl_full.SliceType.Origin = [0.0, 0.0, 0.0]
+    sl_full.SliceType.Normal = [0.0, 0.0, 1.0]
+    sl_full.UpdatePipeline(time=args.time)
+    # Cadrage resserre (defaut 3.3) : decouper la coupe elle-meme, pas
+    # seulement zoomer la camera (sinon Render() la reinitialise -- meme piege
+    # que sur l'image des couches, cf. clip_box()).
+    sl = clip_box(sl_full, zoom_bounds)
 
     view = new_view()
     rep = Show(sl, view)
@@ -264,15 +445,19 @@ def image_03(args):
     rep.EdgeColor = [0.1, 0.1, 0.1]
     rep.LineWidth = 0.5
 
-    bounds = reader.GetDataInformation().GetBounds()
-    # Cadrage large (vue de face sur le plan de coupe) pour que le contraste
-    # maille fin pres de la pale / maille grossier au loin soit visible.
+    # Corps solide (pale + moyeu) DANS la meme vue (defaut 3.4) : sans lui, le
+    # volume qu'occupe l'helice dans la coupe fluide est un simple trou blanc
+    # sur fond blanc -- il doit se lire comme un objet.
+    solid_body(prop, view, color=(0.5, 0.5, 0.55))
+
     # up = X (pas Y) : la coupe reste la meme (normale z, inchangee), seule
     # l'orientation a l'ecran tourne de 90 degres pour que l'axe de l'arbre
     # (Y) se lise a l'horizontale, comme une ligne d'arbre vue de cote.
-    frame_camera(view, bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.55)
+    frame_camera(view, zoom_bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.5)
+    add_flow_arrow(view, zoom_bounds, subject_bounds=prop_bounds)
+    add_scale_bar(view, zoom_bounds, 0.02)
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
-                   + " -- coupe maillage, plan (0,0,0)/normale z")
+                   + " -- coupe maillage (zoom pres helice), plan (0,0,0)/normale z")
     Render(view)
     save(view, os.path.join(args.out_dir, "03_maillage_coupe.png"))
 
@@ -312,8 +497,10 @@ def image_04(args):
     rep_dom.Opacity = 0.08
 
     rep_prop = Show(prop, view)
-    rep_prop.Representation = "Surface"
+    rep_prop.Representation = "Surface With Edges"
     solid_color(rep_prop, (0.5, 0.5, 0.5))
+    rep_prop.EdgeColor = [0.12, 0.12, 0.14]
+    rep_prop.LineWidth = 0.4
 
     rep_ami1 = Show(ami1, view)
     rep_ami1.Representation = "Surface"
@@ -338,27 +525,134 @@ def image_04(args):
 # Image 5 -- pression sur les pales, deux vues (echelle commune)
 # --------------------------------------------------------------------------- #
 
+TWO_MEANS_SCRIPT = """
+import numpy as np
+from vtk.numpy_interface import dataset_adapter as dsa
+
+inp = inputs[0]
+normals = np.asarray(inp.CellData['Normals'])
+c0 = normals[np.argmax(normals[:, 1])]
+c1 = normals[np.argmin(normals[:, 1])]
+centers = np.array([c0, c1], dtype=float)
+for _ in range(30):
+    d0 = np.linalg.norm(normals - centers[0], axis=1)
+    d1 = np.linalg.norm(normals - centers[1], axis=1)
+    assign = (d1 < d0).astype(np.int32)
+    n0 = normals[assign == 0].mean(axis=0) if (assign == 0).any() else centers[0]
+    n1 = normals[assign == 1].mean(axis=0) if (assign == 1).any() else centers[1]
+    n0 = n0 / np.linalg.norm(n0)
+    n1 = n1 / np.linalg.norm(n1)
+    if np.allclose(n0, centers[0]) and np.allclose(n1, centers[1]):
+        centers = np.array([n0, n1])
+        break
+    centers = np.array([n0, n1])
+
+output.ShallowCopy(inp.VTKObject)
+arr = dsa.numpyTovtkDataArray(assign.astype(np.int32), name='cluster')
+output.GetCellData().AddArray(arr)
+"""
+
+
+def split_by_normal(source, time):
+    """Separe une surface en DEUX groupes de mailles par 2-means sur
+    l'orientation de leurs normales (methode du 13/09, PAS un point de vue :
+    verifie le 14/09 que deux cameras antipodales melangent les deux signes
+    sur une pale vrillee). Retourne le filtre annote (champ CELLS 'cluster'
+    0/1) -- Threshold dessus pour extraire chaque face."""
+    merged = MergeBlocks(Input=source)
+    merged.UpdatePipeline(time=time)
+    surf = ExtractSurface(Input=merged)
+    surf.UpdatePipeline(time=time)
+    normals = GenerateSurfaceNormals(Input=surf)
+    normals.ComputeCellNormals = 1
+    normals.UpdatePipeline(time=time)
+    pf = ProgrammableFilter(Input=normals)
+    pf.Script = TWO_MEANS_SCRIPT
+    pf.UpdatePipeline(time=time)
+    _restore_builtins()  # voir la fonction -- ProgrammableFilter + dsa pollue nos globals
+    return pf
+
+
+def safe_up(direction):
+    """Axe global le MOINS aligne avec `direction`, pour eviter une camera
+    degeneree (up parallele a la direction de vue)."""
+    ax, ay, az = abs(direction[0]), abs(direction[1]), abs(direction[2])
+    if ax <= ay and ax <= az:
+        return (1.0, 0.0, 0.0)
+    if ay <= ax and ay <= az:
+        return (0.0, 1.0, 0.0)
+    return (0.0, 0.0, 1.0)
+
+
 def image_05(args):
     case_dir = f"Helice/{args.cas}"
-    # Pale coloree par p (le sujet) et moyeu/arbre a part, attenues (LOT D §4,
-    # correction du 13/09) : le sujet de cette image est la pale, pas l'arbre.
     tip = make_reader(case_dir, ["patch/propellerTip"], ["p"], args.time)
     stem = make_reader(
         case_dir, ["patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"], [], args.time
     )
-    bounds_all = make_reader(
+    bounds = make_reader(
         case_dir,
         ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"],
-        [],
-        args.time,
+        [], args.time,
     ).GetDataInformation().GetBounds()
-    bounds = bounds_all
 
-    # Layout a deux cellules. Verifie a la main sur cette install (5.11.2,
-    # pvbatch) : CreateView() NE place PAS automatiquement dans le layout ;
-    # il faut un AssignView(0, ...) explicite. Et apres SplitViewHorizontal(),
-    # le numero de cellule qu'il RETOURNE n'est pas celui qui marche pour la
-    # nouvelle vue -- empiriquement c'est (retour + 1). D'ou l'essai des deux.
+    # 3.8 -- separation par ORIENTATION DE LA NORMALE (2-means), pas par
+    # point de vue : la version au 13/09 (deux cameras antipodales) melangeait
+    # les deux signes de pression dans chaque vue, verifie a l'oeil.
+    clustered = split_by_normal(tip, args.time)
+
+    from paraview import servermanager as sm
+    from vtk.numpy_interface import dataset_adapter as dsa
+    import numpy as np
+
+    fetched = dsa.WrapDataObject(sm.Fetch(clustered))
+    normals_np = np.asarray(fetched.CellData["Normals"])
+    cluster_np = np.asarray(fetched.CellData["cluster"])
+    p_np = np.asarray(fetched.CellData["p"])
+    mean0 = normals_np[cluster_np == 0].mean(axis=0)
+    mean1 = normals_np[cluster_np == 1].mean(axis=0)
+    mean0 = mean0 / np.linalg.norm(mean0)
+    mean1 = mean1 / np.linalg.norm(mean1)
+    dot = float(mean0[0] * mean1[0] + mean0[1] * mean1[1] + mean0[2] * mean1[2])
+    # NE PAS utiliser min()/max() ici : "from paraview.simple import *" plus
+    # haut masque les builtins par les reductions numpy de vtk (verifie le
+    # 14/09 -- TypeError sournoise, aucun rapport avec la logique).
+    if dot > 1.0:
+        dot = 1.0
+    elif dot < -1.0:
+        dot = -1.0
+    angle_deg = math.degrees(math.acos(dot))
+    mean0 = mean0.tolist()
+    mean1 = mean1.tolist()
+    p_mean0 = float(p_np[cluster_np == 0].mean())
+    p_mean1 = float(p_np[cluster_np == 1].mean())
+    _restore_builtins()  # dsa importe juste au-dessus -- voir la fonction
+    # Etiquetage PRUDENT : la face de pression moyenne la plus HAUTE est
+    # probablement l'intrados (cote pression) d'un rotor qui pousse -- indice
+    # de coherence physique, pas une demonstration aerodynamique rigoureuse.
+    if p_mean0 >= p_mean1:
+        label0, label1 = "haute pression (probable intrados)", "basse pression (probable extrados)"
+    else:
+        label0, label1 = "basse pression (probable extrados)", "haute pression (probable intrados)"
+
+    face_a = Threshold(Input=clustered)
+    face_a.Scalars = ["CELLS", "cluster"]
+    face_a.LowerThreshold = 0
+    face_a.UpperThreshold = 0
+    face_a.ThresholdMethod = "Between"
+    face_a.UpdatePipeline(time=args.time)
+    face_b = Threshold(Input=clustered)
+    face_b.Scalars = ["CELLS", "cluster"]
+    face_b.LowerThreshold = 1
+    face_b.UpperThreshold = 1
+    face_b.ThresholdMethod = "Between"
+    face_b.UpdatePipeline(time=args.time)
+
+    # 3.1 -- interpolation CELLS -> POINTS pour un rendu lisse.
+    interp_a = interpolate_to_points(face_a)
+    interp_b = interpolate_to_points(face_b)
+
+    # Layout a deux cellules (technique verifiee 5.11.2/pvbatch).
     layout = CreateLayout("pression_pales")
     view_a = CreateView("RenderView")
     view_a.ViewSize = list(VIEW_SIZE)
@@ -366,9 +660,7 @@ def image_05(args):
     view_a.UseColorPaletteForBackground = 0
     view_a.OrientationAxesVisibility = 0
     layout.AssignView(0, view_a)
-
     split_return = layout.SplitViewHorizontal(view_a, 0.5)
-
     view_b = CreateView("RenderView")
     view_b.ViewSize = list(VIEW_SIZE)
     view_b.Background = [1.0, 1.0, 1.0]
@@ -380,80 +672,46 @@ def image_05(args):
     else:
         raise RuntimeError("impossible de placer la seconde vue dans le layout (image 5)")
 
-    # LOT D (13/09) -- 5 correctifs sur ce qui suit : (1) percentiles 2-98,
-    # (2) divergent ET symetrique autour de zero, (3) barre hors geometrie
-    # avec unite, (4) arbre/moyeu attenue, sujet = la pale, (5) vue axiale
-    # (dans l'axe de l'arbre), pas un angle 3/4.
-    rep_tip_a = Show(tip, view_a)
-    rep_tip_a.Representation = "Surface"
-    ColorBy(rep_tip_a, ("CELLS", "p"))
+    rep_a = Show(interp_a, view_a)
+    rep_a.Representation = "Surface"
+    ColorBy(rep_a, ("POINTS", "p"))
     p_lut = GetColorTransferFunction("p")
     p_lut.ApplyPreset("Cool to Warm", True)  # divergent : rouge = surpression, bleu = depression
-    # Percentiles 2-98, PUIS symetrise autour de ZERO (L = max(|p2|,|p98|)) :
-    # un divergent ne blanchit pas "la mediane", il blanchit SON POINT CENTRAL
-    # -- le forcer a 0 est ce qui rend le signe lisible d'un coup d'oeil.
     rng = percentile_range(tip, "p", "CELLS", lo=2, hi=98)
     if rng:
         L = max(abs(rng[0]), abs(rng[1]))
         p_lut.RescaleTransferFunction(-L, L)
-        sb_title_suffix = " (p2-p98, ecretee, centree sur 0)"
+        suffix = " (p2-p98, centree sur 0)"
     else:
         p_lut.RescaleTransferFunctionToDataRange(True)
-        sb_title_suffix = ""
-    rep_tip_a.SetScalarBarVisibility(view_a, True)
-    sb = GetScalarBar(p_lut, view_a)
-    sb.Title = "p [m²/s²] (pression cinematique)" + sb_title_suffix
-    sb.ComponentTitle = ""
-    sb.WindowLocation = "Any Location"  # hors de la geometrie, pas superposee
-    sb.Position = [0.86, 0.15]
-    sb.ScalarBarLength = 0.6
-    sb.TitleFontSize = 14
-    sb.LabelFontSize = 12
-    sb.RangeLabelFormat = "%-#5.1f"
-    sb.AutomaticLabelFormat = 0
-    # Fond blanc (view.Background) : sans ceci le titre/graduations heritent
-    # d'une couleur par defaut proche du blanc et deviennent invisibles --
-    # verifie le 13/09, barre rendue mais texte illisible.
-    sb.TitleColor = [0.0, 0.0, 0.0]
-    sb.LabelColor = [0.0, 0.0, 0.0]
-    sb.UseCustomLabels = 0
+        suffix = ""
+    rep_a.SetScalarBarVisibility(view_a, True)
+    style_scalarbar(GetScalarBar(p_lut, view_a), f"p [m²/s²]{suffix}", location="Lower Right Corner")
 
-    rep_stem_a = Show(stem, view_a)
-    rep_stem_a.Representation = "Surface"
-    solid_color(rep_stem_a, (0.6, 0.6, 0.62))
-    rep_stem_a.Opacity = 0.35  # attenue : le sujet est la pale, pas l'arbre
+    rep_b = Show(interp_b, view_b)
+    rep_b.Representation = "Surface"
+    ColorBy(rep_b, ("POINTS", "p"))
+    rep_b.SetScalarBarVisibility(view_b, False)  # meme LUT, une seule barre affichee
 
-    rep_tip_b = Show(tip, view_b)
-    rep_tip_b.Representation = "Surface"
-    ColorBy(rep_tip_b, ("CELLS", "p"))
-    rep_tip_b.SetScalarBarVisibility(view_b, False)  # une seule echelle affichee, commune aux deux
-
-    rep_stem_b = Show(stem, view_b)
-    rep_stem_b.Representation = "Surface"
-    solid_color(rep_stem_b, (0.6, 0.6, 0.62))
+    rep_stem_a = solid_body(stem, view_a, color=(0.6, 0.6, 0.62))
+    rep_stem_a.Opacity = 0.35
+    rep_stem_b = solid_body(stem, view_b, color=(0.6, 0.6, 0.62))
     rep_stem_b.Opacity = 0.35
 
-    # Vue AXIALE de chaque face (dans l'axe de l'arbre), pas un angle 3/4 :
-    # meme famille de camera que l'image 1 (qui compte les 4 pales), reprise
-    # ici cote pile puis cote face pour montrer chaque face successivement.
-    # PAS de coupe planaire (geometrie vrillee, echec du 13/09) -- le
-    # changement de cote d'axe suffit a montrer l'autre face.
-    dir_a = (0.32, 0.82, 0.42)
-    dir_b = (0.32, -0.82, 0.42)
-    frame_camera(view_a, bounds, direction=dir_a, up=(0.0, 0.0, 1.0), zoom=2.3)
-    frame_camera(view_b, bounds, direction=dir_b, up=(0.0, 0.0, 1.0), zoom=2.3)
+    # Camera alignee sur la normale MOYENNE reelle de chaque groupe (pas un
+    # axe suppose) : chaque face est vue de face, quel que soit son orientation.
+    frame_camera(view_a, bounds, direction=mean0, up=safe_up(mean0), zoom=2.1)
+    frame_camera(view_b, bounds, direction=mean1, up=safe_up(mean1), zoom=2.1)
 
     prov = provenance_line(args.cas, args.time, ETAT_DEMO) + " -- p, echelle commune"
-    # Labels neutres, pas "intrados/extrados" : la pale est vrillee, une vue
-    # axiale ne separe pas proprement les deux faces par le signe (verifie a
-    # l'oeil le 13/09 -- voir LEGENDES.md). Ne pas sur-affirmer une separation
-    # que l'image ne montre pas.
-    add_provenance(view_a, "vue axiale, cote +Y -- " + prov)
-    add_provenance(view_b, "vue axiale, cote -Y -- " + prov)
+    add_provenance(view_a, f"face A, {label0} -- " + prov)
+    add_provenance(view_b, f"face B, {label1} -- " + prov)
 
     Render(view_a)
     Render(view_b)
     save(layout, os.path.join(args.out_dir, "05_pression_pales.png"))
+    print(f"  image 5 : angle entre les deux normales moyennes = {angle_deg:.1f} deg"
+          f" (180 = separation parfaite) ; p_moyen face A={p_mean0:.2f}, face B={p_mean1:.2f}")
 
 
 # --------------------------------------------------------------------------- #
@@ -485,139 +743,267 @@ def read_layer_stack_thickness(case_dir):
 
 
 def image_06(args):
+    """REFAIT le 14/09 : la version precedente coupait par un plan NORMAL A
+    L'AXE (Y) -- ce plan est quasi TANGENT a la paroi cylindrique du moyeu a
+    l'endroit zoome, donc les couches n'y apparaissent que de biais, sur la
+    tranche (constate en regardant l'image, pas un probleme de zoom). Pour
+    voir une pile de prismes s'epaissir, le plan de coupe doit etre
+    PERPENDICULAIRE A LA PAROI : ici, la paroi du moyeu est un cylindre
+    d'axe Y, sa normale locale en (x=rayon, z=0) est +X -- un plan de coupe
+    normal Z (le plan X-Y) contient a la fois cette normale et l'axe Y, donc
+    tranche PERPENDICULAIREMENT au mur et montre les couches croitre le long
+    de X. C'est la meme famille de coupe que l'image 3 (normal Z), a une
+    autre origine et un zoom radicalement plus serre.
+    """
     case_layers = f"{args.cas}_layers"
     case_dir = f"Helice/{case_layers}"
     if not os.path.isdir(case_dir):
         print(f"  bonus ignore : {case_dir} n'existe pas")
         return
     reader = make_reader(case_dir, ["internalMesh"], [], 0.0)
+    prop = make_reader(
+        case_dir,
+        ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"],
+        [], 0.0,
+    )
 
     # Zoom sur le CORPS de la pale (Stem2, mi-envergure), pas sur le bout :
     # ce cas retire explicitement les couches au bout de pale
-    # (propellerTipEdge, nSurfaceLayers 0 -- LOT N, 13/09). Zoomer sur le bout
-    # montrerait 0 couche et donnerait une image trompeuse.
+    # (propellerTipEdge, nSurfaceLayers 0 -- LOT N, 13/09).
     stem_reader = make_reader(case_dir, ["patch/propellerStem2"], [], 0.0)
     stem_bounds = stem_reader.GetDataInformation().GetBounds()
-    cy = (stem_bounds[2] + stem_bounds[3]) / 2.0
-    # Point sur la SURFACE du moyeu (pas son axe) : bord +X de la coupe, a
-    # mi-envergure. Les couches poussent radialement depuis ce point.
-    px, py, pz = stem_bounds[1], cy, 0.0
+    py = (stem_bounds[2] + stem_bounds[3]) / 2.0
+    x_wall = stem_bounds[1]  # rayon du moyeu (surface, bord +X), a mi-envergure
+
+    thickness = read_layer_stack_thickness(case_dir)
+    n_layers_m = re.search(r'"propeller\.\*"\s*\{\s*nSurfaceLayers\s+(\d+)\s*;',
+                            open(os.path.join(case_dir, "system", "snappyHexMeshDict")).read())
+    first_m = re.search(r"\bfirstLayerThickness\s+([0-9.eE+-]+)\s*;",
+                         open(os.path.join(case_dir, "system", "snappyHexMeshDict")).read())
+    n_layers = int(n_layers_m.group(1)) if n_layers_m else None
+    first_thickness = float(first_m.group(1)) if first_m else None
+    if thickness is None or thickness <= 0:
+        print("  bonus : epaisseur de couches non lue -- repli 2 mm (non verifie)")
+        thickness = 0.002
+
+    # Fenetre de coupe : X de juste-sous-le-mur a bien au-dela de la pile
+    # (maillage de coeur inclus), Y sur une bonne portion d'envergure pour le
+    # contexte, Z tres fin (le plan lui-meme est a z=0).
+    # y_span reste du MEME ORDRE que la fenetre X (pas une longue bande) :
+    # frame_camera cadre sur la DIAGONALE de la boite -- un Y demesure par
+    # rapport a X (essaye : 40x l'epaisseur) noie le detail des couches dans
+    # une bande verticale ou seul le maillage de coeur, plus grossier, reste
+    # visible a l'oeil (constate le 14/09).
+    x_near, x_far = x_wall - thickness * 0.5, x_wall + thickness * 6.0
+    y_span = thickness * 5.0
+    zoom_bounds = (x_near, x_far, py - y_span, py + y_span, -thickness * 2, thickness * 2)
 
     sl = Slice(Input=reader)
     sl.SliceType = "Plane"
     sl.SliceType.Origin = [0.0, py, 0.0]
-    sl.SliceType.Normal = [0.0, 1.0, 0.0]
+    sl.SliceType.Normal = [0.0, 0.0, 1.0]
     sl.UpdatePipeline(time=0.0)
+    detail = clip_box(sl, zoom_bounds)
 
-    # Cadrage resserre sur l'epaisseur REELLE de la pile de couches (lue dans
-    # le snappyHexMeshDict de ce cas, pas une constante) : sans cette lecture,
-    # un zoom cale sur la taille du moyeu (cm) est ~30x trop large pour
-    # distinguer des couches sub-millimetriques.
-    thickness = read_layer_stack_thickness(case_dir)
-    if thickness is None or thickness <= 0:
-        print("  bonus : epaisseur de couches non lue dans snappyHexMeshDict -- repli 5 mm (non verifie)")
-        half = 0.005
+    # Layout a deux cellules (meme technique verifiee que l'image 5) :
+    # AssignView(0,...) explicite, puis SplitViewHorizontal + (retour+1).
+    layout = CreateLayout("couches_prismes")
+    view_l = CreateView("RenderView")
+    view_l.ViewSize = list(VIEW_SIZE)
+    view_l.Background = [1.0, 1.0, 1.0]
+    view_l.UseColorPaletteForBackground = 0
+    view_l.OrientationAxesVisibility = 0
+    layout.AssignView(0, view_l)
+    split_return = layout.SplitViewHorizontal(view_l, 0.4)
+    view_r = CreateView("RenderView")
+    view_r.ViewSize = list(VIEW_SIZE)
+    view_r.Background = [1.0, 1.0, 1.0]
+    view_r.UseColorPaletteForBackground = 0
+    view_r.OrientationAxesVisibility = 0
+    for candidate in (split_return + 1, split_return, 2):
+        if layout.AssignView(candidate, view_r):
+            break
     else:
-        half = thickness * 6.0  # marge : pile complete + un peu de volume de part et d'autre
-    zoom_bounds = (px - half, px + half, py - half, py + half, pz - half, pz + half)
+        raise RuntimeError("impossible de placer la seconde vue (image 06)")
 
-    # Ne PAS zoomer la camera sur des donnees non decoupees : a cette echelle
-    # (mm) contre un domaine a l'echelle du metre, Render() detecte un ratio
-    # near/far degenere et reinitialise la camera de lui-meme (verifie : sans
-    # ce Clip, la camera repart en vue d'ensemble malgre un CameraPosition
-    # explicite). Le Clip ramene la geometrie AFFICHEE a l'echelle du zoom.
-    clip = Clip(Input=sl)
-    clip.ClipType = "Box"
-    clip.ClipType.Position = [zoom_bounds[0], zoom_bounds[2], zoom_bounds[4]]
-    clip.ClipType.Length = [2 * half, 2 * half, 2 * half]
-    clip.Invert = 1
-    clip.UpdatePipeline(time=0.0)
+    # ---- Panneau gauche : vue d'ensemble + rectangle de reperage ----
+    solid_body(prop, view_l, color=(0.55, 0.55, 0.58))
+    prop_bounds = prop.GetDataInformation().GetBounds()
+    rect = [
+        [x_near, py - y_span, 0.0], [x_far, py - y_span, 0.0],
+        [x_far, py + y_span, 0.0], [x_near, py + y_span, 0.0], [x_near, py - y_span, 0.0],
+    ]
+    for a, b in zip(rect[:-1], rect[1:]):
+        seg = Line(Point1=a, Point2=b)
+        srep = Show(seg, view_l)
+        srep.LineWidth = 3
+        srep.AmbientColor = srep.DiffuseColor = [0.85, 0.1, 0.1]
+    frame_camera(view_l, prop_bounds, direction=(0.15, 0.75, 0.65), up=(0.0, 0.0, 1.0), zoom=2.1)
+    add_provenance(view_l, f"{case_layers} · vue d'ensemble · t = 0 s · {ETAT_MAILLAGE}"
+                   " -- rectangle rouge = zone agrandie (panneau de droite)")
 
-    view = new_view()
-    rep = Show(clip, view)
-    rep.Representation = "Surface With Edges"
-    solid_color(rep, (0.85, 0.85, 0.85))
-    rep.EdgeColor = [0.1, 0.1, 0.1]
-    rep.LineWidth = 1.0
+    # ---- Panneau droit : agrandissement ----
+    rep_r = Show(detail, view_r)
+    rep_r.Representation = "Surface With Edges"
+    solid_color(rep_r, (0.88, 0.88, 0.88))
+    rep_r.EdgeColor = [0.05, 0.05, 0.05]
+    rep_r.LineWidth = 1.1
+    # up = Y : X (mur -> coeur) se lit a l'horizontale, mur a gauche.
+    frame_camera(view_r, zoom_bounds, direction=(0.0, 0.0, 1.0), up=(0.0, 1.0, 0.0), zoom=1.25)
+    add_provenance(view_r, f"{case_layers} · maillage a couches · t = 0 s · {ETAT_MAILLAGE}"
+                   " -- agrandissement, coupe perpendiculaire a la paroi")
+    if first_thickness:
+        ann_text = f"{n_layers or '?'} couches, 1ere epaisseur {first_thickness * 1000:.3g} mm"
+    else:
+        ann_text = f"{n_layers or '?'} couches"
+    ann = Text()
+    ann.Text = ann_text
+    d = Show(ann, view_r)
+    d.WindowLocation = "Upper Left Corner"
+    d.FontSize = 11
+    d.Color = [0, 0, 0]
+    core = Text()
+    core.Text = "maillage de coeur ->"
+    dcore = Show(core, view_r)
+    dcore.WindowLocation = "Upper Right Corner"
+    dcore.FontSize = 11
+    dcore.Color = [0, 0, 0]
 
-    # Vue quasi perpendiculaire au plan de coupe (axe Y) : les couches
-    # s'empilent radialement DANS ce plan (X,Z) depuis la surface du moyeu --
-    # une vue de face les montre comme des bandes concentriques emboitees.
-    frame_camera(view, zoom_bounds, direction=(0.15, 1.0, 0.25), up=(0.0, 0.0, 1.0), zoom=1.3)
-    add_provenance(
-        view,
-        f"{case_layers} · maillage a couches (6 couches, propeller.*) · t = 0 s · {ETAT_MAILLAGE}"
-        " -- zoom corps de pale (pas le bout, couches retirees a propellerTipEdge)",
-    )
-    Render(view)
-    save(view, os.path.join(args.out_dir, "06_couches_prismes.png"))
+    Render(view_l)
+    Render(view_r)
+    save(layout, os.path.join(args.out_dir, "06_couches_prismes.png"))
 
 
 # --------------------------------------------------------------------------- #
 # Image 7 -- champ de vitesse (coupe), Image 8 -- turbulence k (coupe)
 # --------------------------------------------------------------------------- #
 
-def _field_slice_image(args, array_name, association, preset, title, filename, intro):
-    """Commun aux images 7 (U) et 8 (k) : meme coupe, meme cadrage que l'image
-    3 (plan (0,0,0)/normale z), colorée par un champ avec echelle robuste
-    (percentiles, pas min/max brut -- meme raison que l'image 5)."""
+def _field_reader_and_slice(args, array_name):
+    """Coupe commune aux images 07/08 : plan (0,0,0)/normale z, resserree sur
+    l'helice + sillage proche (defaut 3.3), champ interpole POINTS (defaut
+    3.1). Retourne (slice_interpole, prop_bounds, zoom_bounds)."""
     case_dir = f"Helice/{args.cas}"
     reader = make_reader(case_dir, ["internalMesh"], [array_name], args.time)
+    prop = make_reader(
+        case_dir,
+        ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"],
+        [], args.time,
+    )
+    prop_bounds = prop.GetDataInformation().GetBounds()
+    zoom_bounds = propeller_zoom_bounds(prop_bounds)
 
     sl = Slice(Input=reader)
     sl.SliceType = "Plane"
     sl.SliceType.Origin = [0.0, 0.0, 0.0]
     sl.SliceType.Normal = [0.0, 0.0, 1.0]
     sl.UpdatePipeline(time=args.time)
-
-    view = new_view()
-    rep = Show(sl, view)
-    rep.Representation = "Surface"
-    ColorBy(rep, (association, array_name))
-    lut = GetColorTransferFunction(array_name)
-    lut.ApplyPreset(preset, True)
-    rng = percentile_range(sl, array_name, association, lo=2, hi=98)
-    suffix = ""
-    if rng:
-        lut.RescaleTransferFunction(rng[0], rng[1])
-        suffix = " (p2-p98, hors extremes)"
-    else:
-        lut.RescaleTransferFunctionToDataRange(True)
-    rep.SetScalarBarVisibility(view, True)
-    sb = GetScalarBar(lut, view)
-    sb.Title = title + suffix
-    sb.ComponentTitle = ""
-
-    bounds = reader.GetDataInformation().GetBounds()
-    # Meme convention "arbre a l'horizontale" que l'image 3 (up = X).
-    frame_camera(view, bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.55)
-    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO) + " -- " + intro)
-    Render(view)
-    save(view, os.path.join(args.out_dir, filename))
+    sl = clip_box(sl, zoom_bounds)
+    # 3.1 -- CELL DATA -> POINT DATA : sans ca, ColorBy(CELLS,...) peint
+    # chaque maille d'une teinte plate (rendu en blocs, constate le 14/09).
+    interp = interpolate_to_points(sl)
+    return interp, prop, prop_bounds, zoom_bounds
 
 
 def image_07(args):
-    _field_slice_image(
-        args,
-        array_name="U",
-        association="CELLS",
-        preset="Viridis (matplotlib)",
-        title="|U| [m/s]",
-        filename="07_vitesse.png",
-        intro="champ de vitesse (norme), coupe plan (0,0,0)/normale z",
-    )
+    args_case_dir = f"Helice/{args.cas}"
+    interp, prop, prop_bounds, zoom_bounds = _field_reader_and_slice(args, "U")
+
+    view = new_view()
+    rep = Show(interp, view)
+    rep.Representation = "Surface"
+    ColorBy(rep, ("POINTS", "U"))
+    lut = GetColorTransferFunction("U")
+    lut.ApplyPreset("Viridis (matplotlib)", True)  # sequentiel : |U| n'a pas de zero a centrer
+    rng = percentile_range(interp, "U", "POINTS", lo=2, hi=98)
+    suffix = ""
+    if rng:
+        lut.RescaleTransferFunction(rng[0], rng[1])
+        suffix = " (p2-p98)"
+    else:
+        lut.RescaleTransferFunctionToDataRange(True)
+    rep.SetScalarBarVisibility(view, True)
+    style_scalarbar(GetScalarBar(lut, view), f"|U| [m/s]{suffix}")
+
+    # 3.4 -- corps solide DANS la vue, sinon la pale est un trou blanc.
+    solid_body(prop, view, color=(0.55, 0.55, 0.58))
+
+    frame_camera(view, zoom_bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.5)
+    add_flow_arrow(view, zoom_bounds, subject_bounds=prop_bounds)
+    add_scale_bar(view, zoom_bounds, 0.02)
+    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
+                   + " -- champ de vitesse (norme), coupe pres helice, plan (0,0,0)/normale z")
+    Render(view)
+    save(view, os.path.join(args.out_dir, "07_vitesse.png"))
 
 
 def image_08(args):
-    _field_slice_image(
-        args,
-        array_name="k",
-        association="CELLS",
-        preset="Inferno (matplotlib)",
-        title="k [m2/s2]",
-        filename="08_turbulence.png",
-        intro="energie cinetique turbulente k, coupe plan (0,0,0)/normale z",
-    )
+    """k s'etale sur des decades (quasi nul loin de la pale, pic au bout) :
+    UNE ECHELLE LINEAIRE NE MONTRE JAMAIS UN CHAMP ETALE SUR DES DECADES --
+    vaut aussi pour epsilon, nut, Q, a reappliquer si on les rend un jour.
+    Echelle LOG + Threshold : seule la zone turbulente reste coloree, le
+    reste du domaine s'affiche en maillage gris (constat 14/09 : rectangle
+    noir avec deux points brillants en lineaire -- tout le signal utile tient
+    dans les 4 dernieres decades sous le maximum).
+    """
+    case_dir = f"Helice/{args.cas}"
+    interp, prop, prop_bounds, zoom_bounds = _field_reader_and_slice(args, "k")
+
+    # k_max robuste (p99.9, pas le max brut). Regle demandee : seuil bas =
+    # k_max/1e4 (suppose un plancher quasi nul loin de la paroi). VERIFIE FAUX
+    # sur ce champ (14/09) : k minimum reel sur tout le domaine = 0,033, pas
+    # ~0 -- k_max/1e4 tombe alors SOUS le plancher reel, le Threshold ne
+    # filtre rien du tout (896464/896464 cellules passent, confirme par
+    # mesure directe), et les deux representations (fond gris + zone
+    # coloree) se recouvrent exactement -> z-fighting (motif rouge/blanc en
+    # dents de scie a l'ecran, pas un vrai defaut de donnee).
+    # Repli adopte : seuil bas = PERCENTILE (p85), qui filtre toujours
+    # reellement quel que soit le plancher du champ -- l'echelle reste log.
+    rng = percentile_range(interp, "k", "POINTS", lo=85, hi=99.9)
+    k_max = rng[1] if rng else None
+    k_low = rng[0] if rng else None
+
+    view = new_view()
+
+    # Fond : le maillage COMPLET de la coupe, gris, pour que "le reste" reste
+    # lisible comme du maillage et non comme du vide.
+    rep_bg = Show(interp, view)
+    rep_bg.Representation = "Surface With Edges"
+    solid_color(rep_bg, (0.88, 0.88, 0.88))
+    rep_bg.EdgeColor = [0.6, 0.6, 0.6]
+    rep_bg.LineWidth = 0.3
+
+    if k_max and k_low and k_max > k_low > 0:
+        thresh = Threshold(Input=interp)
+        thresh.Scalars = ["POINTS", "k"]
+        low = k_low
+        thresh.LowerThreshold = low
+        thresh.UpperThreshold = k_max
+        thresh.ThresholdMethod = "Between"
+        thresh.UpdatePipeline()
+
+        rep = Show(thresh, view)
+        rep.Representation = "Surface"
+        ColorBy(rep, ("POINTS", "k"))
+        lut = GetColorTransferFunction("k")
+        lut.ApplyPreset("Inferno (matplotlib)", True)
+        lut.UseLogScale = 1
+        lut.RescaleTransferFunction(low, k_max)
+        rep.SetScalarBarVisibility(view, True)
+        style_scalarbar(GetScalarBar(lut, view), f"k [m²/s²] (log, >p85, {low:.1e}-{k_max:.1e})")
+    else:
+        print("  image 08 : k_max non mesure -- seuil/log ignores, repli lineaire complet")
+        rep = Show(interp, view)
+        ColorBy(rep, ("POINTS", "k"))
+
+    solid_body(prop, view, color=(0.55, 0.55, 0.58))
+
+    frame_camera(view, zoom_bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.5)
+    add_flow_arrow(view, zoom_bounds, subject_bounds=prop_bounds)
+    add_scale_bar(view, zoom_bounds, 0.02)
+    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
+                   + " -- k (echelle log, zone turbulente seule coloree), coupe pres helice")
+    Render(view)
+    save(view, os.path.join(args.out_dir, "08_turbulence.png"))
 
 
 IMAGES = {
