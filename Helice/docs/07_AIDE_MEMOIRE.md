@@ -49,7 +49,7 @@ $\omega_0$ du cas k-ω est dérivé de $k_0$, $\varepsilon_0$ du cas k-ε via $\
 ## ④ POINT DE COURS — moyenner sur un tour
 
 Les efforts oscillent au cours du tour — sur ce cas, à la **fréquence de rotation de l'arbre**
-($n$), pas au passage de pale ($3n$) — cause : sillage instationnaire + interface AMI rotor/stator
+($n$), pas au passage de pale ($4n$) — cause : sillage instationnaire + interface AMI rotor/stator
 recalculée à chaque pas.
 
 1. **Ne pas lire la dernière ligne** du `.dat` : instant arbitraire du cycle.

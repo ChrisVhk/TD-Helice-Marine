@@ -111,9 +111,11 @@ couple **varient périodiquement** au cours d'un tour.
 Période de **rotation de l'arbre** — c'est la période sur laquelle on moyenne :
 $$T = \frac{1}{n} = \frac{1}{25{,}15} \approx 0{,}0398 \text{ s}$$
 
-> Sur ce cas, la variation mesurée est dominée par cette fréquence de rotation ($1$ tour), **pas**
-> par le passage des pales (qui serait 3 fois plus rapide, $T/3 \approx 0{,}013$ s) — signe que
-> l'oscillation a une part numérique, détaillée dans la fiche enseignant. Quoi qu'il en soit, on
+> Sur ce cas (hélice quadripale, Z=4 — voir `ERRATUM.md`), la variation mesurée est dominée par
+> cette fréquence de rotation ($1$ tour), pas par le passage des pales (qui serait 4 fois plus
+> rapide, $T/4 \approx 0{,}00994$ s) — mais cette fréquence de passage de pale coïncide avec celle
+> d'un artefact numérique possible (interface AMI sur maillage de fond, lui-même d'ordre 4) : un
+> spectre seul ne sépare pas les deux, détaillé dans la fiche enseignant. Quoi qu'il en soit, on
 > moyenne sur **un tour complet**.
 
 Le calcul s'arrête à $t = 0{,}06$ s, soit **≈ 1,5 tour**. Conséquences pratiques :

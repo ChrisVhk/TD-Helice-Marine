@@ -34,12 +34,12 @@ Trois séances, un seul calcul
 **Progression** :
 actif: 2
 1 — Lire un résultat
-K_T, la question des 3 pales, portance et traînée d'une pale
+K_T, la question des 4 pales, portance et traînée d'une pale
 2 — Confronter
 Trois fermetures, un classement impossible
 3 — Voir, puis conclure
 ParaView, restitution croisée
-liaison: Le même calcul d'hélice tripale traverse les trois séances.
+liaison: Le même calcul d'hélice quadripale traverse les trois séances.
 
 **Notes d'orateur** :
 Le TD hélice n'a que 3 séances — le 4e emplacement de la disposition reste vide,
@@ -100,10 +100,14 @@ B — Amplitude de l'oscillation
 La diapositive qui compte (désignée comme telle par le plan du 06/09). L'oscillation
 qu'on doit moyenner pour lire K_T est 2 à 2,7 fois plus grande que l'écart qu'on cherche à
 classer entre modèles. Origine de l'oscillation, à l'oral seulement (pas sur la
-diapositive) : aucune raie à 3× la fréquence de rotation malgré l'hélice tripale — une
-raie 1× accompagnée d'un 4× marqué désigne une origine numérique (maillage/interface AMI),
-pas le passage des pales. Indice concordant : l'amplitude décroît quand la viscosité
-turbulente augmente (laminaire > kOmegaSST > kEpsilon).
+diapositive) — **erratum du 13/09, voir `Helice/docs/ERRATUM.md`** : l'hélice est
+quadripale (Z=4, pas 3), donc le passage de pale attendu (4n = 100,6 Hz) tombe exactement
+sur la même case de résolution que la raie à 4× déjà repérée. Les deux mécanismes —
+passage de pale et interface AMI sur un fond cartésien lui-même d'ordre 4 — prédisent la
+même fréquence : le spectre seul ne peut pas trancher lequel des deux domine. Seul indice
+qui reste concordant : l'amplitude décroît quand la viscosité turbulente augmente
+(laminaire > kOmegaSST > kEpsilon) — cohérent avec au moins une composante numérique,
+mais n'exclut pas une contribution physique réelle.
 
 ---
 

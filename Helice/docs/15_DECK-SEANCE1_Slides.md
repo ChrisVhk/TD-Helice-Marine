@@ -80,7 +80,7 @@ c'est pour ça qu'elle est ailleurs sur la carte, et que la question qui se pose
 **Segment / timing** : Segment 1, ouverture (~2 min)
 
 **Contenu affiché** :
-Une hélice tripale en eau libre — c'est ce dont vos trois séries de données parlent.
+Une hélice quadripale en eau libre — c'est ce dont vos trois séries de données parlent.
 
 **Figure(s)** : `FIG:fon-s7-helice-3D` — `Images/FIG-fon-s7-helice-3D.png` — rendu 3D de la
 géométrie de pale (patch `propellerTip`), cas kEpsilon reconstruit à t=0,06.
@@ -90,12 +90,12 @@ géométrie de pale (patch `propellerTip`), cas kEpsilon reconstruit à t=0,06.
 **Notes d'orateur** :
 Correctif A2 (deck V2, 07/09, après retour du groupe 1) : « il manque des images parlantes » —
 l'objet du TD n'apparaissait nulle part dans le deck jusqu'ici. C'est la géométrie réelle du cas,
-pas une image d'illustration : D = 0,2 m, 3 pales, tourne à 25,15 tr/s (1 509 tr/min) autour de
+pas une image d'illustration : D = 0,2 m, 4 pales, tourne à 25,15 tr/s (1 509 tr/min) autour de
 l'axe vertical visible sur le rendu. Point d'échelle à donner ici ou en séance 2 : c'est une
 maquette (D = 0,2 m à 1 509 tr/min) ; une hélice réelle fait 5 à 9 m pour 100-120 tr/min — le
 passage modèle → réel (ITTC-78, essais en eau libre) est une discipline qu'ils rencontreront en
 EGN-S9, pas ici.
-Note technique pour qui régénère cette figure : le patch `propellerTip` porte les 3 pales et
+Note technique pour qui régénère cette figure : le patch `propellerTip` porte les 4 pales et
 `propellerStem1/2/3` porte l'arbre cylindrique — l'inverse de ce que les noms suggèrent,
 vérifié en rendant chaque patch séparément (`_Setup/outils/generer_figure_helice_3D.py`).
 
@@ -292,7 +292,7 @@ la séance, ne rien présenter en cours magistral avant.
 
 ---
 
-## Diapo 11 — Les trois pales
+## Diapo 11 — Les quatre pales
 **Disposition** : Tableau
 **Segment / timing** : Segment 3 (~10 min, en fin de créneau K_T)
 
@@ -300,22 +300,23 @@ la séance, ne rien présenter en cours magistral avant.
 
 | | |
 |---|---|
-| a) | L'hélice a 3 pales et tourne à 25,15 tr/s. À quelle fréquence la poussée devrait-elle osciller ? |
-| b) | Cette fenêtre de données vous permet-elle de le vérifier ? Justifiez par un calcul de résolution. |
-| c) | Que faudrait-il pour trancher, et qu'est-ce que ça coûterait ? |
+| a) | L'hélice a 4 pales et tourne à 25,15 tr/s. À quelle fréquence la poussée devrait-elle osciller ? |
+| b) | Cette fenêtre de données vous permet-elle de le vérifier ? Que mesurez-vous à cette fréquence ? |
+| c) | Un autre mécanisme, sans rapport avec les pales, prédit exactement la même fréquence. Lequel, et quel test le sépare du passage de pale ? |
 
 **Notes d'orateur** :
-**Formulation tranchée par le LOT 0A du 06/09 — ne pas dire « mesurez, elle n'y est pas ».** Sur
-une fenêtre d'un tour, la résolution FFT vaut 25,15 Hz : les raies mesurées à 25,1 · 50,1 ·
-100,3 Hz sont les cases 1, 2 et 4 de cette grille de résolution, et la fréquence de passage de
-pale (75,44 Hz) tombe exactement sur la case 3. Il y a un **creux, pas une absence** — vérifié
-(magnitude non nulle, très au-dessus du bruit). Affirmer « la raie n'y est pas » n'est pas soutenu
-par la donnée, et pénaliserait à tort un binôme qui mesure honnêtement un petit pic à 75 Hz.
-La question devient l'adéquation de la donnée à la question posée — même leçon que la séance 2,
-une séance plus tôt : quelle fenêtre, quelle résolution, qu'est-ce que ça permet de conclure.
-b) attend un calcul explicite : résolution = 1/(durée de la fenêtre) ; comparer à 75,44 Hz.
-c) attend une réponse en coût (durée de calcul plus longue, donc en temps machine) autant qu'en
-méthode (plus de tours, ou une méthode d'estimation robuste à un signal court).
+**Erratum du 13/09 — voir `Helice/docs/ERRATUM.md`.** Sur une fenêtre d'un tour, la résolution FFT
+vaut 25,15 Hz : les raies mesurées à 25,1 · 50,1 · 100,3 Hz sont les cases 1, 2 et 4 de cette
+grille de résolution. Passage de pale attendu : $4n$ = 100,6 Hz — la case 4 (100,3 Hz) en est
+proche. b) attend le calcul de résolution (25,15 Hz) et le constat qu'un pic existe bien en case 4,
+pas une absence à expliquer.
+c) est le cœur de la diapo suivante : **le fond du domaine (maillage cartésien autour de l'hélice)
+a lui aussi une symétrie d'ordre 4**, et une interface de maillage glissant (AMI) qui tourne dans
+un fond d'ordre 4 fabrique un signal numérique à 4 événements par tour — **exactement la même
+fréquence que le passage de pale.** Un spectre ne donne qu'une fréquence et une amplitude, jamais
+une origine : les deux hypothèses sont ici strictement indiscernables sur ce seul critère. c)
+n'attend pas une explication de « pourquoi absent » (rien ne prédisait une absence) mais un test
+qui sépare les deux causes — voir diapo 12.
 
 ---
 
@@ -342,10 +343,11 @@ Lecture : les seules fréquences que la fenêtre peut distinguer sont des multip
 résolution (~25,2 Hz) — d'où les bâtons, pas une courbe continue : entre deux bâtons, le spectre
 ne dit rien, une ligne qui les relierait inventerait une information qui n'existe pas (défaut
 trouvé et corrigé en construisant cette figure — boucle 10 appliquée à une figure, pas
-seulement à une diapo). La case de résolution, centrée sur 3n = 75,44 Hz, a **exactement la largeur de l'écart entre deux
-bâtons** (~25 Hz) : la fenêtre ne place un bâton pile sur 75,44 Hz que par chance (3n est un
-multiple entier de la résolution ici) — un signal réel à 70 ou 80 Hz, légèrement décalé, serait
-indiscernable du bâton voisin. C'est exactement pourquoi LOT 0A conclut « creux, pas absence, et
-pas de conclusion possible sans calcul plus long » — pas un artefact de présentation, une limite
-réelle de cette fenêtre.
+seulement à une diapo). La case de résolution, centrée sur $4n$ = 100,6 Hz, a **exactement la
+largeur de l'écart entre deux bâtons** (~25 Hz) : la fenêtre place un bâton en case 4 (100,3 Hz,
+mesuré) à moins de 0,3 Hz de $4n$. **Ce que le spectre ne peut pas dire** : si ce bâton vient du
+passage de pale ou de l'interface AMI sur le fond cartésien (lui aussi d'ordre 4) — les deux
+prédisent la même case, un spectre ne rend jamais l'origine d'une fréquence, seulement sa valeur
+et son amplitude. Erratum du 13/09 (`ERRATUM.md`) : l'ancienne version de cette diapo cherchait un
+« creux » à 3× qui n'a plus de raison d'être avec Z=4.
 kOmegaSST volontairement absent (exclu de toute mesure de fréquence, LOT 0A).

@@ -56,7 +56,7 @@ valides). Vous lirez d'abord le dernier instant ; le tracé vous montrera que ç
 
 Puis la question qui fait la séance :
 
-> L'hélice a **3 pales** et tourne à 25,15 tr/s.
+> L'hélice a **4 pales** et tourne à 25,15 tr/s.
 > **a)** À quelle fréquence la poussée devrait-elle osciller ? Justifiez.
 > **b)** Mesurez la fréquence dominante réellement présente dans les données.
 > **c)** Ce n'est pas celle-là. Proposez une explication, et dites comment vous la testeriez.
@@ -90,7 +90,7 @@ Vous allez vouloir classer les modèles. Vous devez découvrir que :
 |---|---|
 | écart entre les 3 fermetures | $\Delta K_T \approx 0{,}015$ |
 | amplitude de l'oscillation | 0,029 à 0,040 — **2 à 2,7 fois plus grande** |
-| origine de cette oscillation | pas de raie à 3/tour → **non physique** |
+| origine de cette oscillation | **indéterminée** entre passage de pale et interface numérique — les deux prédisent la même fréquence |
 
 **On ne compare pas trois modèles de turbulence quand l'incertitude numérique dépasse leur écart.**
 C'est la leçon du TD : elle est démontrée par vos propres mesures, et elle vaut mieux qu'un
@@ -129,7 +129,7 @@ Chaque binôme répond devant les autres à la question qu'il avait préparée s
 ## Checkpoints enseignant
 
 - **Séance 1** — le binôme trouve seul qu'il faut moyenner sur un tour ; répond correctement au a)
-  (passage de pale = $3n$) ; mesure le 1× dans les données ; propose une piste testable au c).
+  (passage de pale = $4n$) ; mesure le 1× dans les données ; propose une piste testable au c).
 - **Inter-séance A** — chaque binôme a produit moyenne + amplitude + tracé pour sa fermeture.
 - **Séance 2** — le binôme met **côte à côte** l'écart-entre-modèles et l'amplitude, et en tire que
   le classement n'est pas défendable en l'état.
