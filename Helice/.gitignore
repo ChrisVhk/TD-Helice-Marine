@@ -53,7 +53,14 @@ Images/_a_traiter/
 *.pptx
 
 # documents enseignant (corriges, fiches) : jamais dans le depot public
+# PIEGE DE CASSE (trouve le 14/09) : ce motif est SENSIBLE A LA CASSE et
+# n'attrape PAS "Enseignant" (casse mixte) -- seulement "ENSEIGNANT" (tout
+# capitales). FICHES-CONDUITE_Enseignant.md est passe au travers, suivi par
+# erreur pendant un commit avant d'etre corrige. Tout futur fichier enseignant
+# doit etre liste ICI explicitement, motif exact -- ne pas compter sur ce
+# glob pour attraper une variante de casse non prevue.
 /docs/*ENSEIGNANT*
+/docs/FICHES-CONDUITE_Enseignant.md
 
 # corriges etudiants : retires du depot avant la seance 2 (LOT I, decision enseignant
 # 12/09) -- la seance 2 demande de decouvrir ce que ces fichiers donnent en reponse.
