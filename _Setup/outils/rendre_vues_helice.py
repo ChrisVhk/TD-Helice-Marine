@@ -118,6 +118,37 @@ def save(view_or_layout, path, size=VIEW_SIZE):
     print(f"  ecrit : {path}")
 
 
+def percentile_range(source, array_name, association="CELLS", lo=5, hi=95):
+    """Plage [percentile lo, percentile hi] d'un champ, PAS le min/max brut.
+
+    Sur ces calculs non valides (Porte B non franchie), quelques cellules
+    extremes (bout de pale, cf. l'historique de divergence du 13/09) suffisent
+    a etaler l'echelle de couleur sur tout un ordre de grandeur -- le reste de
+    la surface s'affiche alors uniformement blanc. Verifie sur `p` le 13/09 :
+    min/max = [-105,3 ; 97,7] contre p5/p95 = [-25,6 ; 11,3]. Retombe sur
+    RescaleTransferFunctionToDataRange (min/max) si numpy/vtk ne cooperent pas.
+    """
+    try:
+        from paraview import servermanager as sm
+        from vtk.numpy_interface import dataset_adapter as dsa
+        import numpy as np
+
+        data = sm.Fetch(source)
+        wrapped = dsa.WrapDataObject(data)
+        cd = wrapped.CellData if association == "CELLS" else wrapped.PointData
+        arr = cd[array_name]
+        pieces = [np.asarray(a) for a in getattr(arr, "Arrays", [arr]) if a is not None]
+        if not pieces:
+            return None
+        values = np.concatenate(pieces)
+        if values.ndim > 1:  # champ vectoriel (U) -> norme
+            values = np.linalg.norm(values, axis=1)
+        return float(np.percentile(values, lo)), float(np.percentile(values, hi))
+    except Exception as exc:  # defensif : jamais bloquant pour une image
+        print(f"  percentile_range({array_name}) a echoue ({exc}) -- repli min/max")
+        return None
+
+
 MODELE_NOM = {
     "kEpsilon": "k-epsilon",
     "kEpsilon_layers": "k-epsilon (maillage a couches)",
@@ -347,10 +378,26 @@ def image_05(args):
     rep_a.Representation = "Surface"
     ColorBy(rep_a, ("CELLS", "p"))
     p_lut = GetColorTransferFunction("p")
-    p_lut.RescaleTransferFunctionToDataRange(True)
+    # Sequentiel (Viridis), pas la palette divergente par defaut (Cool to
+    # Warm) : cette derniere peint tout ce qui est proche de la MEDIANE en
+    # blanc par construction (0,5 = blanc) -- avec des valeurs concentrees
+    # pres du centre de la plage, la surface entiere ressort blanchatre meme
+    # apres un rescale correct de l'echelle. Un sequentiel distingue les
+    # valeurs mediums au lieu de les neutraliser.
+    p_lut.ApplyPreset("Viridis (matplotlib)", True)
+    # Percentiles 5-95, PAS le min/max brut : quelques cellules extremes (bout
+    # de pale, calcul non valide) etalent sinon l'echelle au point de rendre
+    # toute la surface uniformement d'une seule teinte. Voir percentile_range().
+    rng = percentile_range(reader, "p", "CELLS", lo=5, hi=95)
+    if rng:
+        p_lut.RescaleTransferFunction(rng[0], rng[1])
+        sb_title_suffix = " (p5-p95, hors extremes -- voir legendes)"
+    else:
+        p_lut.RescaleTransferFunctionToDataRange(True)
+        sb_title_suffix = ""
     rep_a.SetScalarBarVisibility(view_a, True)
     sb = GetScalarBar(p_lut, view_a)
-    sb.Title = "p [m2/s2]"
+    sb.Title = "p [m2/s2]" + sb_title_suffix
     sb.ComponentTitle = ""
 
     rep_b = Show(reader, view_b)
@@ -474,6 +521,73 @@ def image_06(args):
     save(view, os.path.join(args.out_dir, "06_couches_prismes.png"))
 
 
+# --------------------------------------------------------------------------- #
+# Image 7 -- champ de vitesse (coupe), Image 8 -- turbulence k (coupe)
+# --------------------------------------------------------------------------- #
+
+def _field_slice_image(args, array_name, association, preset, title, filename, intro):
+    """Commun aux images 7 (U) et 8 (k) : meme coupe, meme cadrage que l'image
+    3 (plan (0,0,0)/normale z), colorée par un champ avec echelle robuste
+    (percentiles, pas min/max brut -- meme raison que l'image 5)."""
+    case_dir = f"Helice/{args.cas}"
+    reader = make_reader(case_dir, ["internalMesh"], [array_name], args.time)
+
+    sl = Slice(Input=reader)
+    sl.SliceType = "Plane"
+    sl.SliceType.Origin = [0.0, 0.0, 0.0]
+    sl.SliceType.Normal = [0.0, 0.0, 1.0]
+    sl.UpdatePipeline(time=args.time)
+
+    view = new_view()
+    rep = Show(sl, view)
+    rep.Representation = "Surface"
+    ColorBy(rep, (association, array_name))
+    lut = GetColorTransferFunction(array_name)
+    lut.ApplyPreset(preset, True)
+    rng = percentile_range(sl, array_name, association, lo=2, hi=98)
+    suffix = ""
+    if rng:
+        lut.RescaleTransferFunction(rng[0], rng[1])
+        suffix = " (p2-p98, hors extremes)"
+    else:
+        lut.RescaleTransferFunctionToDataRange(True)
+    rep.SetScalarBarVisibility(view, True)
+    sb = GetScalarBar(lut, view)
+    sb.Title = title + suffix
+    sb.ComponentTitle = ""
+
+    bounds = reader.GetDataInformation().GetBounds()
+    # Meme convention "arbre a l'horizontale" que l'image 3 (up = X).
+    frame_camera(view, bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.55)
+    add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO) + " -- " + intro)
+    Render(view)
+    save(view, os.path.join(args.out_dir, filename))
+
+
+def image_07(args):
+    _field_slice_image(
+        args,
+        array_name="U",
+        association="CELLS",
+        preset="Viridis (matplotlib)",
+        title="|U| [m/s]",
+        filename="07_vitesse.png",
+        intro="champ de vitesse (norme), coupe plan (0,0,0)/normale z",
+    )
+
+
+def image_08(args):
+    _field_slice_image(
+        args,
+        array_name="k",
+        association="CELLS",
+        preset="Inferno (matplotlib)",
+        title="k [m2/s2]",
+        filename="08_turbulence.png",
+        intro="energie cinetique turbulente k, coupe plan (0,0,0)/normale z",
+    )
+
+
 IMAGES = {
     "1": image_01,
     "2": image_02,
@@ -481,6 +595,8 @@ IMAGES = {
     "4": image_04,
     "5": image_05,
     "6": image_06,
+    "7": image_07,
+    "8": image_08,
 }
 
 

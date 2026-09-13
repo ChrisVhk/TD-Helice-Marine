@@ -57,11 +57,45 @@ enseignant, 13/09). Chaque image porte sa ligne de provenance incrustée en bas 
   deux faces via l'orientation, sans toucher à la géométrie. Approximation
   d'introduction : l'antipodie montre une paire de pales opposées (symétrie
   d'ordre 4), pas rigoureusement les deux faces d'UNE seule pale.
+- **Échelle de couleur, corrigée le 13/09 (retour utilisateur)** : palette
+  **séquentielle** (Viridis), pas la palette divergente par défaut de ParaView
+  (Cool to Warm), et bornée aux **percentiles 5-95** du champ, pas au min/max brut.
+  Deux raisons cumulées à l'aplat blanchâtre initial : (1) le min/max réel sur ce
+  champ est [-105,3 ; 97,7], mais 90 % des valeurs vivent dans [-25,6 ; 11,3] —
+  quelques cellules extrêmes (bout de pale, calcul non convergé) écrasaient toute
+  l'échelle ; (2) une palette divergente peint tout ce qui est proche de la
+  MÉDIANE en blanc par construction, donc même après un bon rescale, une
+  distribution centrée sur sa médiane reste blanchâtre — un séquentiel n'a pas ce
+  problème.
 - **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
 - **Réserve de validation** : calcul de démonstration, non validé (Porte B non franchie).
-  Le champ de pression affiché n'a subi aucune vérification (Porte B non franchie) —
-  la plage de couleur elle-même peut être dominée par des valeurs extrêmes locales
-  sans que cela ait été qualifié.
+  Le champ de pression affiché n'a subi aucune vérification physique — seule sa
+  représentation graphique a été rendue lisible ici, pas sa validité.
+
+## 07_vitesse.png
+
+- **Introduit** : le champ de vitesse (norme `|U|`), coupe par le plan
+  (0,0,0)/normale z (même coupe que `03_maillage_coupe.png`), palette séquentielle
+  (Viridis), échelle bornée aux percentiles 2-98 (même raison qu'en 05). On y lit
+  une accélération marquée de part et d'autre du bout de pale (jaune) et une zone
+  de sillage plus lente juste en aval du moyeu — cohérent avec un disque tournant,
+  sans qu'aucune validation n'ait été faite sur ce champ.
+- **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
+- **Réserve de validation** : calcul de démonstration, non validé (Porte B non franchie).
+  L'aspect « mosaïque » visible loin de l'hélice reflète la taille réelle des
+  cellules du maillage grossier à cet endroit (voir image 3) — ce n'est pas un
+  artefact de rendu.
+
+## 08_turbulence.png
+
+- **Introduit** : l'énergie cinétique turbulente `k`, même coupe et même échelle
+  robuste que 07 (percentiles 2-98, Inferno). La turbulence apparaît concentrée
+  quasi exclusivement dans une fine bande au niveau du bout de pale — le reste du
+  domaine est proche de zéro sur cette coupe à cet instant. Utile pour montrer que
+  la turbulence est PRODUITE localement (bout de pale, couche de cisaillement), pas
+  répartie partout dans l'écoulement.
+- **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
+- **Réserve de validation** : calcul de démonstration, non validé (Porte B non franchie).
 
 ## 06_couches_prismes.png (bonus)
 
