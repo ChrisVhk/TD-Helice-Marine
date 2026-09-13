@@ -92,8 +92,12 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
 
 ## 08_turbulence.png
 
-- **Introduit** : la turbulence (k) n'est PAS répartie partout — elle vit dans une
-  fine couronne au bout de pale, quasi nulle ailleurs sur cette coupe.
+- **Introduit** : la turbulence (k) est **produite** au bout de pale, à un niveau **un
+  ordre de grandeur au-dessus** du niveau ambiant. **Correction du 14/09** : dire
+  qu'elle est « quasi nulle ailleurs » est faux — k ne descend jamais sous 0,033 nulle
+  part dans le domaine (niveau turbulent ambiant imposé à l'entrée, physique, pas une
+  absence de turbulence). L'image affiche le **HAUT de la distribution** (>percentile
+  85 mesuré dans la zone recadrée), **pas un seuil physique** de présence/absence.
 - **Correctif appliqué, différent de la règle initialement demandée** : la consigne
   du 14/09 demandait un seuil bas à `k_max/1e4` (suppose un plancher quasi nul loin
   de la paroi). **Vérifié faux sur ce champ** : le k minimum réel sur tout le domaine

@@ -1000,8 +1000,14 @@ def image_08(args):
     frame_camera(view, zoom_bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.5)
     add_flow_arrow(view, zoom_bounds, subject_bounds=prop_bounds)
     add_scale_bar(view, zoom_bounds, 0.02)
+    # Correction du 14/09 : "zone turbulente seule coloree, reste quasi nul"
+    # est FAUX -- k ne descend jamais sous 0,033 nulle part dans le domaine
+    # (niveau ambiant impose a l'entree, physique, pas une absence de
+    # turbulence). L'image montre le HAUT de la distribution (>p85), pas un
+    # seuil physique de "turbulence presente / absente".
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
-                   + " -- k (echelle log, zone turbulente seule coloree), coupe pres helice")
+                   + " -- k produite au bout de pale, 1 ordre de grandeur au-dessus"
+                     " du niveau ambiant (image = >p85, pas un seuil physique)")
     Render(view)
     save(view, os.path.join(args.out_dir, "08_turbulence.png"))
 
