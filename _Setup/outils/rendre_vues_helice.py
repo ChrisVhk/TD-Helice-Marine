@@ -201,7 +201,11 @@ def image_02(args):
     rep_outlet.Opacity = 0.35
 
     bounds = outer.GetDataInformation().GetBounds()
-    frame_camera(view, bounds, direction=(0.55, 0.35, 0.75), up=(0.0, 1.0, 0.0), zoom=1.7)
+    # Ligne d'arbre A L'HORIZONTALE (up = Z, pas Y) : Y est l'axe du maillage
+    # (arbitraire, ce domaine n'a pas de surface libre ni de "haut" physique),
+    # mais une vue "helice debout comme un verre" n'est pas comment un marin
+    # dessine une ligne d'arbre. Vue de cote, viser perpendiculairement a Y.
+    frame_camera(view, bounds, direction=(0.9, 0.2, 0.35), up=(0.0, 0.0, 1.0), zoom=1.7)
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- domaine : outerCylinder + inlet/outlet")
     Render(view)
@@ -232,7 +236,10 @@ def image_03(args):
     bounds = reader.GetDataInformation().GetBounds()
     # Cadrage large (vue de face sur le plan de coupe) pour que le contraste
     # maille fin pres de la pale / maille grossier au loin soit visible.
-    frame_camera(view, bounds, direction=(0.0, 0.05, 1.0), up=(0.0, 1.0, 0.0), zoom=1.55)
+    # up = X (pas Y) : la coupe reste la meme (normale z, inchangee), seule
+    # l'orientation a l'ecran tourne de 90 degres pour que l'axe de l'arbre
+    # (Y) se lise a l'horizontale, comme une ligne d'arbre vue de cote.
+    frame_camera(view, bounds, direction=(0.0, 0.05, 1.0), up=(1.0, 0.0, 0.0), zoom=1.55)
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- coupe maillage, plan (0,0,0)/normale z")
     Render(view)
@@ -288,7 +295,8 @@ def image_04(args):
     rep_ami2.Opacity = 0.45
 
     bounds = dom.GetDataInformation().GetBounds()
-    frame_camera(view, bounds, direction=(0.6, 0.3, 0.75), up=(0.0, 1.0, 0.0), zoom=1.6)
+    # Meme convention que l'image 2 : ligne d'arbre a l'horizontale (up = Z).
+    frame_camera(view, bounds, direction=(0.9, 0.2, 0.35), up=(0.0, 0.0, 1.0), zoom=1.6)
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- AMI1 (rouge) / AMI2 (bleu), interface de maillage glissant")
     Render(view)
@@ -353,10 +361,12 @@ def image_05(args):
     # Deux points de vue antipodaux (camera symetrique par rapport au centre) :
     # PAS de coupe planaire, la geometrie est vrillee (echec du 13/09) --
     # l'orientation de la camera separe les faces, jamais une geometrie coupee.
+    # up = Z (pas Y) : meme convention "ligne d'arbre a l'horizontale" que les
+    # images 2/3/4.
     dir_a = (1.0, 0.35, 0.25)
     dir_b = tuple(-c for c in dir_a)
-    frame_camera(view_a, bounds, direction=dir_a, up=(0.0, 1.0, 0.0), zoom=2.1)
-    frame_camera(view_b, bounds, direction=dir_b, up=(0.0, 1.0, 0.0), zoom=2.1)
+    frame_camera(view_a, bounds, direction=dir_a, up=(0.0, 0.0, 1.0), zoom=2.1)
+    frame_camera(view_b, bounds, direction=dir_b, up=(0.0, 0.0, 1.0), zoom=2.1)
 
     prov = provenance_line(args.cas, args.time, ETAT_DEMO) + " -- p, echelle commune"
     add_provenance(view_a, "intrados (cote pression) -- " + prov)
