@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dynamicFvMesh   dynamicMotionSolverFvMesh;
+
+motionSolverLibs (fvMotionSolvers);
+
+motionSolver    solidBody;
+
+cellZone        innerCylinderSmall;
+
+solidBodyMotionFunction  rotatingMotion;
+
+origin      (0 0 0);
+axis        (0 1 0);
+// LOT N -- combinaison retrait de couches (bout de pale) + demarrage rampe (13/09, decision
+// enseignant). Rampe lineaire, meme mecanisme Function1 "table" que l'essai precedent (Scale +
+// halfCosineRamp rejete : Function1::integrate() non implemente pour Scale, necessaire a
+// rotatingMotion pour integrer omega(t) en angle -- voir JOURNAL.md du 13/09).
+// Duree allongee de 1 a 5 ms (x5) : l'essai precedent sur le maillage complet a couches montrait
+// la divergence apparaitre AVANT la fin de la rampe de 1 ms (t=4e-4s) -- signe que le taux
+// d'acceleration angulaire etait encore trop eleve, pas seulement la duree totale insuffisante.
+// 5 ms reste une fraction modeste d'un tour (0,0398 s, ~12,5%) tout en divisant ce taux par 5.
+omega table
+(
+    (0      0)
+    (0.005  158)
+    (10     158)
+);
+
+
+// ************************************************************************* //
