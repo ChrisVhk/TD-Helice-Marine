@@ -8,6 +8,7 @@ _Setup/*
 !_Setup/outils/
 _Setup/outils/*
 !_Setup/outils/generer_figure_*.py
+!_Setup/outils/rendre_vues_helice.py
 
 # Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx) : regenerables,
 # jamais commitees -- meme regime que Helice/*.pptx (LOT I, deck vers Vega, pas vers

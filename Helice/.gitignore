@@ -17,6 +17,11 @@ case_*/log.*
 case_*/*.foam
 case_*/_bench_logs*/
 
+# Galerie d'images d'introduction (pvbatch, _Setup/outils/rendre_vues_helice.py) :
+# PNG régénérables depuis les cas, jamais versionnés. Le script et les légendes,
+# eux, sont suivis (traçabilité, pas de gonflement du dépôt).
+Images/galerie/*.png
+
 # Sauvegardes de session : pas de temps corrompus déplacés + sorties de run temporaires.
 # Les SCRIPTS de reprise, eux, sont versionnés (scripts/reprise_cas.sh) — un outil qui
 # produit un résultat traverse le dépôt (INV-11). L'ancien _resume_kOmegaSST.sh est gardé
