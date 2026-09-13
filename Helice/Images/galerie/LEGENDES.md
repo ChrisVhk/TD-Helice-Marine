@@ -49,24 +49,35 @@ enseignant, 13/09). Chaque image porte sa ligne de provenance incrustée en bas 
 
 - **Introduit** : la poussée vient d'abord de la distribution de pression sur les
   pales (bonne réponse, Q8 du QCM). Deux vues côte à côte, échelle de couleurs `p`
-  **commune** aux deux (une seule barre affichée, partagée par construction — même
-  LUT ParaView pour les deux représentations).
-- **Méthode intrados/extrados** : **pas de coupe planaire** (la géométrie est vrillée,
-  une coupe avait déjà échoué le 13/09) — deux points de vue caméra antipodaux
-  (symétriques par rapport au centre de l'hélice), qui montrent naturellement les
-  deux faces via l'orientation, sans toucher à la géométrie. Approximation
-  d'introduction : l'antipodie montre une paire de pales opposées (symétrie
-  d'ordre 4), pas rigoureusement les deux faces d'UNE seule pale.
-- **Échelle de couleur, corrigée le 13/09 (retour utilisateur)** : palette
-  **séquentielle** (Viridis), pas la palette divergente par défaut de ParaView
-  (Cool to Warm), et bornée aux **percentiles 5-95** du champ, pas au min/max brut.
-  Deux raisons cumulées à l'aplat blanchâtre initial : (1) le min/max réel sur ce
-  champ est [-105,3 ; 97,7], mais 90 % des valeurs vivent dans [-25,6 ; 11,3] —
-  quelques cellules extrêmes (bout de pale, calcul non convergé) écrasaient toute
-  l'échelle ; (2) une palette divergente peint tout ce qui est proche de la
-  MÉDIANE en blanc par construction, donc même après un bon rescale, une
-  distribution centrée sur sa médiane reste blanchâtre — un séquentiel n'a pas ce
-  problème.
+  **commune** aux deux (une seule barre affichée, hors de la géométrie, avec
+  unité et graduations chiffrées).
+- **LOT D du 13/09 — 5 correctifs appliqués** :
+  1. Échelle bornée aux **percentiles 2-98** de `p` sur `propellerTip` (pas min/max brut).
+  2. Palette **divergente ET symétrique autour de zéro** (Cool to Warm ; L =
+     max(|p2|,|p98|), rescale [-L,+L]) — rouge = surpression, bleu = dépression,
+     signe lisible d'un coup d'œil. Le passage précédent à Viridis (12/09) réglait
+     le mauvais problème : un divergent ne blanchit pas « la médiane », il
+     blanchit SON POINT CENTRAL — le défaut était que ce centre restait au milieu
+     de la plage brute au lieu d'être forcé à zéro.
+  3. Barre de couleurs **hors de la géométrie**, titrée avec l'unité (`p [m²/s²],
+     pression cinématique`) et le mode d'écrêtage, graduée en valeurs numériques.
+  4. `propellerStem1/2/3` (arbre/moyeu) **atténué** (gris uni, opacité 0,35) : le
+     sujet de l'image est la pale, pas l'arbre.
+  5. Vue **axiale de chaque face** (même famille de caméra que `01_geometrie.png`,
+     miroir en Y), **pas un angle 3/4** — remplace l'ancienne méthode par caméras
+     antipodales à 3/4.
+- **Constat honnête (LOT D, question posée par la consigne)** : on voit une
+  variation de pression réelle sur la surface des pales, mais **concentrée aux
+  bords/bouts de pale** — la majeure partie de chaque face reste proche de 0
+  (teinte pâle), avec des liserés rouges ET bleus mélangés sur les MÊMES bords
+  d'une même vue (cohérent avec bord d'attaque en surpression / bord de fuite en
+  dépression sur une même face). **Les deux vues axiales ne se distinguent PAS
+  proprement par un signe dominant unique** (l'une n'est pas franchement rouge,
+  l'autre franchement bleue) : la pale est vrillée, une vue purement axiale
+  traverse donc, selon le rayon, des zones de torsion différente — la même
+  limite de principe qui interdisait déjà une coupe planaire. **Signalé tel
+  quel, pas maquillé** : cette image montre honnêtement qu'une pression varie
+  sur la pale et où (les bords), pas une séparation propre intrados/extrados.
 - **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
 - **Réserve de validation** : calcul de démonstration, non validé (Porte B non franchie).
   Le champ de pression affiché n'a subi aucune vérification physique — seule sa

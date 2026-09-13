@@ -340,13 +340,19 @@ def image_04(args):
 
 def image_05(args):
     case_dir = f"Helice/{args.cas}"
-    reader = make_reader(
+    # Pale coloree par p (le sujet) et moyeu/arbre a part, attenues (LOT D §4,
+    # correction du 13/09) : le sujet de cette image est la pale, pas l'arbre.
+    tip = make_reader(case_dir, ["patch/propellerTip"], ["p"], args.time)
+    stem = make_reader(
+        case_dir, ["patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"], [], args.time
+    )
+    bounds_all = make_reader(
         case_dir,
         ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"],
-        ["p"],
+        [],
         args.time,
-    )
-    bounds = reader.GetDataInformation().GetBounds()
+    ).GetDataInformation().GetBounds()
+    bounds = bounds_all
 
     # Layout a deux cellules. Verifie a la main sur cette install (5.11.2,
     # pvbatch) : CreateView() NE place PAS automatiquement dans le layout ;
@@ -374,50 +380,76 @@ def image_05(args):
     else:
         raise RuntimeError("impossible de placer la seconde vue dans le layout (image 5)")
 
-    rep_a = Show(reader, view_a)
-    rep_a.Representation = "Surface"
-    ColorBy(rep_a, ("CELLS", "p"))
+    # LOT D (13/09) -- 5 correctifs sur ce qui suit : (1) percentiles 2-98,
+    # (2) divergent ET symetrique autour de zero, (3) barre hors geometrie
+    # avec unite, (4) arbre/moyeu attenue, sujet = la pale, (5) vue axiale
+    # (dans l'axe de l'arbre), pas un angle 3/4.
+    rep_tip_a = Show(tip, view_a)
+    rep_tip_a.Representation = "Surface"
+    ColorBy(rep_tip_a, ("CELLS", "p"))
     p_lut = GetColorTransferFunction("p")
-    # Sequentiel (Viridis), pas la palette divergente par defaut (Cool to
-    # Warm) : cette derniere peint tout ce qui est proche de la MEDIANE en
-    # blanc par construction (0,5 = blanc) -- avec des valeurs concentrees
-    # pres du centre de la plage, la surface entiere ressort blanchatre meme
-    # apres un rescale correct de l'echelle. Un sequentiel distingue les
-    # valeurs mediums au lieu de les neutraliser.
-    p_lut.ApplyPreset("Viridis (matplotlib)", True)
-    # Percentiles 5-95, PAS le min/max brut : quelques cellules extremes (bout
-    # de pale, calcul non valide) etalent sinon l'echelle au point de rendre
-    # toute la surface uniformement d'une seule teinte. Voir percentile_range().
-    rng = percentile_range(reader, "p", "CELLS", lo=5, hi=95)
+    p_lut.ApplyPreset("Cool to Warm", True)  # divergent : rouge = surpression, bleu = depression
+    # Percentiles 2-98, PUIS symetrise autour de ZERO (L = max(|p2|,|p98|)) :
+    # un divergent ne blanchit pas "la mediane", il blanchit SON POINT CENTRAL
+    # -- le forcer a 0 est ce qui rend le signe lisible d'un coup d'oeil.
+    rng = percentile_range(tip, "p", "CELLS", lo=2, hi=98)
     if rng:
-        p_lut.RescaleTransferFunction(rng[0], rng[1])
-        sb_title_suffix = " (p5-p95, hors extremes -- voir legendes)"
+        L = max(abs(rng[0]), abs(rng[1]))
+        p_lut.RescaleTransferFunction(-L, L)
+        sb_title_suffix = " (p2-p98, ecretee, centree sur 0)"
     else:
         p_lut.RescaleTransferFunctionToDataRange(True)
         sb_title_suffix = ""
-    rep_a.SetScalarBarVisibility(view_a, True)
+    rep_tip_a.SetScalarBarVisibility(view_a, True)
     sb = GetScalarBar(p_lut, view_a)
-    sb.Title = "p [m2/s2]" + sb_title_suffix
+    sb.Title = "p [m²/s²] (pression cinematique)" + sb_title_suffix
     sb.ComponentTitle = ""
+    sb.WindowLocation = "Any Location"  # hors de la geometrie, pas superposee
+    sb.Position = [0.86, 0.15]
+    sb.ScalarBarLength = 0.6
+    sb.TitleFontSize = 14
+    sb.LabelFontSize = 12
+    sb.RangeLabelFormat = "%-#5.1f"
+    sb.AutomaticLabelFormat = 0
+    # Fond blanc (view.Background) : sans ceci le titre/graduations heritent
+    # d'une couleur par defaut proche du blanc et deviennent invisibles --
+    # verifie le 13/09, barre rendue mais texte illisible.
+    sb.TitleColor = [0.0, 0.0, 0.0]
+    sb.LabelColor = [0.0, 0.0, 0.0]
+    sb.UseCustomLabels = 0
 
-    rep_b = Show(reader, view_b)
-    rep_b.Representation = "Surface"
-    ColorBy(rep_b, ("CELLS", "p"))
-    rep_b.SetScalarBarVisibility(view_b, False)  # une seule echelle affichee, commune aux deux
+    rep_stem_a = Show(stem, view_a)
+    rep_stem_a.Representation = "Surface"
+    solid_color(rep_stem_a, (0.6, 0.6, 0.62))
+    rep_stem_a.Opacity = 0.35  # attenue : le sujet est la pale, pas l'arbre
 
-    # Deux points de vue antipodaux (camera symetrique par rapport au centre) :
-    # PAS de coupe planaire, la geometrie est vrillee (echec du 13/09) --
-    # l'orientation de la camera separe les faces, jamais une geometrie coupee.
-    # up = Z (pas Y) : meme convention "ligne d'arbre a l'horizontale" que les
-    # images 2/3/4.
-    dir_a = (1.0, 0.35, 0.25)
-    dir_b = tuple(-c for c in dir_a)
-    frame_camera(view_a, bounds, direction=dir_a, up=(0.0, 0.0, 1.0), zoom=2.1)
-    frame_camera(view_b, bounds, direction=dir_b, up=(0.0, 0.0, 1.0), zoom=2.1)
+    rep_tip_b = Show(tip, view_b)
+    rep_tip_b.Representation = "Surface"
+    ColorBy(rep_tip_b, ("CELLS", "p"))
+    rep_tip_b.SetScalarBarVisibility(view_b, False)  # une seule echelle affichee, commune aux deux
+
+    rep_stem_b = Show(stem, view_b)
+    rep_stem_b.Representation = "Surface"
+    solid_color(rep_stem_b, (0.6, 0.6, 0.62))
+    rep_stem_b.Opacity = 0.35
+
+    # Vue AXIALE de chaque face (dans l'axe de l'arbre), pas un angle 3/4 :
+    # meme famille de camera que l'image 1 (qui compte les 4 pales), reprise
+    # ici cote pile puis cote face pour montrer chaque face successivement.
+    # PAS de coupe planaire (geometrie vrillee, echec du 13/09) -- le
+    # changement de cote d'axe suffit a montrer l'autre face.
+    dir_a = (0.32, 0.82, 0.42)
+    dir_b = (0.32, -0.82, 0.42)
+    frame_camera(view_a, bounds, direction=dir_a, up=(0.0, 0.0, 1.0), zoom=2.3)
+    frame_camera(view_b, bounds, direction=dir_b, up=(0.0, 0.0, 1.0), zoom=2.3)
 
     prov = provenance_line(args.cas, args.time, ETAT_DEMO) + " -- p, echelle commune"
-    add_provenance(view_a, "intrados (cote pression) -- " + prov)
-    add_provenance(view_b, "extrados (cote succion) -- " + prov)
+    # Labels neutres, pas "intrados/extrados" : la pale est vrillee, une vue
+    # axiale ne separe pas proprement les deux faces par le signe (verifie a
+    # l'oeil le 13/09 -- voir LEGENDES.md). Ne pas sur-affirmer une separation
+    # que l'image ne montre pas.
+    add_provenance(view_a, "vue axiale, cote +Y -- " + prov)
+    add_provenance(view_b, "vue axiale, cote -Y -- " + prov)
 
     Render(view_a)
     Render(view_b)
