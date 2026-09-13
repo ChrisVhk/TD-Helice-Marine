@@ -59,7 +59,8 @@ Puis la question qui fait la séance :
 > L'hélice a **4 pales** et tourne à 25,15 tr/s.
 > **a)** À quelle fréquence la poussée devrait-elle osciller ? Justifiez.
 > **b)** Mesurez la fréquence dominante réellement présente dans les données.
-> **c)** Ce n'est pas celle-là. Proposez une explication, et dites comment vous la testeriez.
+> **c)** Un mécanisme sans aucun rapport avec les pales prédit exactement la même fréquence.
+> Lequel ? Proposez un test qui séparerait les deux causes.
 
 Zéro manipulation logicielle : du raisonnement, et une compétence d'ingénieur — **distinguer le
 signal physique du bruit de son propre calcul**. Support : doc [`04`](04_GUIDE_PAS_A_PAS.md).
@@ -129,7 +130,8 @@ Chaque binôme répond devant les autres à la question qu'il avait préparée s
 ## Checkpoints enseignant
 
 - **Séance 1** — le binôme trouve seul qu'il faut moyenner sur un tour ; répond correctement au a)
-  (passage de pale = $4n$) ; mesure le 1× dans les données ; propose une piste testable au c).
+  (passage de pale = $4n$) ; mesure le 1× dans les données ; nomme au c) le mécanisme concurrent
+  (interface AMI sur maillage de fond) et propose un test qui le séparerait du passage de pale.
 - **Inter-séance A** — chaque binôme a produit moyenne + amplitude + tracé pour sa fermeture.
 - **Séance 2** — le binôme met **côte à côte** l'écart-entre-modèles et l'amplitude, et en tire que
   le classement n'est pas défendable en l'état.
