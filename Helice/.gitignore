@@ -32,8 +32,11 @@ _resume_*.out
 # Python
 scripts/__pycache__/
 
-# Sorties de post-traitement (régénérables via scripts/bilan_helice.py)
-Results/
+# Sorties de post-traitement (régénérables via scripts/bilan_helice.py) : motif
+# Results/* pas Results/ -- une negation ne peut pas re-inclure un fichier dans un
+# dossier deja exclu par un motif finissant en "/" (meme piege que _Setup/ plus haut).
+Results/*
+!Results/amplitude_KT_fenetre-propre.md
 
 # Kit de données étudiant : les CSV (data/perf_*.csv) SONT versionnés (petits, distribués) ;
 # le kit de champs ParaView (~1 Go) est régénérable par scripts/extraire_kit_donnees.py --champs
