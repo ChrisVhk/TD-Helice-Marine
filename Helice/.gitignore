@@ -15,6 +15,7 @@ case_*/constant/triSurface/
 case_*/dynamicCode/
 case_*/log.*
 case_*/*.foam
+case_*/_bench_logs*/
 
 # Sauvegardes de session : pas de temps corrompus déplacés + sorties de run temporaires.
 # Les SCRIPTS de reprise, eux, sont versionnés (scripts/reprise_cas.sh) — un outil qui
