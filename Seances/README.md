@@ -32,6 +32,16 @@ Le `.pptx` produit, lui, n'est pas versionné non plus (artefact régénérable,
 decks de ce dossier) — seuls `S00_Intro-CFD-Helice_Slides.md` et `generer_pptx_S00.py` le
 sont.
 
+## `S03_Arborescence-et-perspective_Slides.md` — même dépendance
+
+Support de la séance 3 (arborescence OpenFOAM, mécanismes d'erreur, perspective couches
+de prismes — voir `Helice/docs/PLAN_SEANCE-3.md`). Deux de ses douze diapositives
+(« À quoi servent les couches de prismes », disposition `Figure`) utilisent aussi une
+image de `Helice/Images/galerie/*.png` — **même régime, même conséquence** : régénérer
+la galerie (`rendre_vues_helice.py`) avant `generer_pptx_S03.py` sur un autre poste.
+`generer_pptx_S03.py` est une copie adaptée de `generer_pptx_S00.py` (même regex de
+chemin `Helice/Images/...`), pas du modèle brut.
+
 ## Divergence de convention connue — chemins d'image
 
 `generer_pptx_S00.py` accepte des chemins `Helice/Images/...png` dans le champ
