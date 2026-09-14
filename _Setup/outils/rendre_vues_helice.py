@@ -728,6 +728,46 @@ def image_05(args):
 # Image 6 (bonus) -- zoom couches de prismes, maillage seul
 # --------------------------------------------------------------------------- #
 
+def _project_point(cam_pos, cam_focal, cam_up, point, viewport_w, viewport_h, fov_deg=30.0):
+    """Projette un point 3D dans les pixels d'UNE vue, en repetant l'optique
+    pinhole que ParaView applique reellement (camera perspective explicite,
+    FOV vertical par defaut de VTK/ParaView = 30 deg, jamais change ici).
+    Approximatif -- pas un lien avec le pipeline de rendu OpenGL reel, juste
+    assez juste pour placer un trait de rappel entre deux vues separees
+    (image 06, LOT 5 du 15/09) : verifie visuellement, pas cense etre exact
+    au pixel.
+    Retourne None si le point est derriere la camera.
+    """
+    def _sub(a, b):
+        return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+    def _cross(a, b):
+        return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+    def _norm(v):
+        l = math.sqrt(sum(c * c for c in v)) or 1.0
+        return (v[0] / l, v[1] / l, v[2] / l)
+
+    forward = _norm(_sub(cam_focal, cam_pos))
+    up_in = _norm(cam_up)
+    right = _norm(_cross(forward, up_in))
+    true_up = _norm(_cross(right, forward))
+    rel = _sub(point, cam_pos)
+    z_cam = rel[0] * forward[0] + rel[1] * forward[1] + rel[2] * forward[2]
+    if z_cam <= 1e-9:
+        return None
+    x_cam = rel[0] * right[0] + rel[1] * right[1] + rel[2] * right[2]
+    y_cam = rel[0] * true_up[0] + rel[1] * true_up[1] + rel[2] * true_up[2]
+    half_fov_v = math.radians(fov_deg) / 2.0
+    aspect = viewport_w / float(viewport_h)
+    half_fov_h = math.atan(math.tan(half_fov_v) * aspect)
+    ndc_x = x_cam / (z_cam * math.tan(half_fov_h))
+    ndc_y = y_cam / (z_cam * math.tan(half_fov_v))
+    px = (ndc_x * 0.5 + 0.5) * viewport_w
+    py = (1.0 - (ndc_y * 0.5 + 0.5)) * viewport_h
+    return (px, py)
+
+
 def read_layer_stack_thickness(case_dir):
     """Epaisseur totale de la pile de couches de prismes, lue dans le
     snappyHexMeshDict du CAS LUI-MEME (pas une constante figee) -- pour que
@@ -848,7 +888,25 @@ def image_06(args):
         srep = Show(seg, view_l)
         srep.LineWidth = 3
         srep.AmbientColor = srep.DiffuseColor = [0.85, 0.1, 0.1]
-    frame_camera(view_l, prop_bounds, direction=(0.15, 0.75, 0.65), up=(0.0, 0.0, 1.0), zoom=2.1)
+    ZOOM_L, ZOOM_R = 2.1, 1.25
+    _, dist_l = frame_camera(view_l, prop_bounds, direction=(0.15, 0.75, 0.65), up=(0.0, 0.0, 1.0), zoom=ZOOM_L)
+
+    # Facteur de grossissement entre les deux panneaux (LOT 5, consigne du 15/09) :
+    # rapport des distances camera*zoom -- proportionnel a la largeur physique
+    # montree a l'ecran pour un FOV et une resolution identiques (verifie a l'oeil
+    # sur le rendu, pas seulement calcule).
+    def _diag(b):
+        return math.sqrt((b[1] - b[0]) ** 2 + (b[3] - b[2]) ** 2 + (b[5] - b[4]) ** 2)
+    magnification = (_diag(prop_bounds) * ZOOM_L) / (_diag(zoom_bounds) * ZOOM_R)
+    print(f"  image 06 : facteur de grossissement panneau droit / panneau gauche = x{magnification:.0f}")
+
+    mag_ann = Text()
+    mag_ann.Text = f"grossissement panneau de droite : x{magnification:.0f}"
+    d_mag = Show(mag_ann, view_l)
+    d_mag.WindowLocation = "Upper Left Corner"
+    d_mag.FontSize = 12
+    d_mag.Color = [0.6, 0.0, 0.0]
+    d_mag.Bold = 1
     add_provenance(view_l, f"{case_layers} · vue d'ensemble · t = 0 s · {ETAT_MAILLAGE}"
                    " -- rectangle rouge = zone agrandie (panneau de droite)")
 
@@ -859,7 +917,7 @@ def image_06(args):
     rep_r.EdgeColor = [0.05, 0.05, 0.05]
     rep_r.LineWidth = 1.1
     # up = Y : X (mur -> coeur) se lit a l'horizontale, mur a gauche.
-    frame_camera(view_r, zoom_bounds, direction=(0.0, 0.0, 1.0), up=(0.0, 1.0, 0.0), zoom=1.25)
+    _, dist_r = frame_camera(view_r, zoom_bounds, direction=(0.0, 0.0, 1.0), up=(0.0, 1.0, 0.0), zoom=ZOOM_R)
     add_provenance(view_r, f"{case_layers} · maillage a couches · t = 0 s · {ETAT_MAILLAGE}"
                    " -- agrandissement, coupe perpendiculaire a la paroi")
     if first_thickness:
@@ -881,7 +939,47 @@ def image_06(args):
 
     Render(view_l)
     Render(view_r)
-    save(layout, os.path.join(args.out_dir, "06_couches_prismes.png"))
+    out_path = os.path.join(args.out_dir, "06_couches_prismes.png")
+    save(layout, out_path)
+
+    # ---- Trait de rappel entre les deux panneaux (LOT 5, consigne du 15/09) ----
+    # Rupture d'echelle explicite (~0,5 % du diametre) : sans ce trait, rien ne dit
+    # au lecteur QUEL coin du rectangle correspond a QUEL bord du panneau agrandi.
+    # Post-traitement PIL sur le PNG deja compose (pas un objet ParaView -- les deux
+    # vues sont deux cameras separees, aucune primitive commune ne les relie).
+    try:
+        from PIL import Image, ImageDraw
+        split_frac = 0.4  # doit rester en phase avec SplitViewHorizontal(view_l, 0.4) plus haut
+        w_l = int(round(VIEW_SIZE[0] * split_frac))
+        h_total = VIEW_SIZE[1]
+        cam_l = (list(view_l.CameraPosition), list(view_l.CameraFocalPoint), list(view_l.CameraViewUp))
+        cam_r = (list(view_r.CameraPosition), list(view_r.CameraFocalPoint), list(view_r.CameraViewUp))
+        # Milieu du bord DROIT du rectangle (cote panneau droit), et milieu du bord
+        # GAUCHE du detail agrandi -- centres en hauteur (y=py) pour rester loin des
+        # bords du frustum des deux cameras (un coin du rectangle, essaye d'abord,
+        # tombait hors du FOV vertical du panneau droit -- corrige le 15/09).
+        corner_world = [x_far, py, 0.0]
+        p_l = _project_point(cam_l[0], cam_l[1], cam_l[2], corner_world, w_l, h_total)
+        edge_world = [x_near, py, 0.0]
+        p_r = _project_point(cam_r[0], cam_r[1], cam_r[2], edge_world, VIEW_SIZE[0] - w_l, h_total)
+        if p_l and p_r:
+            im = Image.open(out_path).convert("RGB")
+            # Le PNG final peut ne pas etre exactement VIEW_SIZE (splitter, marges
+            # ParaView) -- on remet a l'echelle les coordonnees projetees plutot que
+            # de supposer une correspondance pixel-a-pixel.
+            scale_x, scale_y = im.width / float(VIEW_SIZE[0]), im.height / float(VIEW_SIZE[1])
+            x1, y1 = p_l[0] * scale_x, p_l[1] * scale_y
+            x2, y2 = (p_r[0] + w_l) * scale_x, p_r[1] * scale_y
+            draw = ImageDraw.Draw(im)
+            draw.line([(x1, y1), (x2, y2)], fill=(133, 26, 26), width=3)
+            for cx, cy in ((x1, y1), (x2, y2)):
+                draw.ellipse([cx - 5, cy - 5, cx + 5, cy + 5], fill=(133, 26, 26))
+            im.save(out_path)
+            print(f"  image 06 : trait de rappel dessine ({x1:.0f},{y1:.0f}) -> ({x2:.0f},{y2:.0f})")
+        else:
+            print("  image 06 : trait de rappel NON dessine (point derriere une camera)")
+    except Exception as exc:  # jamais bloquer la livraison de l'image pour une annotation
+        print(f"  image 06 : trait de rappel non dessine ({exc})")
 
 
 # --------------------------------------------------------------------------- #

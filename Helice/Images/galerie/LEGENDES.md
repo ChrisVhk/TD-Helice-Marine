@@ -80,7 +80,32 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   **Deux panneaux** : à gauche la pale entière avec un rectangle rouge marquant la
   zone agrandie ; à droite l'agrandissement, annoté (nombre de couches, épaisseur de
   la première, « maillage de cœur »).
+- **Troisième tentative (15/09, LOT 5)** : les deux versions précédentes ne réglaient
+  pas le vrai problème — une rupture d'échelle (l'empilement fait ≈1,8 mm pour un
+  diamètre de 227 mm, moins de 1 %), pas un mauvais plan de coupe. Ajouté : le
+  **facteur de grossissement écrit en toutes lettres** (« grossissement panneau de
+  droite : ×N », calculé depuis les distances de caméra réelles, pas une estimation)
+  et un **trait de rappel** entre le rectangle et le panneau agrandi (projection
+  perspective approximative, post-traitement PIL sur le PNG composé — vérifiée à
+  l'œil, pas garantie au pixel).
 - **Cas / modèle** : `case_kEpsilon_layers` · maillage seul, aucun champ.
+
+## 06b_couches_epaisseurs.png
+
+- **Introduit (15/09, LOT 5, variante quantitative de l'image 06)** : une image ne
+  peut pas montrer à la fois la pale et l'épaisseur des couches (rupture d'échelle,
+  voir ci-dessus) — ce graphe ne montre plus la géométrie du tout : épaisseur de
+  chaque couche en fonction de son rang (progression géométrique DEMANDÉE à
+  `snappyHexMesh`, 6 points, `firstLayerThickness × expansionRatio^rang`), plus la
+  courbe cumulée et l'épaisseur totale visée.
+- **Ce que l'image ne dit pas et que le graphe dit** : la couverture RÉELLEMENT
+  obtenue (3,71/6 couches, 76,8 % sur `propellerTip`) est différente de la
+  progression demandée tracée ici — annotée en légende, sourcée
+  `Helice/docs/PARAMETRES_CAS.md`, jamais recalculée dans ce script.
+- **Généré par** : `_Setup/outils/generer_figure_couches_epaisseurs.py` (matplotlib,
+  aucun calcul CFD, aucun maillage — arithmétique pure sur les paramètres du dict).
+- **Cas / modèle** : `case_kEpsilon_layers` · lecture de `system/snappyHexMeshDict`
+  seulement.
 
 ## 07_vitesse.png
 
