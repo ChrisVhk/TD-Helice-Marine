@@ -88,6 +88,19 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   et un **trait de rappel** entre le rectangle et le panneau agrandi (projection
   perspective approximative, post-traitement PIL sur le PNG composé — vérifiée à
   l'œil, pas garantie au pixel).
+- **Quatrième tentative (15/09, retour enseignant « cette image ne me parle pas du
+  tout »)** : le grossissement seul ne suffisait pas — cadré large (×6,5 l'épaisseur
+  totale), la pile de 6 couches restait une mince bande écrasée par UNE cellule de
+  cœur bien plus grosse qui dominait tout le panneau, les couches elles-mêmes
+  jamais lisibles comme un empilement. Corrigé par deux changements ensemble :
+  cadrage resserré sur la pile (peu de cœur visible), et **chaque couche colorée
+  séparément** (alternance marine/teal, cœur en gris) au lieu d'un maillage gris
+  uniforme — c'est la couleur qui rend l'empilement lisible, pas le zoom seul.
+  Coloriage par scalaire (distance à la paroi, bandes à transition rapide) plutôt
+  que par découpe géométrique bande par bande : un premier essai de découpe
+  donnait des couches en « lentilles » pointues ou une fenêtre vide, sensible à la
+  moindre ondulation locale de la paroi triangulée — le coloriage par scalaire
+  garde la forme réelle de chaque cellule, robuste à cette ondulation.
 - **Cas / modèle** : `case_kEpsilon_layers` · maillage seul, aucun champ.
 
 ## 06b_couches_epaisseurs.png

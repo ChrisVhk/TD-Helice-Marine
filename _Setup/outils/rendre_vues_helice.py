@@ -823,29 +823,87 @@ def image_06(args):
     stem_reader = make_reader(case_dir, ["patch/propellerStem2"], [], 0.0)
     stem_bounds = stem_reader.GetDataInformation().GetBounds()
     py = (stem_bounds[2] + stem_bounds[3]) / 2.0
-    x_wall = stem_bounds[1]  # rayon du moyeu (surface, bord +X), a mi-envergure
 
-    thickness = read_layer_stack_thickness(case_dir)
-    n_layers_m = re.search(r'"propeller\.\*"\s*\{\s*nSurfaceLayers\s+(\d+)\s*;',
-                            open(os.path.join(case_dir, "system", "snappyHexMeshDict")).read())
-    first_m = re.search(r"\bfirstLayerThickness\s+([0-9.eE+-]+)\s*;",
-                         open(os.path.join(case_dir, "system", "snappyHexMeshDict")).read())
+    # x_wall CORRIGE le 15/09 : stem_bounds[1] (xmax de TOUT le patch) suppose
+    # Stem2 parfaitement cylindrique -- FAUX (constate en couleur par couche :
+    # les bandes sortaient en "lentilles" pointues, signe que le x_wall assume
+    # ne coincidait pas avec la paroi reelle a Y=py precisement, le moyeu etant
+    # legerement conique/irregulier ici). Correction : on relit la position X
+    # REELLE de la paroi en tranchant le PATCH lui-meme (pas le volume) au
+    # meme plan Z=0, Y=py, et on prend le point le plus proche de Y=py.
+    _stem_slice = Slice(Input=stem_reader)
+    _stem_slice.SliceType = "Plane"
+    _stem_slice.SliceType.Origin = [0.0, py, 0.0]
+    _stem_slice.SliceType.Normal = [0.0, 0.0, 1.0]
+    _stem_slice.UpdatePipeline(time=0.0)
+    from paraview import servermanager as _sm
+    from vtk.numpy_interface import dataset_adapter as _dsa
+    _data = _sm.Fetch(_stem_slice)
+    _wrapped = _dsa.WrapDataObject(_data)
+    _pts = _wrapped.Points
+    # Sortie potentiellement composite (multiblock, un bloc par patch/piece) --
+    # VTKCompositeDataArray n'a pas de len() direct, on aplatit via .Arrays.
+    _xy = []
+    if _pts is not None:
+        _blocks = _pts.Arrays if hasattr(_pts, "Arrays") else [_pts]
+        for _blk in _blocks:
+            if _blk is None:
+                continue
+            for _p in _blk:
+                _xy.append((float(_p[0]), float(_p[1])))
+    if _xy:
+        x_wall = min(_xy, key=lambda xy: abs(xy[1] - py))[0]
+    else:
+        x_wall = stem_bounds[1]  # repli si la tranche est vide (non attendu)
+    _restore_builtins()
+
+    dict_text = open(os.path.join(case_dir, "system", "snappyHexMeshDict")).read()
+    n_layers_m = re.search(r'"propeller\.\*"\s*\{\s*nSurfaceLayers\s+(\d+)\s*;', dict_text)
+    first_m = re.search(r"\bfirstLayerThickness\s+([0-9.eE+-]+)\s*;", dict_text)
+    ratio_m = re.search(r"\bexpansionRatio\s+([0-9.eE+-]+)\s*;", dict_text)
     n_layers = int(n_layers_m.group(1)) if n_layers_m else None
     first_thickness = float(first_m.group(1)) if first_m else None
+    ratio = float(ratio_m.group(1)) if ratio_m else 1.2
+    thickness = read_layer_stack_thickness(case_dir)
     if thickness is None or thickness <= 0:
         print("  bonus : epaisseur de couches non lue -- repli 2 mm (non verifie)")
         thickness = 0.002
+        n_layers = n_layers or 6
+        first_thickness = first_thickness or thickness / n_layers
 
-    # Fenetre de coupe : X de juste-sous-le-mur a bien au-dela de la pile
-    # (maillage de coeur inclus), Y sur une bonne portion d'envergure pour le
-    # contexte, Z tres fin (le plan lui-meme est a z=0).
-    # y_span reste du MEME ORDRE que la fenetre X (pas une longue bande) :
-    # frame_camera cadre sur la DIAGONALE de la boite -- un Y demesure par
-    # rapport a X (essaye : 40x l'epaisseur) noie le detail des couches dans
-    # une bande verticale ou seul le maillage de coeur, plus grossier, reste
-    # visible a l'oeil (constate le 14/09).
-    x_near, x_far = x_wall - thickness * 0.5, x_wall + thickness * 6.0
-    y_span = thickness * 5.0
+    # REFAIT le 15/09 (retour enseignant : "cette image ne me parle pas du tout") --
+    # la version precedente zoomait sur 6.5x l'epaisseur totale pour laisser de la
+    # marge au maillage de coeur : a cette echelle, la pile de 6 couches (~1,8 mm)
+    # n'occupait qu'une mince bande sur le bord gauche du panneau, ecrasee par UNE
+    # cellule de coeur bien plus grosse qui dominait tout le cadrage -- les couches
+    # elles-memes n'etaient jamais lisibles comme un empilement. Corrige par DEUX
+    # changements, pas un seul : (1) le cadrage colle desormais sur la pile elle-
+    # meme, tres peu de coeur visible ; (2) chaque couche est colorree separement
+    # (degrade marine -> teal) au lieu d'un seul maillage gris uniforme -- c'est la
+    # couleur, pas le trait, qui rend l'empilement lisible d'un coup d'oeil.
+    n_layers = n_layers or 6
+    bounds_layers = [0.0]
+    for i in range(n_layers):
+        bounds_layers.append(bounds_layers[-1] + first_thickness * (ratio ** i))
+    # bounds_layers[i] = epaisseur cumulee AVANT la couche i+1 (bounds_layers[0]=0
+    # au mur, bounds_layers[n_layers]=thickness, l'epaisseur totale).
+
+    x_near = x_wall - thickness * 0.3
+    x_far = x_wall + thickness * 1.6  # juste assez de coeur pour montrer la transition
+    # y_span : essaye a 1.1x puis 0.2x l'epaisseur totale -- la premiere fenetre
+    # donnait des bandes en "lentilles" (clip par bande X, sensible a la moindre
+    # ondulation locale de la paroi triangulee) ; la seconde, trop etroite, ne
+    # contenait plus aucune cellule (fenetre sous la resolution du maillage a cet
+    # endroit). Repli le 15/09 sur une fenetre intermediaire ET sur un COLORIAGE
+    # PAR SCALAIRE (distance a la paroi) au lieu d'un clip par bande : chaque
+    # cellule garde sa forme reelle, seule sa teinte depend de sa position --
+    # robuste a une paroi localement non plane, jamais vide.
+    # y_span choisi pour que le CADRE (largeur x_far-x_near, hauteur 2*y_span)
+    # ait sensiblement l'aspect du panneau (~0,8) -- frame_camera cadre sur la
+    # DIAGONALE de la boite 3D, donc une boite trop haute-et-etroite par rapport
+    # au panneau se fait rogner sur un axe et déborder sur l'autre (constate le
+    # 15/09 avec y_span=3x : deux des six couches sortaient du cadre a gauche).
+    y_span = thickness * 0.6
     zoom_bounds = (x_near, x_far, py - y_span, py + y_span, -thickness * 2, thickness * 2)
 
     sl = Slice(Input=reader)
@@ -853,7 +911,7 @@ def image_06(args):
     sl.SliceType.Origin = [0.0, py, 0.0]
     sl.SliceType.Normal = [0.0, 0.0, 1.0]
     sl.UpdatePipeline(time=0.0)
-    detail = clip_box(sl, zoom_bounds)
+    detail = clip_box(sl, zoom_bounds)  # garde pour le calcul du trait de rappel
 
     # Layout a deux cellules (meme technique verifiee que l'image 5) :
     # AssignView(0,...) explicite, puis SplitViewHorizontal + (retour+1).
@@ -910,20 +968,53 @@ def image_06(args):
     add_provenance(view_l, f"{case_layers} · vue d'ensemble · t = 0 s · {ETAT_MAILLAGE}"
                    " -- rectangle rouge = zone agrandie (panneau de droite)")
 
-    # ---- Panneau droit : agrandissement ----
-    rep_r = Show(detail, view_r)
+    # ---- Panneau droit : agrandissement, COLORIAGE PAR SCALAIRE (distance au mur) ----
+    # Alternance marine/teal/marine... (charte ENSM) au lieu d'un clip par bande :
+    # chaque cellule garde sa forme reelle, seule sa teinte depend de coordsX --
+    # robuste a une paroi localement non plane (essaye avant : clip par bande fixe,
+    # donnait des "lentilles" pointues ou une fenetre vide -- voir notes du 15/09
+    # ci-dessus). C'est la couleur, pas le decoupage geometrique, qui separe les
+    # couches a l'oeil.
+    calc = Calculator(Input=detail)
+    calc.AttributeType = "Point Data"
+    calc.ResultArrayName = "dist_paroi"
+    calc.Function = "coordsX"
+    calc.UpdatePipeline(time=0.0)
+
+    MARINE_RGB = (0.102, 0.204, 0.427)
+    TEAL_RGB = (0.102, 0.600, 0.533)
+    CORE_RGB = (0.88, 0.88, 0.88)
+    EDGE_RGB = (0.15, 0.15, 0.15)
+    rgb_points = []
+    eps = max(first_thickness * 0.06, 1e-9)
+    for i in range(n_layers):
+        color = MARINE_RGB if i % 2 == 0 else TEAL_RGB
+        b_lo = x_wall + bounds_layers[i]
+        b_hi = x_wall + bounds_layers[i + 1]
+        rgb_points += [b_lo + eps, *color, b_hi - eps, *color]
+    core_lo = x_wall + thickness
+    rgb_points += [core_lo + eps, *CORE_RGB, x_far, *CORE_RGB]
+
+    rep_r = Show(calc, view_r)
     rep_r.Representation = "Surface With Edges"
-    solid_color(rep_r, (0.88, 0.88, 0.88))
-    rep_r.EdgeColor = [0.05, 0.05, 0.05]
-    rep_r.LineWidth = 1.1
+    rep_r.EdgeColor = EDGE_RGB
+    rep_r.LineWidth = 0.8
+    ColorBy(rep_r, ("POINTS", "dist_paroi"))
+    lut = GetColorTransferFunction("dist_paroi")
+    lut.RGBPoints = rgb_points
+    lut.RescaleTransferFunction(x_near, x_far)
+    rep_r.SetScalarBarVisibility(view_r, False)
+
     # up = Y : X (mur -> coeur) se lit a l'horizontale, mur a gauche.
     _, dist_r = frame_camera(view_r, zoom_bounds, direction=(0.0, 0.0, 1.0), up=(0.0, 1.0, 0.0), zoom=ZOOM_R)
     add_provenance(view_r, f"{case_layers} · maillage a couches · t = 0 s · {ETAT_MAILLAGE}"
-                   " -- agrandissement, coupe perpendiculaire a la paroi")
+                   " -- agrandissement, coupe perpendiculaire a la paroi, une couleur par couche")
     if first_thickness:
-        ann_text = f"{n_layers or '?'} couches, 1ere epaisseur {first_thickness * 1000:.3g} mm"
+        ann_text = (f"{n_layers} couches (mur -> coeur), marine/teal en alternance, coeur en gris\n"
+                    f"1ere epaisseur {first_thickness * 1000:.3g} mm · ratio {ratio:g} · "
+                    f"totale {thickness * 1000:.3g} mm")
     else:
-        ann_text = f"{n_layers or '?'} couches"
+        ann_text = f"{n_layers or '?'} couches, une couleur chacune"
     ann = Text()
     ann.Text = ann_text
     d = Show(ann, view_r)
