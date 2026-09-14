@@ -334,12 +334,12 @@ def image_01(args):
     # permet de compter les 4 pales autour du moyeu -- une vraie vue "trois
     # quarts" (perpendiculaire a l'axe) les mettrait en majorite de profil.
     frame_camera(view, bounds, direction=(0.32, 0.82, 0.42), up=(0.0, 0.0, 1.0), zoom=2.3)
-    # D mesure sur cette geometrie (LOT 1, 14/09) = 0,227 m, PAS 0,2 m
-    # (documente dans propellerInfo/MATERIAU-INTRO, non arbitre) -- la barre
-    # d'echelle utilise la mesure directe, pas la valeur documentee.
+    # D mesure sur cette geometrie (LOT 1, 14/09) = 0,227378 m, PAS 0,2 m code en
+    # dur -- arbitrage enseignant rendu le 14/09 : system/propellerInfo corrige
+    # (radius 0.113689) dans les quatre cas, J/K_T/10K_Q reechelonnes.
     add_scale_bar(view, bounds, 0.05)
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
-                   + " -- D mesure ~0,227 m (non 0,2 m documente, non arbitre)")
+                   + " -- D mesure 0,227378 m (corrige le 14/09, etait 0,2 m)")
     Render(view)
     save(view, os.path.join(args.out_dir, "01_geometrie.png"))
 

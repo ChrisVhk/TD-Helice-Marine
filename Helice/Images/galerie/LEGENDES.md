@@ -23,7 +23,9 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
 - **Corps solide** : Surface With Edges, contour sombre — se lit comme un objet.
 - **Échelle** : barre de 50 mm + valeur en toutes lettres dans la légende de l'image.
 - **D mesuré ≈ 0,227 m, pas 0,2 m documenté** (LOT 1, consigne du 14/09) — écrit
-  explicitement sur l'image, non arbitré.
+  explicitement sur l'image. **Arbitrage rendu le 14/09** (boucle suivante) :
+  D = 0,227378 m remplace 0,2 m dans `system/propellerInfo`, J/K_T/10K_Q rééchelonnés
+  sur les données existantes.
 - **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
 
 ## 02_geometrie_domaine.png

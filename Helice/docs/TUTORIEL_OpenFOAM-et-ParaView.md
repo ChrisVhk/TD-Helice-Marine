@@ -57,7 +57,7 @@ les champs de `0/`.
 | Grandeur | Fichier · clé | Valeur sur ce cas | Ce qu'elle change dans le résultat |
 |---|---|---|---|
 | Vitesse de rotation ω | `constant/dynamicMeshDict`, ligne `omega` | 158 rad/s | Pilote la fréquence de rotation n = ω/2π (25,15 tr/s) — donc J, et toutes les fréquences du volet spectral (passage de pale = 4n). |
-| Diamètre de référence D | `system/propellerInfo`, ligne `radius` (D = 2×radius) | `radius 0.1` → **D = 0,2 m codé en dur** — **vérifié FAUX sur la géométrie réelle (D = 0,227 m, voir Partie 5 et la fiche d'identité)** | Dénominateur de J (×D), de K_T (×D⁴), de K_Q (×D⁵) — une petite erreur sur D s'amplifie violemment (voir Partie 5, piège 4). |
+| Diamètre de référence D | `system/propellerInfo`, ligne `radius` (D = 2×radius) | `radius 0.113689` → **D = 0,227378 m, mesuré, corrigé le 14/09** — jusqu'au 14/09 le fichier portait `radius 0.1` (D = 0,2 m codé en dur), **vérifié FAUX sur la géométrie réelle** (voir Partie 5 et la fiche d'identité) | Dénominateur de J (×D), de K_T (×D⁴), de K_Q (×D⁵) — une petite erreur sur D s'amplifie violemment (voir Partie 5, piège 4). |
 | Masse volumique ρ | `system/propellerInfo` (`rhoInf 1.2`) **et** `system/forces` (`rhoInf 1`) — **deux valeurs différentes dans le même cas** | 1,2 (air) et 1 | **N'affecte PAS K_T/10K_Q/η₀** publiés (rhoRef s'annule dans leur formule, vérifié sur le code source du functionObject — voir Partie 5, piège 5) ; affecterait une poussée reconstruite en newtons si on mélangeait les deux sans y prendre garde. |
 | Pas de temps | `system/controlDict`, ligne `deltaT` (+ `adjustTimeStep`, `maxCo`) | `deltaT 1e-5`, `adjustTimeStep yes`, `maxCo 2` | Pas de temps ajusté pour ne jamais dépasser un Courant de 2 — trop grand, le calcul diverge ; trop petit, le calcul coûte cher sans gagner en précision utile. |
 | Nombre de Courant | `system/controlDict`, ligne `maxCo` | 2 | Condition de stabilité du schéma explicite en temps — au-delà, la solution peut diverger à chaque pas. |
@@ -185,11 +185,13 @@ pour l'exercice.
    plats — toujours passer par `Cell Data to Point Data` avant de colorier un champ
    destiné à être *lu visuellement* comme continu (voir §4.1).
 4. **Un adimensionnement par une longueur de référence FAUSSE.** Incident : ce cas
-   précis — `D = 0,2 m` codé en dur dans `system/propellerInfo`, contre `D = 0,227 m`
+   portait `D = 0,2 m` codé en dur dans `system/propellerInfo`, contre `D = 0,227 m`
    mesuré et confirmé sur la géométrie (§2, et la fiche d'identité ci-dessous). Une
    erreur de 14 % sur D, élevée à la puissance 4 (K_T) et 5 (K_Q), donne une erreur
    de **~67 % sur K_T et ~90 % sur K_Q** — une petite erreur géométrique amplifiée
-   par un exposant élevé n'a plus rien de petit.
+   par un exposant élevé n'a plus rien de petit. **Corrigé le 14/09** : `radius`
+   porte désormais 0,113689 m dans les quatre cas ; les données déjà produites ont
+   été rééchelonnées par arithmétique (pas de calcul relancé).
 5. **Une grandeur insensible à l'erreur qu'on croit valider.** Le rendement η₀ =
    K_T·J / (K_Q·2π) **annule D et ρ dans son calcul** — il « semblait bon » pendant
    que K_T et K_Q, eux, étaient faux d'un facteur 1,67 et 1,90. **Une vérification qui
@@ -224,7 +226,9 @@ deux fois indépendamment sur ce cas (r_max = 0,113689 m sur le patch calculé,
 un histogramme azimutal complet (360°) : **quatre amas de points distincts, à
 49,5°/139,5°/229,5°/319,5°, chacun avec exactement le même r_max** — les quatre
 pales sont identiques à la précision du maillage, ce n'est pas une pale isolée qui
-fausserait la mesure. **D = 0,227 m est établi**, contre 0,2 m codé en dur dans
-`system/propellerInfo`. **Ce qui reste ouvert** : l'arbitrage de ce qu'on fait de cet
-écart dans les supports déjà publiés (K_T/K_Q n'ont pas été recalculés avec cette
-valeur) — décision de l'enseignant, pas de ce tutoriel.
+fausserait la mesure. **D = 0,227378 m est établi**, contre 0,2 m codé en dur
+jusqu'au 14/09 dans `system/propellerInfo`. **Arbitrage rendu le 14/09** : `radius`
+corrigé à 0,113689 m dans les quatre cas ; J, K_T, 10K_Q rééchelonnés par arithmétique
+sur les données existantes (facteurs r/r⁴/r⁵, sans relancer aucun calcul) ; η₀ inchangé
+— invariant par construction, vérifié à moins de 5.10⁻⁵ sur les trois cas turbulence/
+laminaire (voir `_Methodo/JOURNAL.md`, 14/09).

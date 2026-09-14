@@ -97,3 +97,10 @@ documenté (0,2 m) utilisé pour dériver $U_{tip}$, $\beta$ et d'autres grandeu
 (hors périmètre du LOT E, qui mesure et rapporte, ne corrige pas le matériau pédagogique
 existant) — **arbitrage enseignant requis** avant la séance 3 si le diamètre doit servir de
 donnée d'entrée à l'Acte 2.
+
+**Arbitrage rendu le 14/09** : D = 0,227378 m remplace 0,2 m dans `system/propellerInfo` (les
+quatre cas) et dans toute la documentation qui le cite. J, K_T, 10K_Q rééchelonnés par
+arithmétique (facteurs r/r⁴/r⁵) sur les données existantes, sans relance de calcul ; η₀
+inchangé (invariant par construction, vérifié à moins de 5.10⁻⁵ sur les trois cas — voir
+`_Methodo/JOURNAL.md`, 14/09). $U_{tip}$ et β de `MATERIAU-INTRO_TD-Helice.md` §2 recalculés
+avec le rayon réel (0,113689 m).

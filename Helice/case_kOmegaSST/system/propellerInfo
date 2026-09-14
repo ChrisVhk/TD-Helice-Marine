@@ -20,8 +20,12 @@ propellerInfo1
 
     writePropellerPerformance yes;
 
-    // Radius
-    radius          0.1;
+    // Radius -- CORRIGE le 14/09 : mesure sur le patch propellerTip
+    // (r_max identique a la 6e decimale sur les quatre pales, histogramme
+    // azimutal 360 deg, boucle du 14/09). Ancienne valeur 0.1 (D=0.2 m)
+    // codee en dur, jamais mesuree sur la geometrie -- voir
+    // Helice/docs/PLAN_SEANCE-3.md et _Methodo/DEFAUTS_DES_SOURCES.md.
+    radius          0.113689;
 
     rotationMode    specified;
 

@@ -90,11 +90,11 @@ géométrie de pale (patch `propellerTip`), cas kEpsilon reconstruit à t=0,06.
 **Notes d'orateur** :
 Correctif A2 (deck V2, 07/09, après retour du groupe 1) : « il manque des images parlantes » —
 l'objet du TD n'apparaissait nulle part dans le deck jusqu'ici. C'est la géométrie réelle du cas,
-pas une image d'illustration : D = 0,2 m, 4 pales, tourne à 25,15 tr/s (1 509 tr/min) autour de
-l'axe vertical visible sur le rendu. Point d'échelle à donner ici ou en séance 2 : c'est une
-maquette (D = 0,2 m à 1 509 tr/min) ; une hélice réelle fait 5 à 9 m pour 100-120 tr/min — le
-passage modèle → réel (ITTC-78, essais en eau libre) est une discipline qu'ils rencontreront en
-EGN-S9, pas ici.
+pas une image d'illustration : D = 0,227 m (mesuré le 14/09 — voir `PLAN_SEANCE-3.md`, remplace
+0,2 m codé en dur), 4 pales, tourne à 25,15 tr/s (1 509 tr/min) autour de l'axe vertical visible
+sur le rendu. Point d'échelle à donner ici ou en séance 2 : c'est une maquette (D = 0,227 m à
+1 509 tr/min) ; une hélice réelle fait 5 à 9 m pour 100-120 tr/min — le passage modèle → réel
+(ITTC-78, essais en eau libre) est une discipline qu'ils rencontreront en EGN-S9, pas ici.
 Note technique pour qui régénère cette figure : le patch `propellerTip` porte les 4 pales et
 `propellerStem1/2/3` porte l'arbre cylindrique — l'inverse de ce que les noms suggèrent,
 vérifié en rendant chaque patch séparément (`_Setup/outils/generer_figure_helice_3D.py`).
