@@ -307,7 +307,14 @@ def provenance_line(case, time, etat):
     return f"{case} · {modele} · t = {time:g} s · {etat}"
 
 
-ETAT_DEMO = "calcul de demonstration, non valide (Porte B non franchie)"
+# Corrige le 14/09 : la ligne citait "Porte B non franchie", une reserve empruntee
+# par erreur (Cowork, consigne d'origine) au cas AVEC couches de prismes -- alors que
+# ces huit images viennent de case_kEpsilon, SANS couches. La reserve correcte cite
+# le y+ reellement mesure sur ce cas (pvbatch + CellSize, pondere par l'aire, t=0,06s,
+# voir _Methodo/JOURNAL.md du 14/09) et garde la seule reserve qui reste vraie : pas de
+# verification de convergence en maillage.
+ETAT_DEMO = ("calcul de demonstration -- y+ propellerTip 83,7% dans [30;300] "
+             "(mediane 161), pas de verification de convergence en maillage")
 ETAT_MAILLAGE = "maillage seul, aucun champ associe"
 
 
@@ -703,9 +710,12 @@ def image_05(args):
     frame_camera(view_a, bounds, direction=mean0, up=safe_up(mean0), zoom=2.1)
     frame_camera(view_b, bounds, direction=mean1, up=safe_up(mean1), zoom=2.1)
 
+    # ETAT_DEMO s'est allonge le 14/09 (chiffres y+ mesures) -- vue coupee en deux,
+    # chaque moitie n'a que ~800 px : police reduite pour rester lisible sans
+    # deborder sur l'autre moitie (verifie visuellement le 14/09).
     prov = provenance_line(args.cas, args.time, ETAT_DEMO) + " -- p, echelle commune"
-    add_provenance(view_a, f"face A, {label0} -- " + prov)
-    add_provenance(view_b, f"face B, {label1} -- " + prov)
+    add_provenance(view_a, f"face A, {label0} -- " + prov, size=7)
+    add_provenance(view_b, f"face B, {label1} -- " + prov, size=7)
 
     Render(view_a)
     Render(view_b)
