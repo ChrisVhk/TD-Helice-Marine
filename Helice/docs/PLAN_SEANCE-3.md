@@ -40,6 +40,11 @@ y⁺ et la stabilité.** C'est exactement l'échelle du test qui a réussi le 13
 (`case_kEpsilon_layers`, pas fixe 1e-5 s, 200 pas francs, Courant max 0,58 — voir
 `_Methodo/JOURNAL.md` côté `ENSM-Enseignement`, entrée « Pas fixe assumé »).
 
+**Motif de cette piste** : `Helice/docs/ETAT-DES-LIEUX.md`, item INCERTAIN « y+ du
+maillage à couches, à convergence » — jamais mesuré à ce jour (seul témoin,
+`log.yPlus2`, donné à t=0,0005 s, transitoire non convergé). C'est la mesure qui
+manque, et c'est exactement ce que cette piste irait chercher.
+
 **INTERDIT, sans exception : demander un calcul en production.** Un cas à couches en
 production coûte **35-41 h sur 16 cœurs** (`Helice/Results/amplitude_KT_fenetre-propre.md`
 et JOURNAL.md, LOT A) — infaisable dans une séance, et le budget disque hôte ne le permet de

@@ -187,6 +187,10 @@ Ce que ces images ne disent pas
 **Notes d'orateur** :
 Une belle image est un argument d'autorité. C'est exactement ce contre quoi ce TD veut
 vous armer.
+Les quatre réserves ci-dessus renvoient chacune à `Helice/docs/ETAT-DES-LIEUX.md` (LOT 7,
+14/09) : (1) rappel de méthode, pas de ligne dédiée ; (2) ÉTABLI « y+ (SANS couches),
+propellerTip 83,7 % dans [30;300] » ; (3) ÉTABLI « D = 0,227378 m », qui a remplacé les
+0,2 m codés en dur ; (4) INCERTAIN « origine de la raie à 4× », toujours ouvert.
 
 ---
 

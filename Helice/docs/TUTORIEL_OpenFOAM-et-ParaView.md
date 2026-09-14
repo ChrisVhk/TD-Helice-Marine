@@ -6,6 +6,11 @@ Registre : celui de `PostTraitement_ParaView.md` (PerfNav) retravaillé par
 l'enseignant — chaque commande Unix et chaque clic ParaView sont explicités, rien
 n'est supposé acquis.
 
+**Où en est le cas, aujourd'hui** : voir `ETAT-DES-LIEUX.md` — ce qui est établi, ce
+qui reste incertain et ce qui le trancherait. La partie 5 ci-dessous, et la fiche
+d'identité qui la suit, sont les incidents dont cet état des lieux tire ses lignes
+d'ÉTABLI.
+
 ## Deux itinéraires
 
 **I3 / Informatique S5** (découverte de l'outil, pas le TD hélice) — 10 lignes :
@@ -170,7 +175,8 @@ Python de base dans la suite de la session.
 ## 5. Lire un résultat sans se faire avoir
 
 Six pièges **réellement rencontrés sur ce cas les 13-14/09** — aucun n'est inventé
-pour l'exercice.
+pour l'exercice. Les incidents 4 et 5 ci-dessous sont exactement les lignes « D »
+et « ρ » d'`ETAT-DES-LIEUX.md` §ÉTABLI.
 
 1. **Une échelle de couleur calée sur le min/max brut, qu'écrasent quelques cellules
    extrêmes.** Incident : image de pression du 13/09 (voir §4.4) — rescaler sur des
