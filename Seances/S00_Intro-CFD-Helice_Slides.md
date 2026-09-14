@@ -120,7 +120,8 @@ La paroi
 
 **Notes d'orateur** :
 Les couches de prismes servent à résoudre la couche limite. On en demande six, on en
-obtient 4,42 en moyenne sur le bout de pale. Un maillage ne se déclare pas, il se négocie.
+obtient nettement moins sur le bout de pale (chiffre exact, sourcé fichier+ligne :
+`Helice/docs/PARAMETRES_CAS.md`). Un maillage ne se déclare pas, il se négocie.
 
 ---
 
