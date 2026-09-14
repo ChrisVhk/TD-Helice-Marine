@@ -58,3 +58,73 @@ biaise directement $K_Q$ (couple/traînée visqueuse sous-estimée ou mal répar
   frottement pariétal et le sillage proche (très sensible à la fermeture).
 - **η0 laminaire hors de l'intervalle RAS** : signal que le cas laminaire n'est pas physiquement
   représentatif à ce Reynolds — c'est le résultat attendu, pas une anomalie de calcul.
+
+## 4. La paroi : $y^+$ et couches de prismes
+
+Un modèle RAS ne modélise pas la turbulence de la même façon partout : près d'une paroi solide
+(la pale), la turbulence est amortie par la viscosité sur une épaisseur bien plus fine que la
+taille des cellules du maillage de cœur. Ce que le maillage fait de cette zone conditionne
+directement $K_Q$ (§3) — c'est le sujet de cette section.
+
+### $y^+$, distance à la paroi adimensionnée
+
+$$y^+ = \frac{y\, u_\tau}{\nu} \qquad u_\tau = \sqrt{\frac{\tau_w}{\rho}}$$
+
+où $y$ est la distance du centre de la première cellule à la paroi, $u_\tau$ la **vitesse de
+frottement** (déduite de la contrainte de paroi $\tau_w$), et $\nu$ la viscosité cinématique
+(§1). $y^+$ n'est pas une longueur physique : c'est une distance à la paroi mesurée dans l'unité
+naturelle de l'écoulement proche paroi lui-même — la même distance physique correspond à un $y^+$
+différent selon l'intensité du frottement local.
+
+### Les trois régions de la couche limite turbulente
+
+| Région | Plage en $y^+$ | Ce qui domine |
+|---|---|---|
+| Sous-couche visqueuse | $y^+ \lesssim 5$ | viscosité seule, profil de vitesse linéaire en $y^+$ |
+| Zone tampon | $5 \lesssim y^+ \lesssim 30$ | ni l'un ni l'autre — zone de transition, aucune loi simple n'y est valide |
+| Zone logarithmique | $30 \lesssim y^+ \lesssim 300$ | turbulence établie, profil de vitesse en $\ln(y^+)$ |
+
+### Deux stratégies, deux exigences opposées sur $y^+$
+
+- **Loi de paroi (wall function)** : le solveur ne résout pas la sous-couche visqueuse ni la zone
+  tampon — il IMPOSE le profil logarithmique connu de la zone log comme condition à la première
+  cellule. Cette loi n'est valide que si la première cellule tombe **dans** la zone log, d'où
+  l'exigence $30 < y^+ < 300$ : en dessous, on impose une loi log à une cellule qui est en réalité
+  dans la sous-couche visqueuse (où le profil est linéaire, pas logarithmique) ; au-dessus, la
+  cellule sort de la zone où la loi log elle-même reste valable.
+- **Résolution directe de la couche limite (low-$y^+$ / wall-resolved)** : le solveur calcule lui-
+  même ce qui se passe dans la sous-couche visqueuse, sans loi imposée — il faut alors que la
+  première cellule y soit vraiment, d'où l'exigence $y^+ \lesssim 1$. C'est une contrainte
+  beaucoup plus dure : elle impose une première cellule environ 30 à 300 fois plus proche de la
+  paroi que pour une loi de paroi, donc un maillage local bien plus fin.
+
+### Les couches de prismes
+
+Un maillage de cœur non structuré (comme celui produit par `snappyHexMesh` sans traitement
+particulier) ne peut pas, à coût raisonnable, placer une cellule assez proche de la paroi pour
+l'une ou l'autre stratégie — ses cellules près d'une surface courbe restent grossières et
+irrégulières. Les **couches de prismes** (`addLayersControls` de `snappyHexMeshDict`) insèrent,
+entre la surface et le maillage de cœur, un empilement de cellules fines et régulières,
+alignées sur la normale à la paroi, d'épaisseur croissante (`expansionRatio`) — c'est ce qui
+permet de viser un $y^+$ donné à la première cellule sans devoir raffiner tout le maillage de
+cœur autour de la pale.
+
+### Conclusion sur NOTRE cas
+
+Chiffres sourcés dans `Helice/docs/PARAMETRES_CAS.md` (fichier et ligne pour chacun) :
+
+- **Sans couches** (`case_kEpsilon`, celui des trois fermetures comparées au §2) : $y^+$ sur
+  `propellerTip` a pour médiane 161 et va de 27,9 à 1043, avec 83,7 % de la surface dans
+  $[30\,;\,300]$. La majorité de la surface EST dans la zone log — mais 16,3 % n'y est pas,
+  dont tout le bout de pale au-delà de $y^+ \approx 300$ : ce cas n'est pas proprement dans le
+  régime « loi de paroi » sur l'ensemble de la pale, il l'est seulement en majorité.
+- **Avec couches** (`case_kEpsilon_layers`) : la stratégie visée était justement de descendre
+  vers $y^+ \lesssim 1$ pour se rapprocher d'une résolution directe. Le seul relevé disponible
+  (transitoire, non convergé) donne `propellerTip` de $y^+ = 14{,}6$ à $1845$ — **jamais sous 1**,
+  pas même au minimum. Ce cas n'atteint pas non plus le régime qu'il visait.
+
+**Notre cas n'est donc proprement dans aucun des deux régimes** : ni une loi de paroi
+correctement posée sur toute la surface (régime 1), ni une couche limite réellement résolue
+(régime 2) — un rappel que « mettre des couches de prismes » ne garantit pas, par construction,
+d'atteindre l'objectif visé en les ajoutant : encore faut-il le mesurer, ce qui n'a jamais été
+fait ici à convergence.
