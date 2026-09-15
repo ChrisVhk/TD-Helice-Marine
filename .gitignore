@@ -11,7 +11,6 @@ _Setup/outils/*
 !_Setup/outils/rendre_vues_helice.py
 !_Setup/outils/extraire_etat_des_lieux_public.py
 !_Setup/outils/verifier_valeurs_perimees.sh
-!_Setup/outils/generer_variantes_deck.py
 !_Setup/outils/tracer_series_temporelles.py
 
 # Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx) : regenerables,
