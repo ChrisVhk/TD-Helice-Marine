@@ -176,10 +176,16 @@ def parse_slides(path):
     return slides
 
 def _parse_figures(text):
-    """Extrait les chemins d'image depuis les lignes `FIG:... — Images/....png — description`."""
+    """Extrait les chemins d'image depuis les lignes `FIG:... — Images/....png — description`.
+
+    Regex élargie le 15/09 (LOT 4) : S02 référence désormais une image de
+    `Helice/Images/galerie/` (graphe y+/couches, diapo ajoutée) -- même
+    adaptation que `generer_pptx_S00.py`/`generer_pptx_S03.py`, `TD-Helice-
+    Marine` range sa galerie sous `Helice/`, pas `Images/` à la racine.
+    """
     paths = []
     for line in text.split("\n"):
-        m = re.search(r"`(Images/[^`]+\.png)`", line)
+        m = re.search(r"`((?:Helice/)?Images/[^`]+\.png)`", line)
         if m:
             rel = m.group(1)
             paths.append(os.path.normpath(os.path.join(HERE, "..", rel)))

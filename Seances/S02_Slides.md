@@ -61,10 +61,15 @@ Chaque groupe pose ses chiffres au tableau
 
 **Notes d'orateur** :
 Tableau volontairement VIDE — à remplir en direct pendant la partie A, chaque groupe
-donne ses trois chiffres pour sa fermeture. Valeurs de référence (re-vérifiées par
-exécution sur les CSV du dépôt, dernier tour) : K_T 0,363 / 0,378 / 0,371 ; η₀ 0,560 /
-0,603 / 0,590 ; amplitude K_T (crête à crête) 0,0294 / 0,0404 / 0,0373 — à confronter aux
-chiffres des groupes, jamais à leur substituer si un écart apparaît.
+donne ses trois chiffres pour sa fermeture. Valeurs de référence (source unique :
+`Helice/docs/PARAMETRES_CAS.md`, fichier+ligne pour chacune) : K_T 0,2170 / 0,2261 /
+0,2221 ; η₀ 0,5599 / 0,6033 / 0,5901 ; amplitude K_T (crête à crête, fenêtre commune)
+0,0176 / 0,0242 / 0,0223 — à confronter aux chiffres des groupes, jamais à leur
+substituer si un écart apparaît. **Corrigé le 15/09** : ces trois séries de chiffres
+avaient encore les valeurs d'avant le rééchelonnement de D du 14/09 (0,363/0,378/0,371
+pour K_T, 0,0294/0,0404/0,0373 pour l'amplitude) — remplacées ; η₀ inchangé (invariant
+par construction) ; l'ORDRE entre les trois fermetures ne change jamais par un
+rééchelonnement uniforme.
 
 ---
 
@@ -92,22 +97,27 @@ Les deux nombres à mettre côte à côte
 
 **Comparaison** :
 A — Écart entre les 3 fermetures
-ΔK_T ≈ 0,015
+ΔK_T ≈ 0,0091
 B — Amplitude de l'oscillation
-0,029 à 0,040 — 2 à 2,7 fois plus grande
+0,0176 à 0,0242 — 2 à 2,7 fois plus grande
 
 **Notes d'orateur** :
 La diapositive qui compte (désignée comme telle par le plan du 06/09). L'oscillation
 qu'on doit moyenner pour lire K_T est 2 à 2,7 fois plus grande que l'écart qu'on cherche à
-classer entre modèles. Origine de l'oscillation, à l'oral seulement (pas sur la
-diapositive) — **erratum du 13/09, voir `Helice/docs/ERRATUM.md`** : l'hélice est
-quadripale (Z=4, pas 3), donc le passage de pale attendu (4n = 100,6 Hz) tombe exactement
-sur la même case de résolution que la raie à 4× déjà repérée. Les deux mécanismes —
-passage de pale et interface AMI sur un fond cartésien lui-même d'ordre 4 — prédisent la
-même fréquence : le spectre seul ne peut pas trancher lequel des deux domine. Seul indice
-qui reste concordant : l'amplitude décroît quand la viscosité turbulente augmente
-(laminaire > kOmegaSST > kEpsilon) — cohérent avec au moins une composante numérique,
-mais n'exclut pas une contribution physique réelle.
+classer entre modèles — ce RAPPORT ne change pas avec le rééchelonnement de D du 14/09
+(les deux grandeurs sont multipliées par le même facteur), seuls les chiffres absolus
+ont changé (source : `Helice/docs/PARAMETRES_CAS.md`). Origine de l'oscillation, à
+l'oral seulement (pas sur la diapositive) — **erratum du 13/09, voir
+`Helice/docs/ERRATUM.md`** : l'hélice est quadripale (Z=4, pas 3), donc le passage de
+pale attendu (4n = 100,6 Hz) tombe exactement sur la même case de résolution que la
+raie à 4× déjà repérée. **État réel (15/09, voir `Helice/docs/ETAT-DES-LIEUX.md`,
+item INCERTAIN « origine de la raie à 4× ») : deux mécanismes distincts prédisent
+EXACTEMENT la même fréquence — passage de pale (Z=4) et symétrie d'ordre 4 du fond
+cartésien (interface AMI) — et le test qui les discriminerait (tourner le fond de 45°
+et relancer) n'a PAS été fait.** Le spectre seul ne peut donc pas trancher lequel des
+deux domine. Seul indice qui reste concordant : l'amplitude décroît quand la viscosité
+turbulente augmente (laminaire > kOmegaSST > kEpsilon) — cohérent avec au moins une
+composante numérique, mais n'exclut pas une contribution physique réelle.
 
 ---
 
@@ -127,7 +137,30 @@ des résultats selon le modèle de turbulence » du référentiel est réellemen
 
 ---
 
-## Diapo 6 — Clôture
+## Diapo 6 — Ce que le maillage doit encore résoudre : y⁺
+**Disposition** : Figure
+**Segment / timing** : Bilan (2 h)
+
+**Contenu affiché** :
+Ce que le maillage doit encore résoudre : y⁺
+
+**Figure(s)** :
+`Helice/Images/galerie/06b_couches_epaisseurs.png`
+
+**Notes d'orateur** :
+Une seule diapositive — la séance 2 n'est pas un cours de maillage, ce point est
+adossé à `Helice/docs/03_BASE_THEORIQUE.md` §4 (théorie complète : ce qu'est y⁺, les
+trois régions de la couche limite, pourquoi une loi de paroi exige 30<y⁺<300).
+Le graphe : épaisseur DEMANDÉE de chaque couche de prismes contre épaisseur
+OBTENUE (moyenne mesurée, 3,71/6 couches sur `propellerTip`, 76,8 %) — le maillage
+ne fait pas ce qu'on lui demande partout, et ça se voit, pas seulement en légende.
+Renvoyer les questions détaillées à la séance 3 (`Seances/S03_Arborescence-et-
+perspective_Slides.md`), qui couvre l'arborescence et la perspective couches en
+entier.
+
+---
+
+## Diapo 7 — Clôture
 **Disposition** : Cloture
 **Segment / timing** : Bilan (2 h)
 

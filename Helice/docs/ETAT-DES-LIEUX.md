@@ -41,10 +41,15 @@ trancherait -- pas le détail.
 
 - **Amplitude crête à crête de K_T, fenêtre COMMUNE aux trois modèles
   [0,022032 ; 0,06] s** (exclut le trou de données du 13/09) :
-  laminaire 0,040407 > kOmegaSST 0,037294 > kEpsilon 0,029420 — ordre identique à celui
-  déjà publié.
-  Source : `_Methodo/JOURNAL.md`, entrée du 13/09 (LOT A, consigne « Correction-ensemble »),
-  recalcul direct sur `data/perf_*.csv`.
+  laminaire 0,0242 > kOmegaSST 0,0223 > kEpsilon 0,0176 — ordre identique à celui
+  déjà publié. **Corrigé le 15/09** : ce bloc citait encore 0,040407/0,037294/0,029420,
+  calculées le 13/09 sur `data/perf_*.csv` AVANT le rééchelonnement de D du 14/09 —
+  valeurs pré-rééchelonnement, périmées comme toute grandeur en K_T non recopiée depuis
+  `Helice/docs/PARAMETRES_CAS.md`. L'ORDRE entre modèles est inchangé par construction
+  (le rééchelonnement multiplie les trois par le même facteur), seuls les chiffres
+  absolus l'étaient.
+  Source : `Helice/docs/PARAMETRES_CAS.md` (recalcul direct sur `data/perf_*.csv`
+  rééchelonnés, 15/09).
 
 - **η₀ = 0,5599 / 0,5901 / 0,6033** (kEpsilon / kOmegaSST / laminaire) — robuste à D et à ρ :
   invariant exact par construction (`η₀ = J·K_T/(K_Q·2π)`, les puissances de D et le
@@ -114,8 +119,8 @@ pas projeté) — ni l'une ni l'autre tentée à ce jour.
 ## OÙ ON VA
 
 - **Séance 2** : l'argument amplitude contre écart tient et reste valable indépendamment
-  de toutes les incertitudes ci-dessus — l'oscillation crête-à-crête de K_T (0,0294 à
-  0,0404 selon le modèle, fenêtre commune) dépasse l'écart entre modèles qu'on cherche à
+  de toutes les incertitudes ci-dessus — l'oscillation crête-à-crête de K_T (0,0176 à
+  0,0242 selon le modèle, fenêtre commune) dépasse l'écart entre modèles qu'on cherche à
   classer : comparer trois fermetures dans ces conditions n'a pas de sens statistique.
 - **Séance 3** : Acte 1 — chaque binôme apporte un point de J (mesuré, pas nominal) →
   diagramme en eau libre collectif. Acte 2 — la courbe entrante dans un calcul

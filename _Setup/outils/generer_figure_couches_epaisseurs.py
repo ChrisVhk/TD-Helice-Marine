@@ -87,7 +87,12 @@ def main():
             reste = 0.0
     total_obtenu_mm = sum(obtenu_mm)
 
-    fig, ax = plt.subplots(figsize=(9.5, 5.8), dpi=200)
+    # Aspect ~2,68:1 choisi le 15/09 pour correspondre au placeholder PICTURE réel de
+    # la disposition Figure (11,93 x 4,45 in dans TEMPLATE_ENSM_cours.pptx) --
+    # python-pptx recadre (crop-to-fill) une image dont l'aspect ne correspond pas,
+    # un premier essai plus carre (9,5x5,8, aspect 1,64) perdait le titre et la
+    # légende, coupés en haut.
+    fig, ax = plt.subplots(figsize=(13.4, 5.0), dpi=200)
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
 
@@ -119,10 +124,8 @@ def main():
     # et les deux ne se recoupent pas exactement (la couverture n'est pas uniforme
     # couche par couche ; seule sa moyenne globale est mesuree).
     ax.set_title(
-        f"Couches de prismes : DEMANDÉ contre OBTENU, schématique (propellerTip)\n"
-        f"{n} couches visées, ratio d'expansion {fr(ratio, 1)}, épaisseur totale visée "
-        f"{fr(total_demande_mm)} mm",
-        fontsize=12.5, color=MARINE, fontweight="bold", pad=14,
+        f"Couches de prismes : DEMANDÉ contre OBTENU (propellerTip)",
+        fontsize=15, color=MARINE, fontweight="bold", pad=14, loc="center",
     )
     ax.grid(True, axis="y", alpha=0.3)
     for spine in ("top", "right"):
@@ -135,17 +138,23 @@ def main():
     for text in legend.get_texts():
         text.set_color(MARINE)
 
-    fig.tight_layout(rect=(0, 0.17, 1, 1))
+    # Marge de securite gauche/droite (le crop-to-fill de python-pptx grignote un
+    # peu les bords meme a aspect quasi identique -- constate le 15/09, le titre
+    # perdait son "C" initial et sa derniere decimale sans cette marge).
+    fig.tight_layout(rect=(0.02, 0.17, 0.98, 1))
     caption = (
-        f"Mesuré (seule valeur réelle) : {fr(COUCHES_OBTENUES, 2)}/{n} couches en moyenne, 76,8 % de l'épaisseur totale visée\n"
-        f"(source : Helice/docs/PARAMETRES_CAS.md, log.snappyHexMesh.tipedge). La série « obtenue » ci-dessus (troncature\n"
-        f"couches 1-3 pleines, 4 à 71 %, 5-6 absentes) est une ILLUSTRATION schématique du compte de couches, pas une\n"
-        f"reconstruction d'épaisseur — sa somme ne vaut PAS 76,8 % de la totale visée (la couverture réelle n'est pas\n"
-        f"uniforme couche par couche, seule sa moyenne globale est mesurée)."
+        f"{n} couches visées, ratio d'expansion {fr(ratio, 1)}, épaisseur totale visée {fr(total_demande_mm)} mm.\n"
+        f"Mesuré (seule valeur réelle) : {fr(COUCHES_OBTENUES, 2)}/{n} couches en moyenne, 76,8 % de l'épaisseur totale visée (source : Helice/docs/PARAMETRES_CAS.md, log.snappyHexMesh.tipedge).\n"
+        f"La série « obtenue » ci-dessus (troncature couches 1-3 pleines, 4 à 71 %, 5-6 absentes) est une ILLUSTRATION schématique du compte de couches, pas une reconstruction d'épaisseur —\n"
+        f"sa somme ne vaut PAS 76,8 % de la totale visée (la couverture réelle n'est pas uniforme couche par couche, seule sa moyenne globale est mesurée)."
     )
-    fig.text(0.02, 0.01, caption, fontsize=8.2, color=RUST, va="bottom", ha="left")
+    fig.text(0.02, 0.01, caption, fontsize=9.5, color=RUST, va="bottom", ha="left")
+    # PAS de bbox_inches="tight" : ça recadre au contenu reel et change l'aspect
+    # (constate le 15/09 -- l'aspect obtenu, 2,89, derivait du 2,68 vise, a cause de
+    # ce recadrage). La taille de figure EXACTE (13,4x5,0 = 2,68) doit survivre
+    # telle quelle pour correspondre au placeholder PICTURE du gabarit.
     out = os.path.join(REPO, "Helice", "Images", "galerie", "06b_couches_epaisseurs.png")
-    fig.savefig(out, facecolor="white", bbox_inches="tight")
+    fig.savefig(out, facecolor="white")
     print("écrit :", out)
 
 

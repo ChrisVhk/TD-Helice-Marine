@@ -37,6 +37,9 @@ la géométrie et le maillage à couches, précisé colonne « Fichier · ligne 
 | Couverture des couches, propellerTip (demandé/obtenu) | 6 / 3,71 | couches | `Helice/case_kEpsilon_layers/log.snappyHexMesh.tipedge:2940` | 15/09 |
 | Couverture des couches, propellerTip (%) | 76,8 | % | `Helice/case_kEpsilon_layers/log.snappyHexMesh.tipedge:2940` | 15/09 |
 | nCells (maillage à couches, `case_kEpsilon_layers`) | 608463 | cellules | `Helice/case_kEpsilon_layers/constant/polyMesh/owner:13` | 15/09 |
+| Amplitude crête à crête K_T, fenêtre commune [0,022032;0,06] s (kEpsilon) | 0,0176 | — | `Helice/data/perf_kEpsilon.csv`, max−min sur la fenêtre (recalculé le 15/09 sur les données rééchelonnées le 14/09 — remplace la valeur pré-rééchelonnement 0,0294 citée au 13/09) | 15/09 |
+| Amplitude crête à crête K_T, même fenêtre (kOmegaSST) | 0,0223 | — | `Helice/data/perf_kOmegaSST.csv`, même méthode (remplace 0,0373) | 15/09 |
+| Amplitude crête à crête K_T, même fenêtre (laminar) | 0,0242 | — | `Helice/data/perf_laminar.csv`, même méthode (remplace 0,0404) | 15/09 |
 
 **Valeurs explicitement PÉRIMÉES, à ne jamais recopier** (voir LOT 2 du rapport de
 boucle pour le détail par document) : Z=3 (tripale) ; D=0,2 m / `radius 0.1` ; K_T=0,3625
