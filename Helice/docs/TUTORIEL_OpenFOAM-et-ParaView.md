@@ -210,6 +210,118 @@ et « ρ » d'`ETAT-DES-LIEUX.md` §ÉTABLI.
 
 ---
 
+## 6. Optimiser le calcul
+
+**Utilisable SANS lancer aucun calcul.** Chaque chiffre ci-dessous est sourcé dans
+`Helice/docs/PARAMETRES_CAS.md` ou un `log.*` nommé — jamais une estimation à l'œil.
+
+### 6.1 Les leviers — fichier, effet coût, effet précision
+
+**Sous-domaines** (`system/decomposeParDict:14 numberOfSubdomains`)
+| Coût | Précision |
+|---|---|
+| Réduit le temps mural, mais avec un rendement décroissant marqué : le coude est à 8 rangs, pas à 16 (débits 4/8/16 rangs — `PARAMETRES_CAS.md`, LOT 2b) — passer de 8 à 16 rangs n'achète que 13-15 % de débit en plus. | Aucun — la décomposition de domaine ne change pas le résultat physique (aux arrondis machine près). |
+
+**Pas de temps & Courant** (`system/controlDict:27 deltaT`, `:47 adjustTimeStep`, `:49 maxCo`)
+| Coût | Précision |
+|---|---|
+| Un pas fixe plus petit que le pas naturel (3,23e-5 s) multiplie le nombre de pas par tour d'autant — 1e-5 s donne ~3977 pas/tour contre ~1231 au pas naturel, soit ×3,2 (`PARAMETRES_CAS.md`, LOT 2a). | Contre-intuitif (§6.3) : un pas plus fin n'est pas toujours plus stable — `case_kEpsilon_layers` avec `adjustTimeStep yes; maxCo 2` (réglage naturellement adaptatif) DIVERGE en 6-9 pas, alors que le même réglage tourne sans incident sur le maillage sans couches (`_Methodo/JOURNAL.md`, 13/09). |
+
+**Durée & nombre de tours** (`system/controlDict:25 endTime`, période = 1/n = 0,03977 s)
+| Coût | Précision |
+|---|---|
+| Linéaire en `endTime` : deux fois plus de tours, deux fois le temps mural. | Il faut couvrir assez de tours pour sortir du transitoire et mesurer une amplitude d'oscillation stable — la fenêtre commune utilisée pour l'amplitude K_T ([0,022032 ; 0,06] s) exclut délibérément le tout début du calcul. |
+
+**Fréquence d'écriture** (`system/controlDict:31 writeInterval`, `:29 writeControl`)
+| Coût | Précision |
+|---|---|
+| N'accélère PAS le solveur — mais pilote presque entièrement le volume disque (voir §6.2 DISQUE). C'est le levier le moins cher à actionner pour tenir un budget de stockage. | Aucun effet sur le calcul lui-même ; un `writeInterval` trop grossier peut sous-échantillonner l'oscillation si on veut la résoudre finement en post-traitement. |
+
+**Raffinement & couches** (`system/snappyHexMeshDict` — `refinementSurfaces.propellerTip.level`, `addLayersControls.nSurfaceLayers`)
+| Coût | Précision |
+|---|---|
+| Plus de cellules = plus cher par pas : passer le niveau de (4,5) à (5,6) sur `propellerTip.eMesh` ajoute 47,5 % de cellules (629082→928197). | Contre-intuitif (§6.3) : cette même tentative DÉGRADE la qualité de maillage (cellules concaves 17655→41541, skewness max 4,32→6,79 — `_Methodo/JOURNAL.md`, 13/09) — raffiner n'améliore pas automatiquement. Les couches elles-mêmes n'atteignent que 3,71/6 couches demandées (76,8 %, `log.snappyHexMesh.tipedge`). |
+
+**Modèle de turbulence** (`constant/turbulenceProperties:16 RASModel`, ou `laminar`)
+| Coût | Précision |
+|---|---|
+| Chaque modèle testé est une exécution complète de plus : c'est le N du modèle de coût §6.2, linéaire en nombre de modèles lancés. | L'écart ENTRE modèles (ΔK_T ≈ 0,0091) est plus PETIT que l'oscillation propre à un seul modèle (amplitude 0,0176 à 0,0242) — lancer un modèle de plus ne réduit pas l'incertitude si cette dernière n'est pas d'abord maîtrisée (leçon de la Séance 2, `Seances/S02_Slides.md`). |
+
+### 6.2 Prédire le coût avant de lancer
+
+Modèle établi le 13/09 (`_Methodo/JOURNAL.md`) : `T_total(N) = N × (4464/S) × (3+2M)`,
+où N = nombre de configurations modèle/maillage lancées, S = accélération parallèle,
+M = surcoût par pas du maillage à couches par rapport au maillage sans couches, aux
+mêmes réglages.
+
+**État des deux inconnues (LOT 2, 15/09 — voir `PARAMETRES_CAS.md`)** :
+- **S = 1,97** (4→16 rangs, sans couches) — établi, sourcé sur logs de banc.
+- **Le « 4464 s/tour » de référence reste PARTIELLEMENT OUVERT** : il implique 1461
+  pas/tour, contre 1231 pas/tour calculés indépendamment depuis le pas naturel mesuré
+  et la période de rotation vérifiée — écart de 19 %, origine de 1461 non retrouvée
+  dans le JOURNAL accessible. **Tout `T_total` calculé avec 4464 est donc susceptible
+  de sous-estimer le coût réel par tour d'environ 19 %** si la production tourne au
+  pas naturel de référence — à garder en tête, pas à corriger silencieusement.
+
+**Exemple chiffré** (reproduit tel quel depuis le JOURNAL du 13/09, M mesuré proprement
+à pas fixe 1e-5 s, 4 rangs) :
+```
+M = 3,1507 / 3,0546 = 1,031        (coût par pas, couches/sans couches, 4 rangs, même dt)
+S = 1,97                            (accélération 4→16 rangs, sans couches)
+T_total(N) = N × (4464/1,97) × (3+2×1,031) = N × 2266,5 × 5,063 ≈ N × 11475 s
+N=6 → 68851 s = 19,13 h
+```
+**Réserve reproduite avec l'exemple** : ce M est un coût PAR PAS, mesuré à pas fixe
+identique des deux côtés — il ne capture pas le surcoût de passer, en production, à un
+pas plus fin que le pas naturel de référence (c'est exactement l'écart de 19 % ci-dessus).
+
+**DISQUE (INV-23, `_Methodo/INVARIANTS.md`)** — indépendant du temps mural, souvent le
+facteur bloquant en premier :
+```
+volume RÉEL ≈ 3 × volume naïf du solveur
+  naïf       = (taille d'un pas) × (nb rangs) × (endTime / writeInterval)
+  + reconstruction  ≈ ×1  (reconstructPar duplique tout)
+  + postProcessing  ≈ ×1  (surfaces VTP, AMIWeights, isoQ...)
+```
+Mesuré le 06/09 sur un cas de ce TD : formule naïve 6,7 Go, consommation réelle **23 Go**
+(facteur 3,4 — proche du ×3 théorique). **Règle d'arrêt : si le volume réel estimé dépasse
+la moitié de l'espace libre de l'hôte, le calcul ne part pas** — réduire `writeInterval`
+ou déplacer la sortie, jamais lancer « pour voir ».
+
+### 6.3 Contre-intuitions mesurées
+
+- **Le coude est à 8 rangs, pas à 16.** Débits 8→16 rangs : 34,5→39,6 pas/min sans
+  couches (87 %), 27,8→32,8 pas/min avec couches (85 %) — `PARAMETRES_CAS.md`, LOT 2b.
+  Doubler les rangs de 8 à 16 n'achète que 13-15 % de débit.
+- **Raffiner dégrade.** Niveau (4,5)→(5,6) sur `propellerTip.eMesh` : cellules concaves
+  17655→41541, skewness max 4,32→6,79 (`_Methodo/JOURNAL.md`, 13/09) — plus de cellules
+  au raccord couches/cœur, pas une meilleure géométrie.
+- **Plus fin peut être moins stable.** `case_kEpsilon_layers` sous `adjustTimeStep yes;
+  maxCo 2` (réglages naturellement adaptatifs, donc plus fins où nécessaire) diverge et
+  plante (Floating Point Exception, solveur GAMG) en 6 à 9 pas — le maillage sans
+  couches, mêmes réglages, tourne des heures sans incident (`_Methodo/JOURNAL.md`, 13/09).
+- **Le pas fixe de production coûte 3,2× plus de pas par tour** que le pas naturel :
+  1e-5 s → ~3977 pas/tour, contre ~1231 au pas naturel 3,23e-5 s (`PARAMETRES_CAS.md`).
+
+### 6.4 Exercice de prédiction, sans machine
+
+**Budget : 4 h de calcul, 4 cœurs, maillage SANS couches.** On veut couvrir 3 tours
+complets, calculés à **pas de temps FIXE 1e-5 s** (le régime initialement envisagé pour
+la production, §4). Débit mesuré à 4 rangs sans couches : 19,9 pas/min
+(`PARAMETRES_CAS.md`).
+
+1. Combien de pas represente 1 tour à ce pas fixe ? Combien pour 3 tours ?
+2. Combien de temps cela prend-il au débit mesuré à 4 rangs ?
+3. Le budget de 4 h est-il tenu ? Sinon, quel levier du §6.1 changer en premier — et
+   **qu'est-ce que ce choix fait perdre** (pas seulement ce qu'il fait gagner) ? Le
+   nombre de cœurs (4) et le nombre de tours (3) sont FIXÉS par l'énoncé : ce ne sont
+   pas des leviers disponibles ici.
+
+Corrigé : `FICHES-CONDUITE_Enseignant.md`, domaine « optimiser le calcul » (gitignoré,
+jamais distribué aux étudiants).
+
+---
+
 ## Fiche d'identité du cas — à remplir par l'étudiant
 
 **Méthode obligatoire : D'ABORD lire les fichiers (colonne 2), PUIS vérifier CHAQUE
