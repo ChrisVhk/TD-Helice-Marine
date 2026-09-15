@@ -95,6 +95,10 @@ EXCLUSIONS=(
     "Seances/S03_Arborescence-et-perspective_Slides.md:162"  # notes d'orateur, même rétractation sourcée JOURNAL
     "Seances/S03_Arborescence-et-perspective_Slides.md:202"  # "Écart signalé : ... citent encore « 4,42 »" -- signale l'écart, ne le recopie pas comme fait
     "Seances/S03_Arborescence-et-perspective_Slides.md:203"  # suite de la même note
+    "Helice/docs/ETAT-DES-LIEUX.md:86"    # brut jamais réécrit (INV-19), D=0,2 y reste vrai par décision -- pas une valeur périmée à corriger
+    "Helice/docs/METHODO_DONNEES.md:21"   # idem, LOT défauts de données du 15/09
+    "Helice/docs/METHODO_DONNEES.md:132"  # idem
+    "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:96"  # idem
     "Helice/docs/METHODO_DONNEES.md:22"  # "D=0,2 m au lieu de 0,227378 m" -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/METHODO_DONNEES.md:43"  # "K_T=0,3625/J=1,0270 ... au lieu de 0,2170/0,9007" -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:161"  # "remplace 0,0404/0,0373/0,0294 pré-rééchelonnement" -- corrigé le 15/09 (LOT B0bis)

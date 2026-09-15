@@ -74,6 +74,20 @@ trancherait -- pas le détail.
   into zoned faces ») ; `_Methodo/JOURNAL.md`, entrée du 15/09 ; théorie complète
   `Helice/docs/03_BASE_THEORIQUE.md`, section « La pale est un baffle, pas un volume ».
 
+- **Trois défauts de données connus, à ne jamais confondre entre eux** (détail complet
+  et sources exactes : `Helice/docs/METHODO_DONNEES.md` §5) :
+  ① `perf_kOmegaSST.csv` a un trou de 13,8 ms (0,008194 à 0,022032 s) dans l'historique
+  des efforts — interdit toute FFT couvrant cette fenêtre, n'affecte pas la moyenne
+  dernier tour (le trou est avant elle).
+  ② `case_laminar` a un trou de champs complets de 0,012 s = 0,30 tour (`0,048` à
+  `0,059` s, 12 répertoires absents) qui empiète sur la fenêtre du dernier tour —
+  interdit toute image/analyse de champ du laminaire dans cette plage, n'affecte pas les
+  séries scalaires (le journal `propellerInfo`, lui, est continu).
+  ③ Le brut `propellerPerformance.dat` des trois cas porte `radius 0,1` (D=0,2 m, décision
+  enseignant du 15/09 : jamais réécrit, INV-19) — la correction D vit dans
+  `Helice/scripts/extraire_kit_donnees.py`, jamais régénérée depuis le solveur (perte de
+  résolution ~30× si tenté par post-traitement, mesuré le 15/09).
+
 ---
 
 ## INCERTAIN — et ce qui le trancherait
