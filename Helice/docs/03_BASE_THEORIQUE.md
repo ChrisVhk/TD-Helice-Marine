@@ -128,3 +128,28 @@ correctement posée sur toute la surface (régime 1), ni une couche limite réel
 (régime 2) — un rappel que « mettre des couches de prismes » ne garantit pas, par construction,
 d'atteindre l'objectif visé en les ajoutant : encore faut-il le mesurer, ce qui n'a jamais été
 fait ici à convergence.
+
+### La pale est un baffle, pas un volume
+
+Tout ce qui précède (couches, $y^+$, loi de paroi) suppose une surface qui SÉPARE le fluide
+d'un solide. Sur `propellerTip` (et plus généralement la pale de ce cas), ce n'est pas ce que
+`snappyHexMesh` construit : le log le dit explicitement — `Converting baffles back into zoned
+faces` (`Helice/case_kEpsilon_layers/log.snappyHexMesh`). Un **baffle** est une surface
+d'ÉPAISSEUR NULLE, dupliquée en deux patches coïncidents (un jeu de faces « intrados », un jeu
+de faces « extrados », géométriquement au même endroit) — pas une géométrie solide 3D creusée
+hors du maillage fluide. Vérifié le 15/09 par une analyse indépendante de l'écart angulaire
+entre centres de cellules fluides à plusieurs rayons/tranches Y de la pale : l'écart maximal
+observé (2,39°–4,09°) correspond à la taille angulaire normale d'une cellule de cœur, jamais à
+un vide de la taille du profil de pale — il n'existe, à aucun rayon, de trou en forme de pale
+dans le volume fluide.
+
+Deux conséquences directes :
+- Les couches de prismes de `addLayersControls` croissent sur LES DEUX faces coïncidentes à la
+  fois — pas seulement « autour » d'un solide unique. La couche limite est résolue deux fois,
+  une pour chaque face, avec potentiellement deux profils $y^+$ différents (normales opposées).
+- « La pression sur la pale » désigne en réalité la pression sur DEUX faces coïncidentes de
+  normales opposées (patch intrados, patch extrados) au même endroit géométrique — jamais une
+  seule surface. C'est exactement pour cela que séparer intrados et extrados **par orientation
+  de la normale** (et non par une découpe géométrique/spatiale, impossible ici puisque les deux
+  faces occupent la même position) est la méthode correcte, et la seule qui fonctionne, pour
+  isoler la portance et la traînée d'une pale depuis ce maillage.

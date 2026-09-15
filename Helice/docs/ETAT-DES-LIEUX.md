@@ -57,6 +57,23 @@ trancherait -- pas le détail.
   Source : `Helice/Results/bilan_helice.txt` (rééchelonné le 14/09, valeurs recalculées
   identiques aux publiées à moins de 5.10⁻⁵) ; `_Methodo/JOURNAL.md`, entrée du 14/09.
 
+- **La pale est un baffle (surface d'épaisseur nulle, deux patches coïncidents), pas un
+  volume solide.** `snappyHexMesh` le déclare explicitement : « Converting baffles back
+  into zoned faces ». Vérifié indépendamment le 15/09 par analyse de l'écart angulaire
+  entre centres de cellules fluides voisines à plusieurs rayons/tranches Y de la pale :
+  écart maximal observé 2,39°–4,09°, taille angulaire normale d'une cellule de cœur —
+  aucun trou en forme de pale à aucun rayon testé. Conséquence : les couches de prismes
+  croissent sur les deux faces coïncidentes (intrados, extrados), et « la pression sur la
+  pale » désigne ces deux faces de normales opposées, jamais une seule surface — d'où la
+  séparation intrados/extrados PAR ORIENTATION DE LA NORMALE, seule méthode possible ici.
+  Ce constat invalide rétroactivement quatre tentatives antérieures de rendu (« image
+  06 ») qui cherchaient un vide de la forme du profil de pale dans le maillage fluide :
+  la 5ᵉ tentative (coupe cylindrique, consigne du 15/09) a été abandonnée avant rendu dès
+  que cette vérification a montré la prémisse fausse.
+  Source : `Helice/case_kEpsilon_layers/log.snappyHexMesh` (« Converting baffles back
+  into zoned faces ») ; `_Methodo/JOURNAL.md`, entrée du 15/09 ; théorie complète
+  `Helice/docs/03_BASE_THEORIQUE.md`, section « La pale est un baffle, pas un volume ».
+
 ---
 
 ## INCERTAIN — et ce qui le trancherait
