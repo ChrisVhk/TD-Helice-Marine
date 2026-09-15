@@ -58,8 +58,8 @@ EXCLUSIONS=(
     "Helice/docs/MATERIAU-INTRO_TD-Helice.md:116"  # "Avant correction, l'argument reposait..." -- historique
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:65"   # "jusqu'au 14/09 ... corrigé le 14/09"
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:194"  # "portait D=0,2 m ... contre D=0,227 m"
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:330"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09 (décalé le 15/09 par l'ajout de la partie 6)
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:347"  # "établi, contre 0,2 m codé en dur" -- contraste explicite (décalé le 15/09)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:338"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09 (décalé le 15/09 par le piège d'usage S=1,97 en 6.2)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:355"  # "établi, contre 0,2 m codé en dur" -- contraste explicite (décalé le 15/09)
     "Helice/docs/PLAN_SEANCE-3.md:87"   # "faux, corrigé le 13/09"
     "Helice/docs/PLAN_SEANCE-3.md:95"   # "Écart avec la documentation existante (D=0,2m)... " -- signalé comme écart, pas comme fait
     "Helice/docs/PLAN_SEANCE-3.md:104"  # même paragraphe que 95, suivi de l'arbitrage rendu (ligne 110)

@@ -256,6 +256,14 @@ mêmes réglages.
 
 **État des deux inconnues (LOT 2, 15/09 — voir `PARAMETRES_CAS.md`)** :
 - **S = 1,97** (4→16 rangs, sans couches) — établi, sourcé sur logs de banc.
+  **Piège d'usage : cette formule PRÉDIT donc un coût à 16 rangs** — puisque S est
+  défini comme le rapport 4→16. Or le débit mesuré (§6.1, §6.3) montre que le coude
+  réel est à **8 rangs**, pas à 16 : 8→16 n'achète que 13-15 % de débit en plus pour
+  deux fois plus de rangs réservés. Appliquer `T_total(N)` avec S=1,97 pour justifier
+  un lancement à 16 rangs, c'est payer le double de ressources pour l'écart entre le
+  coude (8) et 16, en échange d'un gain marginal — la formule ne le dit pas d'elle-même,
+  elle prédit juste UN temps, pas si le nombre de rangs qui produit ce temps est un bon
+  choix de ressources.
 - **Le « 4464 s/tour » de référence reste PARTIELLEMENT OUVERT** : il implique 1461
   pas/tour, contre 1231 pas/tour calculés indépendamment depuis le pas naturel mesuré
   et la période de rotation vérifiée — écart de 19 %, origine de 1461 non retrouvée

@@ -78,7 +78,10 @@ case_kEpsilon/
 `constant/polyMesh/` (sortie maillage, on édite `snappyHexMeshDict` + relance) ·
 `processor*/` (recréés/détruits par decompose/reconstruct) · `postProcessing/` (sortie,
 lecture seule) · `log.*` (trace, jamais réécrit) · `0/` (écrasé par `restore0Dir` à chaque
-`Allrun` — éditer `0.orig/`).
+`Allrun` — éditer `0.orig/`) · `postProcessing/propellerInfo1/*/propellerPerformance.dat`
+en particulier (décision enseignant 15/09, INV-19 : c'est une mesure, radius=0,1 y
+compris — la correction D vit dans `Helice/scripts/extraire_kit_donnees.py`, jamais dans
+ce fichier, voir `METHODO_DONNEES.md`).
 
 ### Informatique S5 (Bloc 2 — Shell & Git), dans les deux sens
 
