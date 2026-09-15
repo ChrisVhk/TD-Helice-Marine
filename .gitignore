@@ -11,6 +11,7 @@ _Setup/outils/*
 !_Setup/outils/rendre_vues_helice.py
 !_Setup/outils/extraire_etat_des_lieux_public.py
 !_Setup/outils/verifier_valeurs_perimees.sh
+!_Setup/outils/generer_variantes_deck.py
 
 # Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx) : regenerables,
 # jamais commitees -- meme regime que Helice/*.pptx (LOT I, deck vers Vega, pas vers
