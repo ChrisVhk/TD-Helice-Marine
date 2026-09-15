@@ -30,6 +30,14 @@ Ordre de lecture :
 9. `06_QCM_FINAL.md` — fin de séance 1, PUBLIC.
 10. `13_CONTROLE-G1_SUJET.md` — contrôle d'ouverture (groupe 1 uniquement), PUBLIC.
 11. `15_DECK-SEANCE1_Slides.md` — source du deck projeté en séance 1, PUBLIC.
+   **Anomalie connue (documentée le 15/09, LOT 6)** : ce fichier vit dans `Helice/docs/`,
+   alors que les sources des séances 2 et 3 vivent dans `Seances/` (`S02_Slides.md`,
+   `S03_Arborescence-et-perspective_Slides.md`) — INTERDIT de le déplacer maintenant, les
+   étudiants ont cloné le dépôt et un lien mort casserait leur accès en cours de séquence
+   (règle générale de ce dépôt, `Helice/docs/` jamais renommé/déplacé en cours de TD). Il
+   rejoindra `Seances/` (renommé `S01_Slides.md` pour la cohérence) **après la dernière
+   séance**, quand plus aucun étudiant n'a besoin du lien actuel. Détail et convention
+   complète : `Seances/README.md`.
 
 **Enseignant, en regard de la séance 1** (non lus par les étudiants) :
 `08_CORRIGE_QCM.md`, `09_FICHE_ENSEIGNANT.md`, `14_CONTROLE-G1_ENSEIGNANT.md`,

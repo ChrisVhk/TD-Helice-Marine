@@ -32,8 +32,10 @@ la correction de D/y⁺ ; ce bloc leur donne, en ouverture, ce que le groupe 3 a
 directement dans la suite du deck. Numérotation volontairement hors séquence (90-93)
 pour ne jamais entrer en conflit avec la numérotation 0-7 de la séance 2, citée ailleurs
 dans le dépôt (`Helice/docs/ETAT-DES-LIEUX.md`, `_Methodo/JOURNAL.md`). Les deux
-variantes (avec/sans ce bloc) sont produites par
-`_Setup/outils/generer_variantes_deck.py` depuis cette source unique.
+variantes (avec/sans ce bloc) sont produites par une seule commande
+(`python3 Seances/generer_pptx_seance.py S02`, LOT 4-5 du 15/09) depuis cette source
+unique — le marqueur ci-dessus suffit à déclencher la troisième sortie
+`S02_groupes1-2.pptx`, rien à passer en argument.
 
 ## Diapo 90 — Titre (rattrapage)
 **Disposition** : Couverture

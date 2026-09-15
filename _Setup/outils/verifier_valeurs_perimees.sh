@@ -78,7 +78,7 @@ EXCLUSIONS=(
     "Helice/docs/ETAT-DES-LIEUX.md:38"   # "(« 60 % » retiré, remplacé par cette mesure sourcée)"
     "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:30"  # source enseignante du même passage que ci-dessus
     "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:48"  # idem
-    "Seances/S00_Intro-CFD-Helice_Slides.md:194"  # "qui a remplacé les 0,2 m codés en dur" -- contraste explicite
+    "Seances/S00_Intro-CFD-Helice_Slides.md:195"  # "qui a remplacé les 0,2 m codés en dur" -- contraste explicite (décalé le 15/09, LOT 4)
     "Helice/docs/ERRATUM.md:5"  # "(et non 75,44 Hz)" -- l'erratum EST la correction elle-même
     "Helice/docs/PARAMETRES_CAS.md:6"    # ce fichier explique lui-même pourquoi ces valeurs sont périmées
     "Helice/docs/PARAMETRES_CAS.md:7"    # idem
@@ -88,7 +88,7 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:107"  # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout des blocs LOT A1/A2)
     "Helice/docs/PARAMETRES_CAS.md:108"  # idem
     "Helice/docs/PARAMETRES_CAS.md:109"  # idem
-    "Seances/S02_Slides.md:57"  # "codé en dur ... corrigé le 14/09" -- bloc rattrapage fusionné le 15/09 (LOT 3), même contraste explicite que S02/S03, ex-S02bis_Rattrapage:31
+    "Seances/S02_Slides.md:59"  # "codé en dur ... corrigé le 14/09" -- bloc rattrapage fusionné le 15/09 (LOT 3), même contraste explicite que S02/S03, ex-S02bis_Rattrapage:31 (décalé le 15/09, LOT 4/5)
     "Seances/S03_Arborescence-et-perspective_Slides.md:138"  # "D était faux de 14 %" -- diapo sur le mécanisme d'erreur, au passé
     "Seances/S03_Arborescence-et-perspective_Slides.md:155"  # "Constantes héritées jamais mesurées" -- idem, diapo mécanismes
     "Seances/S03_Arborescence-et-perspective_Slides.md:158"  # "a circulé ... sans qu'aucun log ne soit jamais ouvert" -- rétractation
@@ -109,7 +109,7 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:40"   # "remplace la valeur pré-rééchelonnement 0,0294 citée au 13/09" -- historique
     "Helice/docs/PARAMETRES_CAS.md:41"   # "remplace 0,0373" -- historique
     "Helice/docs/PARAMETRES_CAS.md:42"   # "remplace 0,0404" -- historique
-    "Seances/S02_Slides.md:150"  # "0,0294/0,0404/0,0373 pour l'amplitude) -- remplacées" -- historique déjà étiqueté
+    "Seances/S02_Slides.md:152"  # "0,0294/0,0404/0,0373 pour l'amplitude) -- remplacées" -- historique déjà étiqueté (décalé le 15/09, LOT 4/5)
 )
 
 is_excluded() {

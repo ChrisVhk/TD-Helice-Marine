@@ -38,10 +38,11 @@ du dépôt (vérifiée sur `Seances/S02_Slides.md`, `_Setup/NOTE_GABARIT_PPTX.md
   générateur résout `Images/...` comme sibling de `Seances/` (racine du dépôt) — or la galerie
   réelle de ce dépôt vit sous `Helice/Images/galerie/`, pas `Images/galerie/` à la racine
   (structure propre à `TD-Helice-Marine`, différente d'un dépôt de cours autonome). Chemins
-  corrigés en `Helice/Images/galerie/....png` ; en conséquence le générateur propre à ce deck
-  (`Seances/generer_pptx_S00.py`, copié puis ADAPTÉ depuis le modèle comme son propre docstring
-  l'invite à faire) élargit la regex d'extraction (qui n'acceptait qu'un chemin commençant
-  littéralement par `Images/`) pour accepter aussi ce préfixe `Helice/`.
+  corrigés en `Helice/Images/galerie/....png` ; en conséquence le générateur
+  (`Seances/generer_pptx_seance.py`, unifié le 15/09 — LOT 4, remplace l'ancien
+  `generer_pptx_S00.py` propre à ce deck) élargit la regex d'extraction (qui n'acceptait
+  qu'un chemin commençant littéralement par `Images/`) pour accepter aussi ce préfixe
+  `Helice/` — pour les trois séances désormais, pas seulement celle-ci.
 - Numérotation des diapos : la source de la consigne commençait à 1 ; renumérotée à partir de
   0 pour suivre la convention réelle (`S02_Slides.md` : `Diapo 0 — Couverture`).
 - Champ `Segment / timing` : aucune durée n'était donnée dans la source fournie — laissé vide
