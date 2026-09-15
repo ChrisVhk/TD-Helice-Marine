@@ -12,9 +12,17 @@ Produit dans Results/ :
   - comparaison_performance.png : KT, 10*KQ, eta0 vs temps, 3 cas superposés
   - bilan_helice.txt          : tableau de synthèse (moyenne dernier tour, cf. compare_turbulence.py)
 
+**Lit `data/perf_<modèle>.csv` (LOT 1, décision enseignant du 15/09, INV-19) — PLUS le
+brut `postProcessing/propellerInfo1/`.** Le brut porte encore radius=0,1 (D=0,2 m) : on
+ne le réécrit jamais, la correction D vit dans `scripts/extraire_kit_donnees.py`. Lire le
+brut ici referait exactement l'erreur qui a produit des bilans périmés — voir
+`docs/METHODO_DONNEES.md`. Lancer `extraire_kit_donnees.py --csv` d'abord si les CSV
+n'existent pas encore.
+
 Usage :
     python3 scripts/bilan_helice.py
 """
+import csv
 import re
 import sys
 from pathlib import Path
@@ -27,8 +35,10 @@ import matplotlib.pyplot as plt
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "Results"
 OUTPUT_DIR.mkdir(exist_ok=True)
+DATA_DIR = BASE_DIR / "data"
 
 CASES = ["case_kEpsilon", "case_kOmegaSST", "case_laminar"]
+CASE_TO_SHORT = {"case_kEpsilon": "kEpsilon", "case_kOmegaSST": "kOmegaSST", "case_laminar": "laminar"}
 COLORS = {"case_kEpsilon": "#1f77b4", "case_kOmegaSST": "#d62728", "case_laminar": "#2ca02c"}
 LABELS = {
     "case_kEpsilon": "k-epsilon (RAS)",
@@ -62,35 +72,16 @@ def parse_residuals(case_dir: Path):
     return np.array(list(zip(times, res))) if times else np.empty((0, 2))
 
 
-def find_performance_files(case_dir: Path):
-    """Tous les segments (0/, 0.022/, 0.034/…), triés par temps de démarrage croissant
-    (numérique) : un cas repris se recoud, un segment tardif écrase le temps commun."""
-    pp = case_dir / "postProcessing" / "propellerInfo1"
-    if not pp.is_dir():
+def read_performance_csv(case: str):
+    """Lit data/perf_<modèle>.csv (rééchelonné D, colonnes tours/angle_deg incluses) --
+    PLUS le brut. Renvoie [] si le CSV n'existe pas (lancer extraire_kit_donnees.py --csv
+    d'abord), jamais un repli silencieux sur le brut périmé."""
+    path = DATA_DIR / f"perf_{CASE_TO_SHORT[case]}.csv"
+    if not path.is_file():
         return []
-
-    def start_time(p: Path) -> float:
-        try:
-            return float(p.parent.name)
-        except ValueError:
-            return -1.0
-
-    return sorted(pp.glob("*/propellerPerformance.dat"), key=start_time)
-
-
-def parse_performance(paths):
-    merged = {}
-    for path in paths:
-        with open(path) as f:
-            for line in f:
-                if line.startswith("#") or not line.strip():
-                    continue
-                parts = line.split()
-                if len(parts) < len(PERF_COLUMNS):
-                    continue
-                row = dict(zip(PERF_COLUMNS, parts))
-                merged[round(float(row["time"]), 9)] = row
-    return [merged[t] for t in sorted(merged)]
+    with open(path, newline="") as f:
+        reader = csv.DictReader(f)
+        return [{c: row[c] for c in PERF_COLUMNS} for row in reader]
 
 
 def average_last_revolution(rows):
@@ -167,12 +158,11 @@ def main() -> int:
         case_dir = BASE_DIR / case
         residuals[case] = parse_residuals(case_dir)
 
-        perf_files = find_performance_files(case_dir)
-        if not perf_files:
+        rows = read_performance_csv(case)
+        if not rows:
             missing.append(case)
             summary_lines.append(f"{case:<15} {'—':>8} {'—':>8} {'—':>10} {'—':>10} {'—':>8}  (non calculé)")
             continue
-        rows = parse_performance(perf_files)
         rows_by_case[case] = rows
         avg = average_last_revolution(rows)
         flag = "" if avg["period_covered"] else "  ⚠ < 1 tour écoulé"
@@ -191,7 +181,8 @@ def main() -> int:
     print(f"Figures : {residuals_png}" + (f", {perf_png}" if perf_png else ""))
 
     if missing:
-        print(f"\nCas non calculés : {', '.join(missing)} — lancer 02_run.sh d'abord.")
+        print(f"\nCSV manquants : {', '.join(missing)} — lancer "
+              "'python3 scripts/extraire_kit_donnees.py --csv' d'abord.")
         return 1
     return 0
 

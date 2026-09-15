@@ -23,8 +23,18 @@ résultats sont fournis ici. Tout est régénérable depuis les 3 cas du dépôt
 > `perf_laminar.csv`. Séance 2 : les trois fichiers, comme prévu. Détail complet :
 > `docs/10_CORRIGE_ETUDIANT_DETAILLE.md` §4 et `docs/STATUT.md`.
 
-Colonnes : `time, n, URef, J, KT, 10KQ, eta0` — sortie du *function object* `propellerInfo`,
-une ligne par pas de temps écrit, série recousue sur les reprises et dédupliquée sur `time`.
+Colonnes : `time, n, URef, J, KT, 10KQ, eta0, tours, angle_deg` — les sept premières sont la
+sortie du *function object* `propellerInfo`, une ligne par pas de temps écrit, série recousue
+sur les reprises et dédupliquée sur `time` ; `tours` et `angle_deg` sont calculées (n =
+ω/2π = 25,146 tr/s, `constant/dynamicMeshDict:29`) pour raisonner en tours plutôt qu'en
+secondes.
+
+> **Rééchelonnement D (15/09, décision enseignant, INV-19)** : le brut solveur
+> (`postProcessing/propellerInfo1/`) porte encore `radius 0,1` (D=0,2 m, jamais réécrit — ce
+> serait réécrire une mesure) ; `J`/`K_T`/`10K_Q` ci-dessus sont corrigés par
+> `scripts/extraire_kit_donnees.py` (facteur calculé depuis le brut et
+> `docs/PARAMETRES_CAS.md`, jamais codé en dur — voir `docs/METHODO_DONNEES.md`).
+> `perf_<modèle>_D0.2.csv` (14/09) reste la trace figée d'avant correction, jamais régénérée.
 
 > **Les toutes premières lignes sont un transitoire de démarrage** ($K_T$ de plusieurs centaines
 > quand `URef` ≈ 0) : c'est normal, ça s'établit en quelques millisecondes. Fait partie de ce que
