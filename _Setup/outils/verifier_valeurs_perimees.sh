@@ -33,6 +33,9 @@ PATTERNS=(
     '60 ?%'
     '4,42'
     '82,7'
+    '0,0404'
+    '0,0373'
+    '0,0294'
 )
 
 # Citations historiques légitimes (LOT 2, consigne du 15/09) -- chaque entrée porte sa
@@ -94,6 +97,15 @@ EXCLUSIONS=(
     "Seances/S03_Arborescence-et-perspective_Slides.md:203"  # suite de la même note
     "Helice/docs/METHODO_DONNEES.md:22"  # "D=0,2 m au lieu de 0,227378 m" -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/METHODO_DONNEES.md:43"  # "K_T=0,3625/J=1,0270 ... au lieu de 0,2170/0,9007" -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:161"  # "remplace 0,0404/0,0373/0,0294 pré-rééchelonnement" -- corrigé le 15/09 (LOT B0bis)
+    "Helice/docs/ETAT-DES-LIEUX.md:45"    # "Corrigé le 15/09 : ce bloc citait encore 0,040407/..." -- historique déjà étiqueté
+    "Helice/docs/MATERIAU-INTRO_TD-Helice.md:134"  # "corrigé le 15/09, remplace 0,0404/0,0373/0,0294" -- LOT B0bis
+    "Helice/docs/09_FICHE_ENSEIGNANT.md:105"  # "corrigé le 15/09, remplace 0,0404/0,0373/0,0294" -- LOT B0bis
+    "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:55"  # "Corrigé le 15/09 : ce bloc citait encore 0,040407/..." -- historique déjà étiqueté
+    "Helice/docs/PARAMETRES_CAS.md:40"   # "remplace la valeur pré-rééchelonnement 0,0294 citée au 13/09" -- historique
+    "Helice/docs/PARAMETRES_CAS.md:41"   # "remplace 0,0373" -- historique
+    "Helice/docs/PARAMETRES_CAS.md:42"   # "remplace 0,0404" -- historique
+    "Seances/S02_Slides.md:150"  # "0,0294/0,0404/0,0373 pour l'amplitude) -- remplacées" -- historique déjà étiqueté
 )
 
 is_excluded() {
