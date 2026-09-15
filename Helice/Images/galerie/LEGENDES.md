@@ -152,6 +152,22 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   être calé sur les PERCENTILES du champ, pas sur une fraction fixe du maximum, sauf
   vérification préalable que le champ approche effectivement zéro.
 
+## series_KT_tours.png / series_10KQ_tours.png / series_eta0_tours.png
+
+- **Introduit (15/09, LOT A5, consigne « Ensemble »)** : K_T, 10·K_Q, η₀ en fonction des
+  TOURS (pas des secondes), trois fermetures de turbulence superposées. Transitoire
+  initial exclu (t<0,001 s, même filtre que `bilan_helice.py`), fenêtre commune et
+  dernier tour marqués, trou de données `kOmegaSST` (13,8 ms) marqué visiblement, moyenne
+  de chaque modèle sur la fenêtre commune en trait horizontal.
+- **Réserve amplitude** : les valeurs annotées (0,0176/0,0223/0,0242) sont les valeurs
+  COURANTES de `PARAMETRES_CAS.md` — PAS le rappel 0,0404/0,0373/0,0294 donné par la
+  consigne de cette boucle, qui reprenait sans le savoir des chiffres pré-rééchelonnement
+  déjà explicitement PÉRIMÉS depuis le 15/09 (voir JOURNAL).
+- **Généré par** : `_Setup/outils/tracer_series_temporelles.py` (matplotlib, lit
+  `Helice/data/perf_*.csv` déjà augmenté par `Helice/scripts/augmenter_tours_angle.py`
+  — aucun calcul CFD, arithmétique et lecture de CSV existants).
+- **Cas / modèle** : les trois cas (`case_kEpsilon`, `case_kOmegaSST`, `case_laminar`).
+
 ---
 
 ## Écarts signalés, non comblés (LOT 3)
