@@ -79,9 +79,10 @@ EXCLUSIONS=(
     "Helice/docs/ERRATUM.md:5"  # "(et non 75,44 Hz)" -- l'erratum EST la correction elle-même
     "Helice/docs/PARAMETRES_CAS.md:6"    # ce fichier explique lui-même pourquoi ces valeurs sont périmées
     "Helice/docs/PARAMETRES_CAS.md:7"    # idem
-    "Helice/docs/PARAMETRES_CAS.md:42"   # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier"
-    "Helice/docs/PARAMETRES_CAS.md:43"   # idem
-    "Helice/docs/PARAMETRES_CAS.md:44"   # idem
+    "Helice/docs/PARAMETRES_CAS.md:45"   # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout des trois lignes d'amplitude K_T)
+    "Helice/docs/PARAMETRES_CAS.md:46"   # idem
+    "Helice/docs/PARAMETRES_CAS.md:47"   # idem
+    "Seances/S02bis_Rattrapage-groupes-1-2_Slides.md:31"  # "codé en dur ... corrigé le 14/09" -- même contraste explicite que S02/S03
     "Seances/S03_Arborescence-et-perspective_Slides.md:138"  # "D était faux de 14 %" -- diapo sur le mécanisme d'erreur, au passé
     "Seances/S03_Arborescence-et-perspective_Slides.md:155"  # "Constantes héritées jamais mesurées" -- idem, diapo mécanismes
     "Seances/S03_Arborescence-et-perspective_Slides.md:158"  # "a circulé ... sans qu'aucun log ne soit jamais ouvert" -- rétractation
