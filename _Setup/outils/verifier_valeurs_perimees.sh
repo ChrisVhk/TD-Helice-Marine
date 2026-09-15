@@ -55,8 +55,8 @@ EXCLUSIONS=(
     "Helice/docs/MATERIAU-INTRO_TD-Helice.md:116"  # "Avant correction, l'argument reposait..." -- historique
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:65"   # "jusqu'au 14/09 ... corrigé le 14/09"
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:194"  # "portait D=0,2 m ... contre D=0,227 m"
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:218"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:235"  # "établi, contre 0,2 m codé en dur" -- contraste explicite
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:330"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09 (décalé le 15/09 par l'ajout de la partie 6)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:347"  # "établi, contre 0,2 m codé en dur" -- contraste explicite (décalé le 15/09)
     "Helice/docs/PLAN_SEANCE-3.md:87"   # "faux, corrigé le 13/09"
     "Helice/docs/PLAN_SEANCE-3.md:95"   # "Écart avec la documentation existante (D=0,2m)... " -- signalé comme écart, pas comme fait
     "Helice/docs/PLAN_SEANCE-3.md:104"  # même paragraphe que 95, suivi de l'arbitrage rendu (ligne 110)
@@ -79,10 +79,10 @@ EXCLUSIONS=(
     "Helice/docs/ERRATUM.md:5"  # "(et non 75,44 Hz)" -- l'erratum EST la correction elle-même
     "Helice/docs/PARAMETRES_CAS.md:6"    # ce fichier explique lui-même pourquoi ces valeurs sont périmées
     "Helice/docs/PARAMETRES_CAS.md:7"    # idem
-    "Helice/docs/PARAMETRES_CAS.md:45"   # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout des trois lignes d'amplitude K_T)
-    "Helice/docs/PARAMETRES_CAS.md:46"   # idem
-    "Helice/docs/PARAMETRES_CAS.md:47"   # idem
-    "Seances/S02bis_Rattrapage-groupes-1-2_Slides.md:31"  # "codé en dur ... corrigé le 14/09" -- même contraste explicite que S02/S03
+    "Helice/docs/PARAMETRES_CAS.md:71"   # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout du bloc LOT 2 coût/pas-tour)
+    "Helice/docs/PARAMETRES_CAS.md:72"   # idem
+    "Helice/docs/PARAMETRES_CAS.md:73"   # idem
+    "Seances/S02_Slides.md:57"  # "codé en dur ... corrigé le 14/09" -- bloc rattrapage fusionné le 15/09 (LOT 3), même contraste explicite que S02/S03, ex-S02bis_Rattrapage:31
     "Seances/S03_Arborescence-et-perspective_Slides.md:138"  # "D était faux de 14 %" -- diapo sur le mécanisme d'erreur, au passé
     "Seances/S03_Arborescence-et-perspective_Slides.md:155"  # "Constantes héritées jamais mesurées" -- idem, diapo mécanismes
     "Seances/S03_Arborescence-et-perspective_Slides.md:158"  # "a circulé ... sans qu'aucun log ne soit jamais ouvert" -- rétractation

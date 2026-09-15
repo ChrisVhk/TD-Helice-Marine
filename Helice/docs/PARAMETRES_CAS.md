@@ -40,6 +40,32 @@ la géométrie et le maillage à couches, précisé colonne « Fichier · ligne 
 | Amplitude crête à crête K_T, fenêtre commune [0,022032;0,06] s (kEpsilon) | 0,0176 | — | `Helice/data/perf_kEpsilon.csv`, max−min sur la fenêtre (recalculé le 15/09 sur les données rééchelonnées le 14/09 — remplace la valeur pré-rééchelonnement 0,0294 citée au 13/09) | 15/09 |
 | Amplitude crête à crête K_T, même fenêtre (kOmegaSST) | 0,0223 | — | `Helice/data/perf_kOmegaSST.csv`, même méthode (remplace 0,0373) | 15/09 |
 | Amplitude crête à crête K_T, même fenêtre (laminar) | 0,0242 | — | `Helice/data/perf_laminar.csv`, même méthode (remplace 0,0404) | 15/09 |
+| Pas de temps naturel (sans couches) | 3,23e-5 | s | `case_kEpsilon` (`adjustTimeStep`, pas observé en régime établi) — voir `_Methodo/JOURNAL.md`, 13/09 « Pas fixe assumé » | 15/09 |
+| Période de rotation (=1/n) | 0,03977 | s | calculé depuis n=25,15 tr/s ci-dessus | 15/09 |
+| Pas par tour, pas naturel (=période/pas naturel) | 1231 | pas/tour | calculé (0,03977/3,23e-5) — **JUSTE**, les deux termes sont indépendamment sourcés dans ce tableau | 15/09 |
+| Pas par tour, pas fixe production (1e-5 s) | 3977 | pas/tour | calculé (0,03977/1e-5) — régime `§4` envisagé, jamais arbitré | 15/09 |
+| Coût par pas, 4 rangs, sans couches (référence banc S) | 150,67 / 50 = 3,013 | s/pas | `case_kEpsilon_layers/_bench_logs/S_log.pimpleFoam.bench4` (Case=`case_kEpsilon_bench`), dernière `ExecutionTime`, 50 pas | 15/09 |
+| Débit, 4 rangs, sans couches | 19,9 | pas/min | idem, 50 pas/150,67 s × 60 | 15/09 |
+| Débit, 8 rangs, sans couches | 34,5 | pas/min | `.../_bench_logs/S_log.pimpleFoam.bench8`, 50 pas/87,06 s × 60 | 15/09 |
+| Débit, 16 rangs, sans couches | 39,6 | pas/min | `.../_bench_logs/S_log.pimpleFoam.bench16`, 50 pas/75,69 s × 60 | 15/09 |
+| S, accélération 4→16 rangs, sans couches | 1,97 | — | `_Methodo/JOURNAL.md`, 13/09 « LOT N (reprise) » : 152,73/77,35 s pour 50 pas — **rang de référence : 4→16, PAS 4→8** | 15/09 |
+| Débit, 4/8/16 rangs, AVEC couches | 17,2 / 27,8 / 32,8 | pas/min | `case_kEpsilon_layers/log.pimpleFoam.bench{4,8,16}`, dernière `ExecutionTime` (174,68 / 107,87 / 91,55 s), 50 pas chacun | 15/09 |
+
+**LOT 2a — écart de 19 % sur le pas/tour de référence, ÉCART OUVERT** : la formule de
+coût `T_total(N) = N × (4464/S) × (3+2M)` (`_Methodo/JOURNAL.md`, 13/09) utilise une
+référence « 4464 s/tour » qui, divisée par le coût mesuré 3,0546 s/pas (4 rangs, sans
+couches), implique **1461 pas/tour** — alors que le pas/tour calculé directement depuis
+le pas naturel mesuré (3,23e-5 s) et la période de rotation vérifiée (0,03977 s, depuis
+n=25,15 tr/s) donne **1231 pas/tour**, un écart de 19 %. **1231 est la valeur JUSTE** :
+ses deux termes (pas naturel, période) sont chacun indépendamment sourcés dans ce
+tableau. **L'origine de 1461 (et donc de « 4464 s/tour ») reste OUVERTE** : elle est
+citée comme « référence du matin » dans le JOURNAL du 13/09 sans que son calcul
+intermédiaire n'y soit reproduit, et aucun log de ce dépôt ne permet de la reconstruire
+avec certitude — hypothèse la plus probable, non vérifiée : un pas ou une période
+antérieurs, jamais recorrigés après l'établissement de n=25,15 tr/s. **Conséquence
+pratique** : tout `T_total(N)` calculé avec 4464 sous-estime probablement le coût réel
+par tour d'environ 19 % si le régime de pas fixe de production utilise effectivement le
+pas naturel comme référence de coût par pas.
 
 **Valeurs explicitement PÉRIMÉES, à ne jamais recopier** (voir LOT 2 du rapport de
 boucle pour le détail par document) : Z=3 (tripale) ; D=0,2 m / `radius 0.1` ; K_T=0,3625
