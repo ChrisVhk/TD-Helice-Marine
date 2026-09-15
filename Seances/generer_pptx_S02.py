@@ -131,12 +131,27 @@ _WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
 # ---- Parsing de <STEM>_Slides.md --------------------------------------------------------------------
 
-def parse_slides(path):
+_RATTRAPAGE_RE = re.compile(
+    r"<!-- RATTRAPAGE G1-G2 -->.*?<!-- FIN RATTRAPAGE -->\n?", re.DOTALL
+)
+
+def strip_rattrapage(text):
+    """Retire le bloc rattrapage groupes 1-2 (fusionné le 15/09, LOT 3) marqué par
+    `<!-- RATTRAPAGE G1-G2 -->` ... `<!-- FIN RATTRAPAGE -->`. Utilisé pour que
+    S02.pptx (canonique) reste la séance telle que le groupe 3 l'a reçue ; la variante
+    « groupes 1-2 » (avec ce bloc) est produite séparément par
+    `_Setup/outils/generer_variantes_deck.py`, qui réutilise `parse_slides` ci-dessous
+    avec `keep_rattrapage=True` plutôt que dupliquer le parseur."""
+    return _RATTRAPAGE_RE.sub("", text)
+
+def parse_slides(path, keep_rattrapage=False):
     """Découpe le fichier Slides.md en une liste de dicts {title, disposition, body, figures,
     credit, notes, ...}. Un bloc de diapo commence à '## Diapo <N> — <titre>' et se termine au
     '---' suivant (ou à la fin)."""
     with open(path, encoding="utf-8") as f:
         text = f.read()
+    if not keep_rattrapage:
+        text = strip_rattrapage(text)
 
     blocks = re.split(r"\n## Diapo \d+ — ", text)[1:]  # jette le préambule avant la 1re diapo
     slides = []

@@ -24,6 +24,86 @@ en séance : le calcul est un fait acquis depuis la séance 1.
 
 ---
 
+<!-- RATTRAPAGE G1-G2 -->
+**Bloc rattrapage — groupes 1 et 2 uniquement (décision enseignant, 15/09, équité).**
+Fusionné depuis `Seances/S02bis_Rattrapage-groupes-1-2_Slides.md` (LOT 3, consigne du
+15/09, source unique/deux sorties) — les groupes 1 et 2 ont passé leur séance 2 avant
+la correction de D/y⁺ ; ce bloc leur donne, en ouverture, ce que le groupe 3 a reçu
+directement dans la suite du deck. Numérotation volontairement hors séquence (90-93)
+pour ne jamais entrer en conflit avec la numérotation 0-7 de la séance 2, citée ailleurs
+dans le dépôt (`Helice/docs/ETAT-DES-LIEUX.md`, `_Methodo/JOURNAL.md`). Les deux
+variantes (avec/sans ce bloc) sont produites par
+`_Setup/outils/generer_variantes_deck.py` depuis cette source unique.
+
+## Diapo 90 — Titre (rattrapage)
+**Disposition** : Couverture
+
+**Contenu affiché** :
+Rattrapage — ce que le groupe 3 a eu en séance 2
+Trois points à mettre à jour avant de commencer la séance 3
+
+**Notes d'orateur** :
+À passer en 5 minutes en ouverture de séance 3, pour les groupes 1 et 2 uniquement.
+Pas de nouvelle matière : une mise à jour de chiffres déjà vus, plus un point
+théorique qui a été ajouté après leur passage.
+
+---
+
+## Diapo 91 — Les chiffres ont changé (rattrapage)
+**Disposition** : Corps
+
+**Contenu affiché** :
+Les chiffres ont changé
+- D était codé en dur à 0,2 m — mesuré et corrigé le 14/09 : D = 0,227378 m.
+- K_T, 10K_Q ont été rééchelonnés en conséquence (facteur D⁴ et D⁵) : les valeurs que vous avez comparées en séance 2 ne sont plus les bonnes valeurs absolues.
+- η₀ (le rendement) n'a PAS changé — c'est la seule grandeur mathématiquement invariante à cette correction, et c'est pour ça que rien ne vous a alertés en séance 2.
+- Source unique désormais pour tout chiffre du cas : Helice/docs/PARAMETRES_CAS.md.
+
+**Notes d'orateur** :
+Ce n'est pas une remise en cause de votre travail de séance 2 : la LEÇON de la
+diapositive « les deux nombres à mettre côte à côte » (l'oscillation domine l'écart
+entre modèles) reste entièrement valable — elle est invariante au rééchelonnement,
+comme η₀. Seuls les chiffres absolus de K_T et 10K_Q changent. Détail dans
+`Helice/docs/PARAMETRES_CAS.md` et `_Methodo/JOURNAL.md` (entrée du 14/09).
+
+---
+
+## Diapo 92 — Ce que le maillage doit encore résoudre : y⁺ (rattrapage)
+**Disposition** : Figure
+
+**Contenu affiché** :
+Ce que le maillage doit encore résoudre : y⁺
+
+**Figure(s)** :
+`Helice/Images/galerie/06b_couches_epaisseurs.png`
+
+**Notes d'orateur** :
+Point ajouté après votre séance 2 (théorie complète : `Helice/docs/
+03_BASE_THEORIQUE.md` §4). Couches de prismes demandées contre couches réellement
+obtenues (moyenne mesurée, 3,71/6 sur `propellerTip`, 76,8 %) — le maillage ne fait
+pas ce qu'on lui demande partout. Détail en séance 3
+(`Seances/S03_Arborescence-et-perspective_Slides.md`).
+
+---
+
+## Diapo 93 — Origine de l'oscillation : l'état réel (rattrapage)
+**Disposition** : Corps
+
+**Contenu affiché** :
+Origine de l'oscillation : l'état réel
+- En séance 2, l'origine de l'oscillation à 4× la fréquence de rotation était laissée ouverte à l'oral.
+- État réel (non résolu) : deux mécanismes distincts prédisent EXACTEMENT la même fréquence — le passage de pale (Z=4) et la symétrie d'ordre 4 du fond cartésien (interface AMI).
+- Le test qui les distinguerait — tourner le fond de 45° et relancer — n'a PAS été fait.
+- Ce n'est pas une case à cocher qui manque : c'est une incertitude assumée et documentée (Helice/docs/ETAT-DES-LIEUX.md).
+
+**Notes d'orateur** :
+Même contenu que celui donné au groupe 3 en séance 2 (diapo « les deux nombres à
+mettre côte à côte »). Insister : documenter une incertitude n'est pas un échec du
+TD, c'est l'objet même de la démarche scientifique qu'il enseigne.
+
+---
+<!-- FIN RATTRAPAGE -->
+
 ## Diapo 1 — Progression : trois séances, un seul calcul
 **Disposition** : Progression
 **Segment / timing** : transition
@@ -160,7 +240,29 @@ entier.
 
 ---
 
-## Diapo 7 — Clôture
+## Diapo 7 — La pale est un baffle, pas un volume
+**Disposition** : Corps
+**Segment / timing** : Bilan (2 h)
+
+**Contenu affiché** :
+La pale est un baffle, pas un volume
+- `log.snappyHexMesh` le dit explicitement : « Converting baffles back into zoned faces ».
+- Un baffle est une surface d'épaisseur nulle, dupliquée en deux patches coïncidents (intrados, extrados) — pas un solide creusé dans le maillage fluide.
+- Conséquence : « la pression sur la pale » désigne deux faces coïncidentes de normales opposées, jamais une seule surface.
+- C'est pour ça que séparer intrados/extrados PAR ORIENTATION DE LA NORMALE est la méthode correcte — et la seule possible ici.
+
+**Notes d'orateur** :
+Trouvé le 15/09 en tentant un rendu (5e essai) d'une coupe cylindrique du maillage : la
+coupe ne pouvait montrer aucun trou en forme de pale, à aucun rayon testé — l'écart
+angulaire entre cellules fluides voisines (2,39°-4,09°) est celui d'une cellule de
+cœur normale, pas d'un vide de la taille de la pale. Quatre tentatives d'image
+antérieures avaient corrigé des symptômes de rendu sans jamais vérifier cette
+prémisse. Détail théorique complet : `Helice/docs/03_BASE_THEORIQUE.md`, section
+« La pale est un baffle, pas un volume » (juste après le §4 y⁺).
+
+---
+
+## Diapo 8 — Clôture
 **Disposition** : Cloture
 **Segment / timing** : Bilan (2 h)
 
