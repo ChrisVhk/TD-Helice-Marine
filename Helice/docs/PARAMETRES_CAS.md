@@ -50,22 +50,58 @@ la géométrie et le maillage à couches, précisé colonne « Fichier · ligne 
 | Débit, 16 rangs, sans couches | 39,6 | pas/min | `.../_bench_logs/S_log.pimpleFoam.bench16`, 50 pas/75,69 s × 60 | 15/09 |
 | S, accélération 4→16 rangs, sans couches | 1,97 | — | `_Methodo/JOURNAL.md`, 13/09 « LOT N (reprise) » : 152,73/77,35 s pour 50 pas — **rang de référence : 4→16, PAS 4→8** | 15/09 |
 | Débit, 4/8/16 rangs, AVEC couches | 17,2 / 27,8 / 32,8 | pas/min | `case_kEpsilon_layers/log.pimpleFoam.bench{4,8,16}`, dernière `ExecutionTime` (174,68 / 107,87 / 91,55 s), 50 pas chacun | 15/09 |
+| n, précision oméga/2π (pour tours/angle, LOT A3) | 25,146 | tr/s | calculé (`constant/dynamicMeshDict:29`, ω=158 rad/s, n=ω/2π) — plus précis que le n=25,15 arrondi ci-dessus, utilisé pour convertir temps→tours dans `data/perf_*.csv` | 15/09 |
+| Lignes de données, `perf_kEpsilon.csv` (1 seul segment, jamais repris) | 1853 | lignes | `Helice/data/perf_kEpsilon.csv` (`wc -l` moins l'en-tête) | 15/09 |
+| Tours couverts à t=0,06 s (=0,06×25,146) | 1,509 | tours | calculé depuis n=25,146 ci-dessus | 15/09 |
+| Pas par tour, mesuré directement sur le CSV (=1853/1,509) | 1228 | pas/tour | calculé, `Helice/data/perf_kEpsilon.csv` — **confirme indépendamment** la ligne « pas naturel » ci-dessous (deuxième méthode, deux sources primaires distinctes) | 15/09 |
+| Trou de données, `perf_kOmegaSST.csv` (segment repris) | 0,0138388 | s | `Helice/data/perf_kOmegaSST.csv`, saut entre 0,00819355 s et 0,0220323 s (`postProcessing/propellerInfo1/0/` s'arrête, `/0.022/` reprend) | 15/09 |
 
-**LOT 2a — écart de 19 % sur le pas/tour de référence, ÉCART OUVERT** : la formule de
-coût `T_total(N) = N × (4464/S) × (3+2M)` (`_Methodo/JOURNAL.md`, 13/09) utilise une
+**LOT A1 — chaîne solveur→figure, maillon cassé identifié (15/09)** : `system/
+propellerInfo` (functionObject natif, colonnes `Time n URef J KT 10*KQ eta0`, UNE
+LIGNE PAR PAS DE TEMPS — confirmé : 1853 lignes pour seulement 62 répertoires
+d'écriture) écrit `postProcessing/propellerInfo1/<segment>/propellerPerformance.dat`.
+**Ce fichier brut, sur les trois cas, est resté au stade PRÉ-correction de D** (D=0,2 m,
+`radius 0.1` — vérifié : J/K_T/10K_Q du fichier brut valent respectivement le J/K_T/10K_Q
+de `data/perf_*.csv` divisés exactement par (0,2/0,227378)¹ᐟ⁴ᐟ⁵, aux trois modèles). Le
+script `Helice/scripts/extraire_kit_donnees.py --csv` (via `compare_turbulence.
+find_performance_files`/`read_rows`) **copie ces colonnes SANS AUCUN rééchelonnement** —
+relancé aujourd'hui tel quel, il écraserait `data/perf_*.csv` avec les valeurs PÉRIMÉES
+(vérifié par exécution arithmétique directe des deux fonctions, aucun fichier modifié).
+`data/perf_*.csv`, TELS QU'ILS SONT SUR CE DISQUE, portent bien le rééchelonnement
+correct — mais AUCUN script actuellement dans ce dépôt ne documente ni ne reproduit ce
+rééchelonnement : c'est une correction arithmétique déjà appliquée hors dépôt, jamais
+capturée en code. **Même maillon cassé pour `Results/bilan_helice.txt` et les deux
+.png** : `Helice/scripts/bilan_helice.py` lit directement `postProcessing/propellerInfo1/
+*/propellerPerformance.dat` (le brut périmé), PAS `data/perf_*.csv` — vérifié par
+exécution arithmétique de `average_last_revolution()` sur le brut (donne K_T=0,3625,
+J=1,0270 pour kEpsilon, les valeurs PÉRIMÉES) contre la même fonction appliquée à
+`data/perf_kEpsilon.csv` (donne K_T=0,2170, J=0,9007 — reproduit EXACTEMENT
+`Results/bilan_helice.txt` actuel). **Conclusion : `bilan_helice.py`, SI RELANCÉ
+AUJOURD'HUI, régénérerait un `bilan_helice.txt` et deux .png PÉRIMÉS** — le script est
+trouvé, mais il n'est PAS reproductible en l'état contre les valeurs établies dans ce
+tableau. Ne jamais le relancer sans d'abord le corriger pour lire `data/perf_*.csv` au
+lieu du brut `postProcessing/`.
+
+**LOT 2a — pas/tour du modèle de coût, 1228-1231 CONFIRMÉ par deux méthodes
+indépendantes, 1461/4464 CONTREDIT PAR LES DONNÉES** : la formule de coût
+`T_total(N) = N × (4464/S) × (3+2M)` (`_Methodo/JOURNAL.md`, 13/09) utilise une
 référence « 4464 s/tour » qui, divisée par le coût mesuré 3,0546 s/pas (4 rangs, sans
-couches), implique **1461 pas/tour** — alors que le pas/tour calculé directement depuis
-le pas naturel mesuré (3,23e-5 s) et la période de rotation vérifiée (0,03977 s, depuis
-n=25,15 tr/s) donne **1231 pas/tour**, un écart de 19 %. **1231 est la valeur JUSTE** :
-ses deux termes (pas naturel, période) sont chacun indépendamment sourcés dans ce
-tableau. **L'origine de 1461 (et donc de « 4464 s/tour ») reste OUVERTE** : elle est
-citée comme « référence du matin » dans le JOURNAL du 13/09 sans que son calcul
-intermédiaire n'y soit reproduit, et aucun log de ce dépôt ne permet de la reconstruire
-avec certitude — hypothèse la plus probable, non vérifiée : un pas ou une période
-antérieurs, jamais recorrigés après l'établissement de n=25,15 tr/s. **Conséquence
-pratique** : tout `T_total(N)` calculé avec 4464 sous-estime probablement le coût réel
-par tour d'environ 19 % si le régime de pas fixe de production utilise effectivement le
-pas naturel comme référence de coût par pas.
+couches), implique **1461 pas/tour**. Deux méthodes indépendantes contredisent ce
+chiffre : (1) pas naturel mesuré (3,23e-5 s) ÷ période de rotation (0,03977 s, depuis
+n=25,15 tr/s) = **1231 pas/tour** ; (2) lecture directe du CSV — 1853 lignes de données
+pour 1,509 tour couverts (t=0,06 s × n=25,146) = **1228 pas/tour**, une mesure PRIMAIRE,
+pas un calcul dérivé. Les deux méthodes s'accordent à moins de 0,3 % l'une de l'autre et
+CONTREDISENT 1461 de 19 %. **1228-1231 est désormais positivement établi, pas seulement
+probable.** Le terme `3,0546 s/pas` lui-même est vérifié légitime : il mesure un coût de
+calcul PAR PAS ÉLÉMENTAIRE (4 rangs, sans couches) à PAS FIXE (banc `S_4 du matin`,
+152,73 s/50 pas) — une mesure de coût de calcul pur, indépendante du régime de pas
+(adaptatif ou fixe) réellement utilisé en production ; ce n'est ni un coût par pas
+naturel ni un coût par pas de production 1e-5 s, et rien n'indique qu'il soit lui-même
+faux. **L'erreur est en aval** : `4464 = 1461 × 3,0546` utilise un pas/tour de 1461 que
+plus aucune donnée primaire ne soutient. **L'origine exacte du calcul ayant produit
+1461/4464 reste NON RETRACÉE** dans le JOURNAL accessible — mais son inexactitude n'est
+plus une simple suspicion. **Conséquence pratique inchangée** : tout `T_total(N)` calculé
+avec 4464 s'appuie sur un pas/tour non soutenu par les données ; utiliser 1228-1231.
 
 **Valeurs explicitement PÉRIMÉES, à ne jamais recopier** (voir LOT 2 du rapport de
 boucle pour le détail par document) : Z=3 (tripale) ; D=0,2 m / `radius 0.1` ; K_T=0,3625

@@ -79,9 +79,12 @@ EXCLUSIONS=(
     "Helice/docs/ERRATUM.md:5"  # "(et non 75,44 Hz)" -- l'erratum EST la correction elle-même
     "Helice/docs/PARAMETRES_CAS.md:6"    # ce fichier explique lui-même pourquoi ces valeurs sont périmées
     "Helice/docs/PARAMETRES_CAS.md:7"    # idem
-    "Helice/docs/PARAMETRES_CAS.md:71"   # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout du bloc LOT 2 coût/pas-tour)
-    "Helice/docs/PARAMETRES_CAS.md:72"   # idem
-    "Helice/docs/PARAMETRES_CAS.md:73"   # idem
+    "Helice/docs/PARAMETRES_CAS.md:63"   # "reste au stade PRÉ-correction de D (D=0,2 m..." -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/PARAMETRES_CAS.md:64"   # "radius 0.1 -- vérifié" -- suite du même contraste
+    "Helice/docs/PARAMETRES_CAS.md:76"   # "donne K_T=0,3625 ... les valeurs PÉRIMÉES" -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/PARAMETRES_CAS.md:107"  # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 15/09 par l'ajout des blocs LOT A1/A2)
+    "Helice/docs/PARAMETRES_CAS.md:108"  # idem
+    "Helice/docs/PARAMETRES_CAS.md:109"  # idem
     "Seances/S02_Slides.md:57"  # "codé en dur ... corrigé le 14/09" -- bloc rattrapage fusionné le 15/09 (LOT 3), même contraste explicite que S02/S03, ex-S02bis_Rattrapage:31
     "Seances/S03_Arborescence-et-perspective_Slides.md:138"  # "D était faux de 14 %" -- diapo sur le mécanisme d'erreur, au passé
     "Seances/S03_Arborescence-et-perspective_Slides.md:155"  # "Constantes héritées jamais mesurées" -- idem, diapo mécanismes
@@ -89,6 +92,8 @@ EXCLUSIONS=(
     "Seances/S03_Arborescence-et-perspective_Slides.md:162"  # notes d'orateur, même rétractation sourcée JOURNAL
     "Seances/S03_Arborescence-et-perspective_Slides.md:202"  # "Écart signalé : ... citent encore « 4,42 »" -- signale l'écart, ne le recopie pas comme fait
     "Seances/S03_Arborescence-et-perspective_Slides.md:203"  # suite de la même note
+    "Helice/docs/METHODO_DONNEES.md:22"  # "D=0,2 m au lieu de 0,227378 m" -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/METHODO_DONNEES.md:43"  # "K_T=0,3625/J=1,0270 ... au lieu de 0,2170/0,9007" -- contraste explicite, LOT A1 du 15/09
 )
 
 is_excluded() {
