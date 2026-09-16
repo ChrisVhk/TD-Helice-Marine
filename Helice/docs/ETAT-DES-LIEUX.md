@@ -104,12 +104,14 @@ venait de la symétrie du fond.
 
 ### y+ du maillage À COUCHES, à convergence
 **Énoncé** : le y+ réel du maillage AVEC couches de prismes (`case_kEpsilon_layers`), à
-convergence, n'a JAMAIS été mesuré.
+convergence, n'a JAMAIS été mesuré. **Une seconde mesure existe désormais (16/09),
+huit fois plus loin que la première — TOUJOURS PAS À CONVERGENCE, à étiqueter comme
+telle systématiquement.**
 
-**Trancherait** : relancer ce cas jusqu'à ~200 pas de temps supplémentaires (budget disque
-et temps non arbitrés à ce jour, voir `_Methodo/DEFAUTS_ENVIRONNEMENT.md` §précondition
-budget) puis répéter la mesure `pimpleFoam -postProcess -func yPlus` + pondération par
-l'aire, comme fait le 14/09 sur le cas sans couches.
+**Trancherait** : relancer au-delà de 200 pas (plusieurs tours complets, budget disque
+et temps à arbitrer, voir `_Methodo/DEFAUTS_ENVIRONNEMENT.md` §précondition budget) et
+répéter la même mesure jusqu'à ce que la fraction se stabilise d'un relevé à l'autre —
+ce qui n'a pas été tenté ici (hors périmètre du 16/09, borné à 200 pas).
 
 ### Les couches de prismes améliorent-elles quoi que ce soit
 **Énoncé** : non démontré — aucune comparaison chiffrée avec/sans couches n'existe sur ce
@@ -120,19 +122,24 @@ dépôt (K_T, K_Q, η₀, y+ à convergence).
 
 ### Convergence en maillage
 **Énoncé** : jamais faite sur ce dépôt — aucun des chiffres absolus publiés (K_T, K_Q, η₀,
-y+) ne porte de barre d'erreur liée au maillage.
+y+) ne porte de barre d'erreur liée au maillage. **C'est la lacune la plus lourde du TD,
+désormais CHIFFRÉE (16/09, LOT D3) sans être lancée.**
 
-**Trancherait** : au moins deux maillages supplémentaires (facteur ~0,7× et ~1,4× en
-taille de cellule caractéristique), même cas, même modèle de turbulence, comparaison des
-K_T/K_Q/η₀ obtenus.
+**Trancherait** : purger ou déplacer une partie du disque hôte, ou revoir la durée visée
+(moins de 1,509 tour réduirait le volume proportionnellement), puis reprendre ce
+dimensionnement avant toute construction réelle.
 
 ### Pas de temps rendant `§4` faisable
 **Énoncé** : le régime de pas de temps qui rendrait `§4` (les cinq cas prévus) faisable
-dans le budget disque disponible n'a jamais été testé — seule une borne inférieure est
-posée : dt ≥ 2,06.10⁻⁵ s.
+dans le budget disque disponible n'a jamais été testé — seule une borne inférieure était
+posée : dt ≥ 2,06.10⁻⁵ s. **PARTIELLEMENT TRANCHÉ le 16/09 (LOT D1)** : dt=2e-5 s
+mesuré stable (200 pas, `case_kEpsilon_layers`, 4 rangs) — au-dessus de la borne, mais
+dt=2,5e-5 s diverge (FPE), donc la marge au-dessus de 2e-5 s reste étroite et non
+cartographiée finement (rien entre 2e-5 et 2,5e-5 n'a été testé).
 
-**Trancherait** : lancer un cas au pas fixe candidat pendant une fraction du temps prévu et
-mesurer le volume écrit réel, avant d'arbitrer `§4` en entier.
+**Trancherait** : mesurer le volume RÉEL écrit par un cas complet au pas 2e-5 s retenu
+(pas seulement 200 pas exploratoires) avant d'arbitrer `§4` en entier — non fait ici,
+hors périmètre du 16/09 (borné à 200 pas/essai, aucune production).
 
 ### P/D et rapport de surface (EAR)
 **Énoncé** : P/D = 1,21 ± 4 % (dispersion inter-rayons mesurée, pas une incertitude

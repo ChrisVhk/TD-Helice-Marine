@@ -225,7 +225,7 @@ et « ρ » d'`ETAT-DES-LIEUX.md` §ÉTABLI.
 **Pas de temps & Courant** (`system/controlDict:27 deltaT`, `:47 adjustTimeStep`, `:49 maxCo`)
 | Coût | Précision |
 |---|---|
-| Un pas fixe plus petit que le pas naturel (3,23e-5 s) multiplie le nombre de pas par tour d'autant — 1e-5 s donne ~3977 pas/tour contre ~1231 au pas naturel, soit ×3,2 (`PARAMETRES_CAS.md`, LOT 2a). | Contre-intuitif (§6.3) : un pas plus fin n'est pas toujours plus stable — `case_kEpsilon_layers` avec `adjustTimeStep yes; maxCo 2` (réglage naturellement adaptatif) DIVERGE en 6-9 pas, alors que le même réglage tourne sans incident sur le maillage sans couches (`_Methodo/JOURNAL.md`, 13/09). |
+| Un pas fixe plus petit que le pas naturel (3,23e-5 s) multiplie le nombre de pas par tour d'autant — 1e-5 s donne ~3977 pas/tour contre ~1231 au pas naturel, soit ×3,2 (`PARAMETRES_CAS.md`, LOT 2a). **Mesuré le 16/09** (`case_kEpsilon_layers`, 200 pas, 4 rangs) : coût 3,1507 s/pas à 1e-5 s contre **4,6624 s/pas à 2e-5 s** — un pas 2× plus gros coûte 48 % plus cher À L'UNITÉ, mais divise le nombre de pas par tour par deux : net, le coût PAR TOUR baisse de 26 % (12530→9269 s/tour, `PARAMETRES_CAS.md`, LOT D1). | Contre-intuitif (§6.3) : un pas plus fin n'est pas toujours plus stable — `case_kEpsilon_layers` avec `adjustTimeStep yes; maxCo 2` (réglage naturellement adaptatif) DIVERGE en 6-9 pas, alors que le même réglage tourne sans incident sur le maillage sans couches (`_Methodo/JOURNAL.md`, 13/09). **Le pas fixe retenu le 16/09 est 2e-5 s** : 2,5e-5 s diverge aussi (Courant explose de 1,09 à 5e70 entre les pas 48 et 55, FPE), 1e-5 s reste le seul autre point vérifié stable — la marge de manœuvre est étroite (`PARAMETRES_CAS.md`, LOT D1). |
 
 **Durée & nombre de tours** (`system/controlDict:25 endTime`, période = 1/n = 0,03977 s)
 | Coût | Précision |
@@ -271,17 +271,21 @@ mêmes réglages.
   de sous-estimer le coût réel par tour d'environ 19 %** si la production tourne au
   pas naturel de référence — à garder en tête, pas à corriger silencieusement.
 
-**Exemple chiffré** (reproduit tel quel depuis le JOURNAL du 13/09, M mesuré proprement
-à pas fixe 1e-5 s, 4 rangs) :
+**Exemple chiffré, MIS À JOUR le 16/09** (le pas fixe stable pour `case_kEpsilon_layers`
+est désormais 2e-5 s, pas 1e-5 s — voir §6.1 et `PARAMETRES_CAS.md`, LOT D1) :
 ```
-M = 3,1507 / 3,0546 = 1,031        (coût par pas, couches/sans couches, 4 rangs, même dt)
+Coût/tour couches à 2e-5 s = 1988,35 pas/tour × 4,6624 s/pas = 9269 s/tour
+Coût/tour sans couches à 1e-5 s (référence 13/09, inchangée) = 3977 × 3,0546 = 12147 s/tour
+M = 9269 / 12147 = 0,763            (remplace 1,031 — voir la mise en garde ci-dessous)
 S = 1,97                            (accélération 4→16 rangs, sans couches)
-T_total(N) = N × (4464/1,97) × (3+2×1,031) = N × 2266,5 × 5,063 ≈ N × 11475 s
-N=6 → 68851 s = 19,13 h
+T_total(N) = N × (4464/1,97) × (3+2×0,763) = N × 2266,5 × 4,526 ≈ N × 10263 s
+N=7 → 71838 s = 19,96 h   (remplace N=6)
 ```
-**Réserve reproduite avec l'exemple** : ce M est un coût PAR PAS, mesuré à pas fixe
-identique des deux côtés — il ne capture pas le surcoût de passer, en production, à un
-pas plus fin que le pas naturel de référence (c'est exactement l'écart de 19 % ci-dessus).
+**M=1,031 et N=6 (13/09) sont CADUCS.** Ils avaient été mesurés au SEUL pas fixe connu
+stable à l'époque (1e-5 s) — le pas fixe retenu aujourd'hui est plus grand (2e-5 s,
+§6.1), ce qui change le coût par tour du côté « couches » de la comparaison. **Réserve
+inchangée** : ce recalcul utilise toujours la référence `4464 s/tour`, dont l'écart de
+19 % avec le pas/tour vérifié (ci-dessus) reste ouvert.
 
 **DISQUE (INV-23, `_Methodo/INVARIANTS.md`)** — indépendant du temps mural, souvent le
 facteur bloquant en premier :
@@ -310,6 +314,12 @@ ou déplacer la sortie, jamais lancer « pour voir ».
   couches, mêmes réglages, tourne des heures sans incident (`_Methodo/JOURNAL.md`, 13/09).
 - **Le pas fixe de production coûte 3,2× plus de pas par tour** que le pas naturel :
   1e-5 s → ~3977 pas/tour, contre ~1231 au pas naturel 3,23e-5 s (`PARAMETRES_CAS.md`).
+- **Un pas fixe seulement 2,5× le pas de référence stable suffit à diverger.** Sur
+  `case_kEpsilon_layers` (16/09, 4 rangs) : deltaT=2e-5 s tient 200 pas sans incident
+  (Courant max 2,00) ; deltaT=2,5e-5 s (25 % plus grand) fait exploser le Courant de
+  1,09 à 5×10⁷⁰ en 7 pas (t=0,0012 à 0,001375 s) et plante en FPE dans le solveur de
+  pression — la marge entre « stable » et « diverge » n'est pas large, et n'est pas
+  linéaire en deltaT (`PARAMETRES_CAS.md`, LOT D1).
 
 ### 6.4 Exercice de prédiction, sans machine
 

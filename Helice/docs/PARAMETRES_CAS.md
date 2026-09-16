@@ -103,9 +103,46 @@ plus aucune donnée primaire ne soutient. **L'origine exacte du calcul ayant pro
 plus une simple suspicion. **Conséquence pratique inchangée** : tout `T_total(N)` calculé
 avec 4464 s'appuie sur un pas/tour non soutenu par les données ; utiliser 1228-1231.
 
+**LOT D1 (16/09) — pas fixe retenu pour `case_kEpsilon_layers` : 2e-5 s, M et N
+recalculés, 1,031/6 CADUCS.** Trois essais bornés (200 pas, 4 rangs, maillage
+`case_kEpsilon_layers` déjà construit, rampe 5 ms conservée), `controlDict` sauvegardé
+et restauré (vérifié par `diff`/`md5sum` après chaque essai) :
+
+| Essai | deltaT | Pas franchis | Courant max | Coût mesuré | Motif d'arrêt |
+|---|---|---|---|---|---|
+| 1 | 2e-5 s | 200/200 | 2,004 (croissance régulière, stable) | 932,48 s → **4,6624 s/pas** | Aucun — fin propre (`End`) |
+| 2 | 2,5e-5 s | 55/200 | 5,04e70 (explosion géométrique) | 477,26 s avant arrêt (non exploitable) | **FPE, solveur de pression (GAMG/DIC)**, écart amorcé à t=0,0012 s (pas ~48, Courant passe de 1,09 à 2,93), emballement jusqu'à t=0,001375 s (pas 55) |
+| 3 | 1,5e-5 s | — non lancé — | — | — | Essai 1 stable → branche « sinon essai 3 » non déclenchée (arbre de décision de la consigne du 16/09) |
+
+**Pas retenu : 2e-5 s** (le plus grand des deux valeurs testées au-dessus de 1e-5 qui
+tienne). Source logs : `case_kEpsilon_layers/log.pimpleFoam.essai1_2e-5` (et sa reprise
+`essai1_rerun_pour_yplus`, identique, relancée pour D2), `log.pimpleFoam.essai2_2.5e-5`.
+
+**M et N recalculés** — M=1,031/N=6 (13/09) étaient mesurés à pas fixe 1e-5 s, SEUL
+régime stable connu à l'époque (adaptatif divergeait, cf. `_Methodo/JOURNAL.md` du
+13/09). Le pas fixe retenu aujourd'hui (2e-5 s) change le côté « couches » de la
+comparaison :
+```
+Coût/tour couches à 2e-5 s = 1988,35 pas/tour × 4,6624 s/pas = 9269 s/tour
+Coût/tour couches à 1e-5 s (référence 13/09) = 3977 pas/tour × 3,1507 s/pas = 12530 s/tour
+  -> -26 % de coût par tour pour les couches (pas 2x plus gros, coût/pas +48 %, net favorable)
+Coût/tour sans couches à 1e-5 s (référence 13/09, INCHANGÉ, non re-mesuré) = 3977 × 3,0546 = 12147 s/tour
+M_nouveau = 9269 / 12147 = 0,763        (remplace 1,031)
+T_total(N) = N × (4464/1,97) × (3+2×0,763) = N × 2266,5 × 4,526 = N × 10262,6 s
+N=7 : 71838 s = 19,96 h  (<=20h, tient)
+N=8 : 82101 s = 22,81 h  (>20h)
+-> N=7 (remplace 6)
+```
+**M=1,031 et N=6 sont CADUCS**, remplacés par **M≈0,763 et N=7**. Réserve inchangée
+depuis le 15/09 : ce recalcul utilise toujours la référence `4464 s/tour`, dont
+l'écart de 19 % avec le pas/tour vérifié (ci-dessus) reste ouvert — un futur
+recalcul sur la base de 1231 changerait encore ces deux chiffres.
+
 **Valeurs explicitement PÉRIMÉES, à ne jamais recopier** (voir LOT 2 du rapport de
 boucle pour le détail par document) : Z=3 (tripale) ; D=0,2 m / `radius 0.1` ; K_T=0,3625
 et J=1,024 (valeurs pré-rééchelonnement du 14/09, D=0,2 m) ; y+ « 60 % » (jamais sourcé) ;
 couverture des couches 4,42/6 et 82,7 % (`log.snappyHexMesh.v2`, run antérieur au retrait
 des couches sur `propellerTipEdge`, ne correspond pas au maillage sur
-`constant/polyMesh` aujourd'hui).
+`constant/polyMesh` aujourd'hui) ; **M=1,031 et « N=6 » (établis le 13/09 au pas fixe
+1e-5 s, CADUCS depuis le 16/09 — remplacés par M≈0,763 et N=7, pas fixe 2e-5 s, voir
+LOT D1 ci-dessus)**.

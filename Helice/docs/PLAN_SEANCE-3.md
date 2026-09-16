@@ -42,12 +42,23 @@ réservée aux binômes qui ont fini en avance.
 Objectif borné : **construire le maillage à couches de prismes, lancer 200 pas, vérifier
 y⁺ et la stabilité.** C'est exactement l'échelle du test qui a réussi le 13/09
 (`case_kEpsilon_layers`, pas fixe 1e-5 s, 200 pas francs, Courant max 0,58 — voir
-`_Methodo/JOURNAL.md` côté `ENSM-Enseignement`, entrée « Pas fixe assumé »).
+`_Methodo/JOURNAL.md` côté `ENSM-Enseignement`, entrée « Pas fixe assumé »). **Pas fixe
+retenu depuis le 16/09 : 2e-5 s** (même 200 pas, Courant max 2,00, aussi stable, deux
+fois plus rapide par tour — 2,5e-5 s diverge, ne pas l'essayer sans savoir pourquoi
+l'ancien pas de 1e-5 s a été choisi initialement, voir `PARAMETRES_CAS.md` LOT D1).
 
 **Motif de cette piste** : `Helice/docs/ETAT-DES-LIEUX.md`, item INCERTAIN « y+ du
-maillage à couches, à convergence » — jamais mesuré à ce jour (seul témoin,
-`log.yPlus2`, donné à t=0,0005 s, transitoire non convergé). C'est la mesure qui
-manque, et c'est exactement ce que cette piste irait chercher.
+maillage à couches, à convergence » — jamais mesuré à convergence à ce jour. **Ce que
+les binômes referont a déjà été fait une fois (16/09), à titre de repère, PAS comme
+résultat définitif** : à t=0,004 s (200 pas, 0,10 tour — huit fois plus loin que le
+premier témoin `log.yPlus2` à t=0,0005 s, mais toujours pas à convergence),
+`propellerTip` était à 90,0 % de sa surface dans [30;300] pondéré par l'aire (médiane
+62,84), les trois `propellerStem` tous légèrement SOUS 30 (15,6 à 27,6 — cohérent avec
+une couche qui pousse y+ vers le bas comme visé, pas encore stabilisée). Si un binôme
+retrouve des chiffres proches à un tour comparable, c'est un signe de reproductibilité ;
+un écart net serait lui-même une observation à consigner, pas une erreur à corriger en
+silence. Détail et sources exactes : `ETAT-DES-LIEUX_Enseignant.md` (gitignoré) et
+`Helice/docs/PARAMETRES_CAS.md`, LOT D1-D2 du 16/09.
 
 **INTERDIT, sans exception : demander un calcul en production.** Un cas à couches en
 production coûte **35-41 h sur 16 cœurs** (`Helice/Results/amplitude_KT_fenetre-propre.md`
