@@ -60,8 +60,9 @@ EXCLUSIONS=(
     "Helice/docs/MATERIAU-INTRO_TD-Helice.md:116"  # "Avant correction, l'argument reposait..." -- historique
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:65"   # "jusqu'au 14/09 ... corrigé le 14/09"
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:194"  # "portait D=0,2 m ... contre D=0,227 m"
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:348"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09 (décalé le 16/09 par le LOT D4)
-    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:365"  # "établi, contre 0,2 m codé en dur" -- contraste explicite (décalé le 16/09)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:347"  # liste des quatre erreurs PASSÉES trouvées le 13-14/09 (décalé le 17/09 par la correction M/N)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:364"  # "établi, contre 0,2 m codé en dur" -- contraste explicite (décalé le 17/09)
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:282"  # "N=6 est le plafond, pas une valeur calculée" -- discussion du plafond, LOT 17/09
     "Helice/docs/PLAN_SEANCE-3.md:98"   # "faux, corrigé le 13/09" (décalé le 16/09, LOT D2, piste avancée)
     "Helice/docs/PLAN_SEANCE-3.md:106"  # "Écart avec la documentation existante (D=0,2m)... " -- signalé comme écart, pas comme fait (décalé)
     "Helice/docs/PLAN_SEANCE-3.md:115"  # même paragraphe, suivi de l'arbitrage rendu (décalé)
@@ -87,9 +88,9 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:63"   # "reste au stade PRÉ-correction de D (D=0,2 m..." -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/PARAMETRES_CAS.md:64"   # "radius 0.1 -- vérifié" -- suite du même contraste
     "Helice/docs/PARAMETRES_CAS.md:76"   # "donne K_T=0,3625 ... les valeurs PÉRIMÉES" -- contraste explicite, LOT A1 du 15/09
-    "Helice/docs/PARAMETRES_CAS.md:142"  # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 16/09 par l'ajout du bloc LOT D1)
-    "Helice/docs/PARAMETRES_CAS.md:143"  # idem
-    "Helice/docs/PARAMETRES_CAS.md:144"  # idem
+    "Helice/docs/PARAMETRES_CAS.md:159"  # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 17/09 par la correction M/N)
+    "Helice/docs/PARAMETRES_CAS.md:160"  # idem
+    "Helice/docs/PARAMETRES_CAS.md:161"  # idem
     "Seances/S02_Slides.md:59"  # "codé en dur ... corrigé le 14/09" -- bloc rattrapage fusionné le 15/09 (LOT 3), même contraste explicite que S02/S03, ex-S02bis_Rattrapage:31 (décalé le 15/09, LOT 4/5)
     "Seances/S03_Arborescence-et-perspective_Slides.md:138"  # "D était faux de 14 %" -- diapo sur le mécanisme d'erreur, au passé
     "Seances/S03_Arborescence-et-perspective_Slides.md:155"  # "Constantes héritées jamais mesurées" -- idem, diapo mécanismes
@@ -106,9 +107,13 @@ EXCLUSIONS=(
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:284"  # "M=1,031 et N=6 ... sont CADUCS" -- contraste explicite, LOT D1 du 16/09
     "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:203"  # "remplace M=1,031/N=6 du 13/09" -- contraste explicite, LOT D1/D3 du 16/09
     "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:205"  # "contre N=6 avant" -- contraste explicite, LOT D1 du 16/09
-    "Helice/docs/PARAMETRES_CAS.md:121"  # "M=1,031/N=6 (13/09) étaient mesurés" -- contraste explicite, LOT D1 du 16/09
-    "Helice/docs/PARAMETRES_CAS.md:136"  # "M=1,031 et N=6 sont CADUCS" -- contraste explicite, LOT D1 du 16/09
-    "Helice/docs/PARAMETRES_CAS.md:146"  # "M=1,031 et N=6 (établis le 13/09" -- contraste explicite, LOT D1 du 16/09
+    "Helice/docs/PARAMETRES_CAS.md:153"  # "si N=6 tient réellement sous 20h" -- discussion du plafond, LOT 17/09, pas une valeur publiée comme un fait
+    "Helice/docs/PARAMETRES_CAS.md:154"  # "N=6 dépasserait 20h" -- idem
+    "Helice/docs/PARAMETRES_CAS.md:155"  # "N=6 est le PLAFOND, pas nécessairement..." -- idem
+    "Helice/docs/PARAMETRES_CAS.md:163"  # "M=1,031 et N=6 (établis le 13/09" -- contraste explicite, LOT 17/09
+    "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:205"  # "(M≈0,763, N=7) comparait deux régimes..." -- contraste explicite, LOT 17/09, cite l'erreur pour l'expliquer
+    "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:275"  # "M≈0,763 en comparant..." -- contraste explicite, LOT 17/09
+    "Helice/docs/PARAMETRES_CAS.md:122"  # "donnait M≈0,763 -- erreur de méthode" -- contraste explicite, LOT 17/09
     "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:161"  # "remplace 0,0404/0,0373/0,0294 pré-rééchelonnement" -- corrigé le 15/09 (LOT B0bis)
     "Helice/docs/ETAT-DES-LIEUX.md:45"    # "Corrigé le 15/09 : ce bloc citait encore 0,040407/..." -- historique déjà étiqueté
     "Helice/docs/MATERIAU-INTRO_TD-Helice.md:134"  # "corrigé le 15/09, remplace 0,0404/0,0373/0,0294" -- LOT B0bis

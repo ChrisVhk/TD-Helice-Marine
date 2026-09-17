@@ -118,31 +118,50 @@ et restauré (vérifié par `diff`/`md5sum` après chaque essai) :
 tienne). Source logs : `case_kEpsilon_layers/log.pimpleFoam.essai1_2e-5` (et sa reprise
 `essai1_rerun_pour_yplus`, identique, relancée pour D2), `log.pimpleFoam.essai2_2.5e-5`.
 
-**M et N recalculés** — M=1,031/N=6 (13/09) étaient mesurés à pas fixe 1e-5 s, SEUL
-régime stable connu à l'époque (adaptatif divergeait, cf. `_Methodo/JOURNAL.md` du
-13/09). Le pas fixe retenu aujourd'hui (2e-5 s) change le côté « couches » de la
-comparaison :
+**M — PROVISOIRE, EN COURS DE VÉRIFICATION (17/09).** Le recalcul du 16/09 (ci-dessous,
+barré) donnait M≈0,763 — **erreur de méthode repérée le 17/09**, pas seulement une
+valeur douteuse : M<1 signifierait que les couches coûtent MOINS que leur absence, alors
+que le coût PAR PAS augmente (4,66 contre 3,05 s/pas, mesuré) et qu'à 2e-5 s il faut
+1988 pas/tour contre 1231 au pas naturel. La cause : le calcul comparait couches-à-2e-5s
+contre sans-couches-à-1e-5s — **deux pas de temps différents sur les deux côtés**, alors
+que `§4` impose LE MÊME RÉGIME TEMPOREL aux cinq cas. Trois bases de comparaison
+donnent trois résultats très différents, et aucune n'est validée à ce jour :
 ```
-Coût/tour couches à 2e-5 s = 1988,35 pas/tour × 4,6624 s/pas = 9269 s/tour
-Coût/tour couches à 1e-5 s (référence 13/09) = 3977 pas/tour × 3,1507 s/pas = 12530 s/tour
-  -> -26 % de coût par tour pour les couches (pas 2x plus gros, coût/pas +48 %, net favorable)
-Coût/tour sans couches à 1e-5 s (référence 13/09, INCHANGÉ, non re-mesuré) = 3977 × 3,0546 = 12147 s/tour
-M_nouveau = 9269 / 12147 = 0,763        (remplace 1,031)
-T_total(N) = N × (4464/1,97) × (3+2×0,763) = N × 2266,5 × 4,526 = N × 10262,6 s
-N=7 : 71838 s = 19,96 h  (<=20h, tient)
-N=8 : 82101 s = 22,81 h  (>20h)
--> N=7 (remplace 6)
+(a) couches à 2e-5s / sans-couches à 1e-5s (calcul du 16/09, ERRONÉ, bases différentes)
+    = 9269 / 12147 = 0,763
+(b) couches à 2e-5s / sans-couches à SA PROPRE dt naturelle (3,23e-5s), coût/pas non
+    réajusté au changement de dt (méthode Cowork, 17/09)
+    = 9269 / (1231 × 3,0546) = 9269 / 3760 = 2,46 ≈ 2,5
+(c) couches à 2e-5s / sans-couches à 2e-5s EXTRAPOLÉ (même facteur d'augmentation du
+    coût/pas avec dt que celui mesuré sur les couches, ×1,48 — JAMAIS MESURÉ sur le cas
+    sans couches, une hypothèse, pas une donnée)
+    = 9269 / (1988,35 × 3,0546 × 1,48) = 9269 / 8991 ≈ 1,03
 ```
-**M=1,031 et N=6 sont CADUCS**, remplacés par **M≈0,763 et N=7**. Réserve inchangée
-depuis le 15/09 : ce recalcul utilise toujours la référence `4464 s/tour`, dont
-l'écart de 19 % avec le pas/tour vérifié (ci-dessus) reste ouvert — un futur
-recalcul sur la base de 1231 changerait encore ces deux chiffres.
+**Aucune des trois n'est tranchée.** (a) est écarté (bases non comparables). (b) et (c)
+restent tous deux plausibles selon ce que `§4` décide RÉELLEMENT pour le régime des trois
+cas sans couches — et c'est un ARBITRAGE ENSEIGNANT, pas un calcul : si les cas sans
+couches tournent à leur pas naturel (aucune contrainte de stabilité ne les y oblige),
+(b) s'applique ; si `§4` les force au même pas fixe que les couches pour rester
+strictement comparable, (c) s'applique. **Tant que cet arbitrage n'est pas rendu, M
+reste PROVISOIRE — ne pas le publier comme un fait établi, dans aucun document.**
+
+**N — PLAFONNÉ À 6, par construction, pas par calcul.** `N∈[4;6]` est une borne EXTERNE
+imposée par la consigne du 13/09 (nombre de configurations retenu pour l'étude, jamais
+une sortie du modèle de coût) : *« le plus grand N∈[4;6] sous le budget »*
+(`_Methodo/JOURNAL.md`, 13/09). Le calcul du 16/09 avait donné N=7 en ignorant cette
+borne — **erreur, corrigée le 17/09** : quel que soit M, N ne peut jamais dépasser 6.
+Reste à vérifier, une fois M tranché, si N=6 tient réellement sous 20h (avec M≈2,5, même
+N=6 dépasserait 20h — `6×(4464/1,97)×(3+2×2,5)=108792 s=30,2 h` — et le N affordable
+serait alors plus proche de 4). **Conclusion honnête : N=6 est le PLAFOND, pas
+nécessairement la valeur atteignable — dépend de M, provisoire.**
 
 **Valeurs explicitement PÉRIMÉES, à ne jamais recopier** (voir LOT 2 du rapport de
 boucle pour le détail par document) : Z=3 (tripale) ; D=0,2 m / `radius 0.1` ; K_T=0,3625
 et J=1,024 (valeurs pré-rééchelonnement du 14/09, D=0,2 m) ; y+ « 60 % » (jamais sourcé) ;
 couverture des couches 4,42/6 et 82,7 % (`log.snappyHexMesh.v2`, run antérieur au retrait
 des couches sur `propellerTipEdge`, ne correspond pas au maillage sur
-`constant/polyMesh` aujourd'hui) ; **M=1,031 et « N=6 » (établis le 13/09 au pas fixe
-1e-5 s, CADUCS depuis le 16/09 — remplacés par M≈0,763 et N=7, pas fixe 2e-5 s, voir
-LOT D1 ci-dessus)**.
+`constant/polyMesh` aujourd'hui) ; **M=1,031 et N=6 (établis le 13/09 au pas fixe
+1e-5 s) NE SONT PLUS LA RÉFÉRENCE depuis le 16/09, mais leur remplaçant n'est PAS
+établi — M reste PROVISOIRE (0,763/2,5/1,03 selon la base de comparaison, aucune
+tranchée) et N reste PLAFONNÉ À 6 par construction, jamais 7 (voir LOT D1/17-09
+ci-dessus).**

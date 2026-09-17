@@ -271,21 +271,20 @@ mêmes réglages.
   de sous-estimer le coût réel par tour d'environ 19 %** si la production tourne au
   pas naturel de référence — à garder en tête, pas à corriger silencieusement.
 
-**Exemple chiffré, MIS À JOUR le 16/09** (le pas fixe stable pour `case_kEpsilon_layers`
-est désormais 2e-5 s, pas 1e-5 s — voir §6.1 et `PARAMETRES_CAS.md`, LOT D1) :
-```
-Coût/tour couches à 2e-5 s = 1988,35 pas/tour × 4,6624 s/pas = 9269 s/tour
-Coût/tour sans couches à 1e-5 s (référence 13/09, inchangée) = 3977 × 3,0546 = 12147 s/tour
-M = 9269 / 12147 = 0,763            (remplace 1,031 — voir la mise en garde ci-dessous)
-S = 1,97                            (accélération 4→16 rangs, sans couches)
-T_total(N) = N × (4464/1,97) × (3+2×0,763) = N × 2266,5 × 4,526 ≈ N × 10263 s
-N=7 → 71838 s = 19,96 h   (remplace N=6)
-```
-**M=1,031 et N=6 (13/09) sont CADUCS.** Ils avaient été mesurés au SEUL pas fixe connu
-stable à l'époque (1e-5 s) — le pas fixe retenu aujourd'hui est plus grand (2e-5 s,
-§6.1), ce qui change le coût par tour du côté « couches » de la comparaison. **Réserve
-inchangée** : ce recalcul utilise toujours la référence `4464 s/tour`, dont l'écart de
-19 % avec le pas/tour vérifié (ci-dessus) reste ouvert.
+**M — PROVISOIRE, EN COURS DE VÉRIFICATION (17/09).** Un premier recalcul (16/09) donnait
+M≈0,763 en comparant couches à 2e-5 s contre sans-couches à 1e-5 s — **deux pas de temps
+différents sur les deux côtés, erreur de méthode** : `§4` impose le MÊME régime temporel
+aux cinq cas. Selon la base de comparaison réellement retenue par cet arbitrage (pas
+encore rendu), M vaut soit ≈2,5 (sans-couches à son pas naturel) soit ≈1,03
+(sans-couches extrapolé au même pas fixe que les couches) — **aucune des deux n'est
+tranchée**. Détail complet et calculs : `PARAMETRES_CAS.md`, LOT D1 (17/09).
+**Conséquence directe : N aussi reste provisoire.** `N∈[4;6]` est une borne EXTERNE
+imposée dès le 13/09 (jamais dépassée, quel que soit le résultat du modèle) — **N=6 est
+le plafond, pas une valeur calculée** ; le calcul du 16/09 avait donné N=7 en ignorant
+cette borne (erreur, corrigée). Si M≈2,5 se confirme, même N=6 dépasse 20 h
+(`6×(4464/1,97)×(3+2×2,5)≈30,2 h`) et le N réellement atteignable serait plus proche de
+4. **Ne publier aucune valeur de M ou de N tant que l'arbitrage du régime des cas sans
+couches n'est pas rendu.**
 
 **DISQUE (INV-23, `_Methodo/INVARIANTS.md`)** — indépendant du temps mural, souvent le
 facteur bloquant en premier :
