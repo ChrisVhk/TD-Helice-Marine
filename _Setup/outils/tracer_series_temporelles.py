@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
 """Trace K_T, 10*K_Q, eta0 en fonction des TOURS (pas des secondes) pour les trois
-fermetures de turbulence superposées (LOT A5, consigne du 15/09).
+fermetures de turbulence superposées (LOT A5, consigne du 15/09 ; unifié le 17/09,
+LOT 2 -- remplace `generer_figure_KT_series.py`, qui produisait la même figure K_T
+depuis les mêmes CSV avec sa propre reconversion tours = t/T interne).
 
-Lit `Helice/data/perf_<modele>.csv` DÉJÀ AUGMENTÉ des colonnes `tours`/`angle_deg`
-(`Helice/scripts/augmenter_tours_angle.py` — lancer ce script d'abord s'il n'a pas
-encore tourné). Produit trois figures dans `Helice/Images/galerie/` :
-  series_KT_tours.png, series_10KQ_tours.png, series_eta0_tours.png
+Lit `Helice/data/perf_<modele>.csv`, colonnes `tours`/`angle_deg` déjà présentes
+(`Helice/scripts/extraire_kit_donnees.py`, colonnes ajoutées dans la même passe que le
+rééchelonnement D -- lancer ce script d'abord si les colonnes manquent). Produit trois
+figures dans `Helice/Images/` (convention `FIG-fon-s7-*`, PAS `galerie/` -- ces figures
+sont du matériel de cours, pas la galerie d'introduction régénérable) :
+  FIG-fon-s7-KT-series-tours.png, FIG-fon-s7-10KQ-series-tours.png,
+  FIG-fon-s7-eta0-series-tours.png
+
+**Diff avec l'ancien script avant suppression (17/09)** : mêmes données, même n
+(25,146 vs 25,15 tr/s lu directement dans le CSV -- écart relatif 0,014 %, invisible à
+l'échelle du tracé), courbes visuellement identiques. Seule différence réelle :
+l'ancien coupait franchement la ligne au niveau du trou de données `kOmegaSST`
+(`break_gaps()`, aucun segment tracé) ; celui-ci reliait les deux bords du trou par un
+segment droit dans le fond ombré -- moins honnête (une droite suggère une donnée
+interpolée qui n'existe pas). Repris ici : la ligne est coupée, pas reliée.
 
 **Réserve amplitude (15/09)** : la consigne de cette boucle rappelait les amplitudes
 crête-à-crête 0,0404 / 0,0373 / 0,0294 -- ce sont les valeurs PRÉ-rééchelonnement du
@@ -27,7 +40,7 @@ HERE = Path(__file__).resolve().parent
 # _Setup/outils/tracer_series_temporelles.py -> repo root est deux niveaux au-dessus
 ROOT = HERE.parent.parent
 DATA = ROOT / "Helice" / "data"
-OUT_DIR = ROOT / "Helice" / "Images" / "galerie"
+OUT_DIR = ROOT / "Helice" / "Images"
 
 CASES = ["kEpsilon", "kOmegaSST", "laminar"]
 LABELS = {"kEpsilon": "k-epsilon (RAS)", "kOmegaSST": "k-omega SST (RAS)", "laminar": "laminaire"}
@@ -49,9 +62,9 @@ TROU_KOMEGASST = (0.00819355, 0.0220323)  # METHODO_DONNEES.md §5
 # sans lui, le pic initial écrase l'oscillation utile à une ligne plate.
 T_TRANSIENT_SKIP = 0.001
 
-GRANDEURS = [("KT", "$K_T$", "series_KT_tours.png"),
-             ("10KQ", "$10 \\cdot K_Q$", "series_10KQ_tours.png"),
-             ("eta0", "$\\eta_0$", "series_eta0_tours.png")]
+GRANDEURS = [("KT", "$K_T$", "FIG-fon-s7-KT-series-tours.png"),
+             ("10KQ", "$10 \\cdot K_Q$", "FIG-fon-s7-10KQ-series-tours.png"),
+             ("eta0", "$\\eta_0$", "FIG-fon-s7-eta0-series-tours.png")]
 
 
 def read_csv(short):
@@ -62,9 +75,29 @@ def read_csv(short):
     if "tours" not in rows[0]:
         raise SystemExit(
             f"{path} n'a pas de colonne 'tours' -- lancer d'abord "
-            "Helice/scripts/augmenter_tours_angle.py"
+            "Helice/scripts/extraire_kit_donnees.py"
         )
     return [r for r in rows if float(r["time"]) >= T_TRANSIENT_SKIP]
+
+
+def casser_trous(temps, tours, y, facteur=5):
+    """Insère un `None` partout où l'écart de temps dépasse `facteur` fois l'écart
+    médian -- repris de l'ancien `generer_figure_KT_series.py` (break_gaps) : sans ça,
+    matplotlib relie les deux bords du trou kOmegaSST par une droite qui ne correspond
+    à aucune donnée réelle (trouvé à l'œil sur une première version de cette figure).
+    """
+    if len(temps) < 3:
+        return tours, y
+    ecarts = sorted(temps[i + 1] - temps[i] for i in range(len(temps) - 1))
+    mediane = ecarts[len(ecarts) // 2]
+    tours_c, y_c = [tours[0]], [y[0]]
+    for i in range(1, len(temps)):
+        if temps[i] - temps[i - 1] > facteur * mediane:
+            tours_c.append(None)
+            y_c.append(None)
+        tours_c.append(tours[i])
+        y_c.append(y[i])
+    return tours_c, y_c
 
 
 def moyenne_fenetre(rows, key, t0, t1):
@@ -87,8 +120,10 @@ def plot_grandeur(rows_by_case, key, label, out_name):
 
     for case in CASES:
         rows = rows_by_case[case]
+        temps = [float(r["time"]) for r in rows]
         tours = [float(r["tours"]) for r in rows]
         y = [float(r[key]) for r in rows]
+        tours, y = casser_trous(temps, tours, y)
         ax.plot(tours, y, lw=1.0, color=COLORS[case], label=LABELS[case])
         moy = moyenne_fenetre(rows, key, *FENETRE_COMMUNE)
         if moy is not None:

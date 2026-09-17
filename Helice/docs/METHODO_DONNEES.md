@@ -64,12 +64,28 @@ début de calcul. Sur `case_kEpsilon` (un seul segment, jamais repris) : **1853 
 le monde** : compter les répertoires pour estimer le nombre de pas de calcul sous-estime
 d'un facteur ~30.
 
-## 3. Conversion temps → tours → angle
+## 3. De la seconde au tour d'hélice — conversion temps → tours → angle
 
-n = 25,146 tr/s (calculé : ω=158 rad/s / 2π, `constant/dynamicMeshDict:29` — plus
-précis que le n=25,15 arrondi de `propellerInfo:34`, même rotation, deux sources
-cohérentes). Période T = 1/n = **0,039767 s**. Colonnes ajoutées par
-`Helice/scripts/extraire_kit_donnees.py` (même passe que le rééchelonnement D, §1) :
+`constant/dynamicMeshDict:28` : `omega       158; // rad/s`. L'unité (rad/s) vit
+**uniquement dans le commentaire** — `solidBodyMotionFunction rotatingMotion` lit
+`omega` comme un scalaire nu, sans dimension attachée (contrairement à un champ
+dimensionné) : **rien dans le solveur ne vérifie cette unité**. Se tromper ici (deg/s
+au lieu de rad/s, par exemple) ne produirait aucune erreur OpenFOAM — juste une hélice
+qui tourne à la mauvaise vitesse, à découvrir seulement en comparant le résultat aux
+autres sources.
+
+n = ω/2π = 158/(2π) = **25,146 tr/s** (plus précis que le n=25,15 arrondi de
+`propellerInfo:34` — même rotation, deux sources cohérentes, l'écart n'est qu'un
+arrondi d'affichage). Période T = 1/n = **0,039767 s**.
+
+**Le piège du facteur ~30** (voir §2) : une **ligne** de `propellerPerformance.dat` est
+un **pas de temps** interne du solveur ; un **répertoire** `0.NNN/` est une **écriture**
+de champs complets. Les confondre — par exemple compter les répertoires (`ls` sur le
+cas) pour estimer combien de pas couvrent un tour — sous-estime la densité réelle d'un
+facteur ~30 (1853 lignes pour 62 répertoires sur `case_kEpsilon`).
+
+Colonnes ajoutées par `Helice/scripts/extraire_kit_donnees.py` (même passe que le
+rééchelonnement D, §1) :
 ```
 tours     = time * n
 angle_deg = (360 * time * n) mod 360
@@ -77,7 +93,15 @@ angle_deg = (360 * time * n) mod 360
 Le brut (jamais modifié, §1) reste la trace « sans tours » -- pas besoin d'une copie
 CSV supplémentaire pour ça.
 
-**Contrôle (lignes par tour, trois modèles)** — référence indépendante :
+**Le contrôle, le cœur de cette conversion** : ~1228 lignes par tour, soit 0,293° par
+pas en moyenne. Celui qui convertit correctement (une division par n, pas par le nombre
+de répertoires) retrouve ce chiffre à quelques pourcents près sur les trois modèles ;
+celui qui confond ligne et répertoire compte ~41 (62 répertoires / 1,509 tour) — un
+facteur ~30 d'écart, impossible à ne pas remarquer si on le cherche. C'est un contrôle
+à reproduire soi-même, pas une valeur à recopier : le tableau ci-dessous existe pour
+vérifier après coup, pas pour remplacer le calcul.
+
+**Contrôle chiffré (lignes par tour, trois modèles)** — référence indépendante :
 1853 lignes / 1,509 tour (kEpsilon) = **1228 pas/tour**, soit 0,293°/pas en moyenne :
 
 | Modèle | Lignes | Temps réellement couvert | Tours | Lignes/tour | Écart vs 1228 |
@@ -89,6 +113,10 @@ CSV supplémentaire pour ça.
 Les trois sont sous 5 % d'écart — **contrôle passé**. Pour kOmegaSST, le temps
 « réellement couvert » exclut le trou du §5 : aucun pas n'a été calculé pendant ces
 13,8 ms, les compter dans les tours sous-estimerait faussement sa densité de pas.
+
+Cette conversion tours/angle est ce qui rend lisible la fenêtre du **dernier tour**
+utilisée pour toutes les moyennes K_T/10K_Q/η₀ — voir §4 pour où elle commence
+(0,020233 s) et pourquoi.
 
 ## 4. Le dernier tour : pourquoi on y moyenne
 
