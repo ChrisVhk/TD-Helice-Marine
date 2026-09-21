@@ -522,6 +522,10 @@ def build_slide(prs, s, avec_notes=True, variante_figures="public"):
                 card_ph.fill.solid(); card_ph.fill.fore_color.rgb = _WHITE
                 _fill_text(pastille_ph, "")
                 pastille_ph.fill.solid(); pastille_ph.fill.fore_color.rgb = _WHITE
+                # Contour blanc aussi : sinon la pastille neutralisée apparaît comme un cercle vide à contour visible.
+                card_ph.line.color.rgb = _WHITE
+                pastille_ph.line.color.rgb = _WHITE
+                card_ph.shadow.inherit = False; pastille_ph.shadow.inherit = False
         liaison_ph = _ph_by_idx(slide, 14)
         if liaison_ph is not None:
             _fill_text(liaison_ph, liaison)
@@ -581,6 +585,47 @@ def build_slide(prs, s, avec_notes=True, variante_figures="public"):
 
 OUT_ENSEIGNANT = os.path.join(HERE, f"{STEM}_enseignant.pptx")
 
+# Indices : `K_T`, `10K_Q`, `J_T`.. et `U_aval` s'écrivent en texte simple dans la source ; le rendu PowerPoint les met en indice.
+# OPT-IN par séance (INDICES_STEMS) : les decks déjà validés (S01, S03) ne sont pas régénérés différemment.
+INDICES_STEMS = {"S02"}
+_INDICE_RE = re.compile(r"(10K|K|J)_([TQ])(?![A-Za-z0-9_])|(U)_(aval)(?![A-Za-z0-9_])")
+
+def _indices_en_bas(prs):
+    import copy
+    from pptx.oxml.ns import qn
+    def traiter_paragraphe(par):
+        for run in list(par.runs):
+            t = run.text
+            ms = list(_INDICE_RE.finditer(t))
+            if not ms:
+                continue
+            r = run._r
+            morceaux, pos = [], 0
+            for m in ms:
+                base, ind = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+                if m.start() > pos:
+                    morceaux.append((t[pos:m.start()], False))
+                morceaux.append((base, False)); morceaux.append((ind, True)); pos = m.end()
+            if pos < len(t):
+                morceaux.append((t[pos:], False))
+            for texte, indice in morceaux:
+                e = copy.deepcopy(r)
+                e.find(qn("a:t")).text = texte
+                if indice:
+                    e.get_or_add_rPr().set("baseline", "-25000")
+                r.addprevious(e)
+            r.getparent().remove(r)
+    for sl in prs.slides:
+        for sh in sl.shapes:
+            if sh.has_text_frame:
+                for par in sh.text_frame.paragraphs:
+                    traiter_paragraphe(par)
+            if getattr(sh, "has_table", False) and sh.has_table:
+                for row in sh.table.rows:
+                    for cell in row.cells:
+                        for par in cell.text_frame.paragraphs:
+                            traiter_paragraphe(par)
+
 def _construire(slides, avec_notes, variante_figures="public"):
     """Presentation() indépendante par exemplaire -- pas de notes_slide créé du tout sur
     l'exemplaire public (pas une suppression après coup : _notes() n'est simplement jamais
@@ -588,6 +633,8 @@ def _construire(slides, avec_notes, variante_figures="public"):
     prs = Presentation(TEMPLATE)
     for s in slides:
         build_slide(prs, s, avec_notes=avec_notes, variante_figures=variante_figures)
+    if STEM in INDICES_STEMS:
+        _indices_en_bas(prs)
     return prs
 
 def build():

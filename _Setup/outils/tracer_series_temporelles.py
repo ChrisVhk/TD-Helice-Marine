@@ -161,11 +161,12 @@ def plot_grandeur(rows_by_case, key, label, out_name):
     ax.grid(True, alpha=0.3)
     ax.legend(loc="upper right", fontsize=10)
     ax.set_title(f"{label} en fonction des tours — trois fermetures de turbulence")
-    fig.text(0.01, 0.01,
-              f"Source : Helice/data/perf_*.csv · fenêtre commune [{t0_c:.6f} ; {t1_c:.6f}] s · "
-              f"dernier tour complet [{t0_d:.6f} ; {t1_d:.6f}] s (traits pointillés : moyenne de ce dernier tour)".replace(".", ","),
-              fontsize=8, color="#555555")
-    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    import textwrap
+    pied = (f"Source : Helice/data/perf_*.csv · fenêtre commune [{t0_c:.6f} ; {t1_c:.6f}] s · "
+            f"dernier tour complet [{t0_d:.6f} ; {t1_d:.6f}] s (traits pointillés : moyenne de ce dernier tour)").replace(".", ",")
+    # Pied sur deux lignes : sur une seule il dépassait la largeur de la figure et sa fin était coupée (constaté au rendu).
+    fig.text(0.01, 0.01, textwrap.fill(pied, width=105), fontsize=8, color="#555555", va="bottom")
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
     out = OUT_DIR / out_name
     fig.savefig(out, dpi=140)
     plt.close(fig)

@@ -125,7 +125,6 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:59"   # "valeur publiée le 17/09 (2,4287) était FAUSSE" -- contraste explicite, LOT 3 du 18/09
     "Helice/docs/PARAMETRES_CAS.md:60"   # "Remplace la valeur erronée du 17/09 (2,2967)" -- idem
     "Helice/docs/PARAMETRES_CAS.md:61"   # "Remplace la valeur erronée du 17/09 (2,2312)" -- idem
-    "Seances/S02_Slides.md:106"  # "0,0294/0,0404/0,0373 pour l'amplitude) -- remplacées" -- historique déjà étiqueté (décalé le 18/09, LOT 3 consigne "Cloture-et-passation", diapo figures K_Q/eta0 ajoutée)
     "Seances/S01_Slides.md:273"  # notes de diapo diapo 12, verbatim origine (07/09) -- "D = 0,2 m, 3 pales" -- extraction LOT 1 du 18/09, NON corrigé par choix (hors des deux corrections autorisées) -- ligne décalée par les notes de conduite facultatives, LOT 4 consigne "Lever-la-contradiction"
     "Seances/S01_Slides.md:275"  # idem, suite de la même note -- "D = 0,2 m" verbatim
     "Seances/S01_Slides.md:278"  # idem -- "le patch propellerTip porte les 3 pales" verbatim
