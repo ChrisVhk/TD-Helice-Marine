@@ -13,31 +13,48 @@ adaptée à `TD-Helice-Marine`, suivie en git.
 
 ## Usage
 
-    python3 Seances/generer_pptx_seance.py S00
+    python3 Seances/generer_pptx_seance.py S01
     python3 Seances/generer_pptx_seance.py S02
     python3 Seances/generer_pptx_seance.py S03
 
-Résout `SLIDES_MD` depuis le numéro de séance : par défaut `Seances/<STEM>_Slides.md`,
-sauf entrée dans `SLIDES_MD_OVERRIDE` (ci-dessous) quand la source ne suit pas cette
-convention -- `S00`/`S03` y sont explicitement listés, ce n'est PAS une divergence
-fonctionnelle entre séances, seulement un nom de fichier historique.
+Résout `SLIDES_MD` depuis le numéro de séance : `Seances/<STEM>_Slides.md`, toujours --
+`SLIDES_MD_OVERRIDE` (ci-dessous) ne sert plus depuis le 18/09 (consigne « Supports-Vega »,
+LOT 3) que le retrait du deck `S00` générique (fusionné dans `S01_Slides.md`, un seul
+deck par séance déposable sur Vega) a vidé de ses deux seules entrées historiques.
 
 Produit toujours DEUX fichiers (LOT B, audit charte 11/09) :
-  - `Seances/<STEM>.pptx` — **exemplaire Vega**, sans aucune part `notesSlide`. C'est
-    celui qu'on dépose sur Vega ou qu'on projette : les notes d'orateur sont des notes
-    de préparation pour l'enseignant, pas un contenu pour les étudiants qui liraient
-    le deck en dehors de la séance.
-  - `Seances/<STEM>_enseignant.pptx` — même contenu, notes d'orateur incluses. **Jamais
-    déposé sur Vega.**
+  - `Seances/<STEM>.pptx` — **exemplaire PUBLIC (GitHub)**, sans aucune part
+    `notesSlide` ET sans aucune figure `licence: restreint` (GARDE 2, consigne du 18/09
+    "Consolidee_Figures-et-variante-Vega" -- échoue plutôt que d'en publier une par
+    erreur). Les notes de conduite sont des notes de préparation pour l'enseignant, pas un
+    contenu pour les étudiants qui liraient le deck en dehors de la séance.
+  - `Seances/<STEM>_enseignant.pptx` — même contenu, notes de conduite incluses ET toutes
+    les figures (attribution imprimée sur chaque `restreint`). **Jamais publié.**
+
+Et, SI ET SEULEMENT SI la source contient AU MOINS UNE figure `licence: restreint`
+(détection automatique) :
+  - `Seances/<STEM>_vega.pptx` — **espace fermé de l'école** : toutes les figures
+    (attribution imprimée sur chaque `restreint`), sans notes de conduite. C'est ce qu'on
+    dépose sur Vega quand le deck utilise des figures empruntées -- jamais sur GitHub.
+    Absent quand la source n'a que des figures `libre` (serait un doublon strict du
+    fichier public, jamais régénéré -- voir JOURNAL, LOT 9 de la même consigne).
 
 Et, SI ET SEULEMENT SI la source contient un bloc marqué
 `<!-- RATTRAPAGE G1-G2 --> ... <!-- FIN RATTRAPAGE -->` (détection automatique, pas un
-argument à passer) — c'est le cas de `S02_Slides.md` aujourd'hui, d'aucun autre —
-produit un TROISIÈME fichier :
+argument à passer) — produit un fichier supplémentaire :
   - `Seances/<STEM>_groupes1-2.pptx` — même source, bloc rattrapage INCLUS. Le fichier
-    par défaut ci-dessus reste la version SANS ce bloc (ce que le groupe 3 a reçu).
+    public ci-dessus reste la version SANS ce bloc (ce que le groupe 3 a reçu).
 Ce mécanisme remplace `_Setup/outils/generer_variantes_deck.py` (LOT 5, même consigne)
 -- une seule logique de variantes, pas deux.
+
+## Licence des figures (LOT 4, consigne du 18/09 "Consolidee_Figures-et-variante-Vega")
+
+Chaque ligne `**Figure(s)**` porte désormais `— licence: libre` ou
+`— licence: restreint — auteur: X, titre: Y, source: Z, année: NNNN` (les quatre champs
+d'attribution tous requis pour `restreint`, GARDE 1 -- voir `_parse_figures`). Contrôle
+indépendant, en aval de ce générateur : `_Setup/outils/verifier_pptx_restreint.sh` déplie
+l'exemplaire PUBLIC et vérifie qu'aucune image restreinte (par contenu, pas par nom) n'y
+est embarquée -- GARDE 2, seconde moitié.
 
 **Contrôle obligatoire** avant toute livraison :
 `_Setup/verifier_deck.sh Seances/<STEM>.pptx` — rendu en images, à REGARDER, pas
@@ -60,8 +77,8 @@ Voir `_Setup/NOTE_GABARIT_PPTX.md` pour le détail des placeholders par disposit
 `_Setup/specification/INVENTAIRE_DISPOSITIONS_ENSM.md` pour le mapping champ `.md` ↔
 disposition. Le format `S<NN>_Slides.md` (une diapo = `## Diapo <N> — <titre>` suivi de
 champs `**Disposition**`, `**Segment / timing**`, `**Contenu affiché**`, `**Figure(s)**`,
-`**Crédit**`, `**Notes d'orateur**`, terminé par `---`) est identique à celui déjà en
-usage — copier un `S00_Slides.md` existant comme gabarit de départ est le chemin le plus
+`**Crédit**`, le champ des notes, terminé par `---`) est identique à celui déjà en
+usage — copier un `S02_Slides.md` existant comme gabarit de départ est le chemin le plus
 rapide plutôt que d'inventer le format à partir de ce docstring.
 
 ## Piège de rédaction récurrent (LOT G+H, audit charte 12/09) — une ligne = une pensée complète
@@ -106,18 +123,16 @@ if _SETUP_DIR is None:
     sys.exit(f"_Setup/ introuvable en remontant depuis {HERE} — synchronisez le noyau "
               f"d'abord (voir _Setup/SYNCHRONISER.md).")
 
-# --- Séance passée en argument, résolue ici -- source unique pour les trois séances,
-# le seul écart légitime (nom de fichier historique) est listé explicitement plutôt que
-# deviné. Ne pas ajouter d'entrée ici "pour la prochaine séance" tant que sa source
-# suit la convention par défaut -- une entrée non nécessaire serait elle-même une
-# divergence non paramétrable cachée.
-SLIDES_MD_OVERRIDE = {
-    "S00": "S00_Intro-CFD-Helice_Slides.md",
-    "S03": "S03_Arborescence-et-perspective_Slides.md",
-}
+# --- Séance passée en argument, résolue ici -- source unique pour les quatre séances.
+# Vide depuis le 18/09 (consigne « Supports-Vega », LOT 3, S00 fusionné dans S01) --
+# gardé comme mécanisme, pas comme registre : ne pas ajouter d'entrée ici "pour la
+# prochaine séance" tant que sa source suit la convention par défaut (Seances/<STEM>_
+# Slides.md) -- une entrée non nécessaire serait elle-même une divergence non
+# paramétrable cachée.
+SLIDES_MD_OVERRIDE = {}
 
 if len(sys.argv) < 2:
-    sys.exit(f"Usage : python3 {os.path.basename(__file__)} <STEM>  (ex. S00, S02, S03)")
+    sys.exit(f"Usage : python3 {os.path.basename(__file__)} <STEM>  (ex. S01, S02, S03)")
 STEM = sys.argv[1]
 SLIDES_MD = os.path.join(HERE, SLIDES_MD_OVERRIDE.get(STEM, f"{STEM}_Slides.md"))
 OUT = os.path.join(HERE, f"{STEM}.pptx")
@@ -145,6 +160,20 @@ FIELD_NAMES = ["Disposition", "Segment / timing", "Contenu affiché", "Figure(s)
 _MARINE = RGBColor(0x1A, 0x34, 0x6D)
 _CORAIL = RGBColor(0xEB, 0x56, 0x00)
 _WHITE = RGBColor(0xFF, 0xFF, 0xFF)
+# TEAL/PALE (charte, NOTE_GABARIT_PPTX.md "Charte appliquée") -- utilisées UNIQUEMENT
+# pour le remplissage direct des tableaux (LOT 4, consigne du 18/09 "Supports-Vega") :
+# `ppt/tableStyles.xml` du gabarit (182 octets, `def` pointe un styleId sans aucun
+# `<a:tblStyle>` le définissant) est le même fichier, non fonctionnel, que python-pptx
+# lui-même distribue par défaut (vérifié le 18/09 dans `pptx/templates/default.pptx`) --
+# PowerPoint/LibreOffice retombent alors sur un style Office générique (bleu/gris),
+# jamais la charte. Plutôt que d'écrire à la main un `<a:tblStyle>` OOXML complet (schéma
+# strict, aucun exemple valide dans ce dépôt pour le vérifier, risque de corrompre le
+# fichier sans le retour visuel de PowerPoint) -- même logique que le remplissage direct
+# déjà utilisé ci-dessous pour les cartes/pastilles de `Progression` -- ce script
+# applique désormais le remplissage/police directement à chaque cellule, sans dépendre
+# du style nommé (cassé) du gabarit.
+_TEAL = RGBColor(0x1A, 0x99, 0x88)
+_PALE = RGBColor(0xE8, 0xF4, 0xF2)
 
 # ---- Parsing de <STEM>_Slides.md --------------------------------------------------------------------
 
@@ -194,9 +223,9 @@ def parse_slides(path, keep_rattrapage=False):
             "title": title,
             "disposition": "\n".join(fields["Disposition"]).strip(),
             "timing": "\n".join(fields["Segment / timing"]).strip(),
-            "body": "\n".join(fields["Contenu affiché"]).strip("\n"),
-            "figures": _parse_figures("\n".join(fields["Figure(s)"])),
-            "credit": "\n".join(fields["Crédit"]).strip(),
+            "body": "\n".join(fields["Contenu affiché"]).strip("\n").replace("`", ""),  # pas de balisage Markdown à l'écran
+            "figures": _parse_figures("\n".join(fields["Figure(s)"]), title),
+            "credit": "\n".join(fields["Crédit"]).strip().replace("`", ""),
             "notes": "\n".join(fields["Notes d'orateur"]).strip("\n"),
             "rappel": "\n".join(fields["Rappel"]).strip("\n"),
             "figure_commentee": "\n".join(fields["Figure commentée"]).strip("\n"),
@@ -207,20 +236,54 @@ def parse_slides(path, keep_rattrapage=False):
         slides.append(slide)
     return slides
 
-def _parse_figures(text):
-    """Extrait les chemins d'image depuis les lignes `FIG:... — Images/....png — description`.
+_ATTRIBUTION_RE = re.compile(
+    r"auteur\s*:\s*([^,]+?)\s*,\s*titre\s*:\s*([^,]+?)\s*,\s*source\s*:\s*([^,]+?)\s*,\s*année\s*:\s*(\d{4})",
+    re.IGNORECASE,
+)
+
+def _parse_figures(text, titre_diapo="?"):
+    """Extrait les chemins d'image + licence depuis les lignes
+    `` `Images/....png` — licence: libre `` ou
+    `` `Images/....png` — licence: restreint — auteur: X, titre: Y, source: Z, année: NNNN ``.
 
     `TD-Helice-Marine` range sa galerie sous `Helice/Images/galerie/`, pas `Images/` à
     la racine -- la regex accepte les deux préfixes, résolution toujours relative à la
     racine du dépôt (`HERE/..`).
+
+    GARDE 1 (LOT 4, consigne du 18/09 "Consolidee_Figures-et-variante-Vega") : une figure
+    sans `licence:` explicite, ou une figure `restreint` sans les QUATRE champs
+    d'attribution complets, fait ÉCHOUER la génération -- jamais un défaut silencieux vers
+    "libre" (qui publierait par erreur), jamais une attribution partielle acceptée.
     """
-    paths = []
+    figures = []
     for line in text.split("\n"):
         m = re.search(r"`((?:Helice/)?Images/[^`]+\.png)`", line)
-        if m:
-            rel = m.group(1)
-            paths.append(os.path.normpath(os.path.join(HERE, "..", rel)))
-    return paths
+        if not m:
+            continue
+        rel = m.group(1)
+        path = os.path.normpath(os.path.join(HERE, "..", rel))
+        lm = re.search(r"licence\s*:\s*(libre|restreint)", line, re.IGNORECASE)
+        if not lm:
+            sys.exit(f"Diapo « {titre_diapo} » : figure {rel} sans `licence:` déclarée -- "
+                      f"chaque figure doit porter `licence: libre` ou `licence: restreint` "
+                      f"(GARDE 1, consigne du 18/09).")
+        licence = lm.group(1).lower()
+        attribution = None
+        if licence == "restreint":
+            am = _ATTRIBUTION_RE.search(line)
+            if not am:
+                sys.exit(f"Diapo « {titre_diapo} » : figure {rel} déclarée `licence: restreint` "
+                          f"SANS attribution complète (auteur, titre, source, année tous les "
+                          f"quatre requis) -- GARDE 1, consigne du 18/09. Corriger la ligne "
+                          f"`Figure(s)` de cette diapo avant de régénérer.")
+            attribution = {
+                "auteur": am.group(1).strip(),
+                "titre": am.group(2).strip(),
+                "source": am.group(3).strip(),
+                "annee": am.group(4).strip(),
+            }
+        figures.append({"path": path, "rel": rel, "licence": licence, "attribution": attribution})
+    return figures
 
 def _parse_comparaison(text):
     """Découpe le champ `**Comparaison** :` en quatre textes (en-tête A, corps A, en-tête B, corps B)."""
@@ -324,21 +387,33 @@ def _fill_table(slide, ph, rows):
         for j in range(n_cols):
             table.cell(i, j).text = row[j] if j < len(row) else ""
 
+    # Remplissage direct à la charte ENSM (LOT 4, 18/09) -- voir le commentaire sur
+    # _TEAL/_PALE ci-dessus : `ppt/tableStyles.xml` du gabarit ne définit aucun style,
+    # ne JAMAIS compter sur `table.first_row`/`table.horz_banding` (ils pointent ce
+    # style cassé) -- désactivés explicitement, chaque cellule reçoit sa couleur ici.
+    table.first_row = False
+    table.horz_banding = False
+    header_is_empty = all(not c.strip() for c in rows[0])
     font_pt = 14 if n_rows <= 5 else 11 if n_rows <= 8 else 9
     row_height = max(int(ph_height / n_rows), Pt(1))
-    for row in table.rows:
+    for i, row in enumerate(table.rows):
         row.height = row_height
+        is_header = (i == 0) and not header_is_empty
         for cell in row.cells:
             cell.margin_top = cell.margin_bottom = Pt(1)
             cell.margin_left = cell.margin_right = Pt(3)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = _TEAL if is_header else (_PALE if i % 2 == 0 else _WHITE)
             for para in cell.text_frame.paragraphs:
                 for run in para.runs:
                     run.font.size = Pt(font_pt)
+                    run.font.color.rgb = _WHITE if is_header else _MARINE
+                    if is_header:
+                        run.font.bold = True
 
 def _fill_picture(slide, ph, path):
-    if hasattr(ph, "insert_picture"):
-        ph.insert_picture(path)
-        return
+    # Toujours ajuster DANS le cadre en gardant les proportions. `insert_picture` de python-pptx RECADRE l'image pour remplir le
+    # placeholder : constaté le 20/09 sur le rendu de S03 (axes, légendes et titres de figures coupés).
     from PIL import Image
     with Image.open(path) as im:
         iw, ih = im.size
@@ -356,7 +431,7 @@ def _notes(slide, text):
     if text:
         slide.notes_slide.notes_text_frame.text = text
 
-def build_slide(prs, s, avec_notes=True):
+def build_slide(prs, s, avec_notes=True, variante_figures="public"):
     layout = _find_layout(prs, s["disposition"])
     if layout is None:
         sys.exit(f"Diapo « {s['title']} » : disposition « {s['disposition']} » absente du gabarit "
@@ -456,16 +531,37 @@ def build_slide(prs, s, avec_notes=True):
         if bodies and len(body_lines) > 1:
             _fill_text(bodies[0], "\n".join(body_lines[1:]))
 
+    attribution_a_imprimer = []
     if s["figures"]:
+        # GARDE 2 (LOT 4, consigne du 18/09) : la sortie PUBLIQUE (GitHub) ne doit JAMAIS
+        # embarquer une figure `restreint` -- le générateur ÉCHOUE plutôt que de l'omettre
+        # en silence (un silence qui masquerait le problème au lieu de forcer une décision :
+        # reclasser la figure, ou la retirer explicitement de la source).
+        if variante_figures == "public":
+            restreintes = [fig["rel"] for fig in s["figures"] if fig["licence"] == "restreint"]
+            if restreintes:
+                sys.exit(f"Diapo « {s['title']} » : figure(s) `restreint` dans une sortie "
+                          f"PUBLIQUE -- INTERDIT (GARDE 2, consigne du 18/09) : {restreintes}. "
+                          f"Utiliser la variante `vega` pour cette diapo, ou reclasser la "
+                          f"figure `libre` si elle peut l'être.")
         if len(pictures) < len(s["figures"]):
             sys.exit(f"Diapo « {s['title']} » : {len(s['figures'])} figure(s) déclarée(s) mais "
                       f"{len(pictures)} placeholder(s) IMAGE/CONTENU dans le gabarit.")
-        for ph, path in zip(pictures, s["figures"]):
-            if not os.path.isfile(path):
-                sys.exit(f"Diapo « {s['title']} » : figure introuvable — {path}")
-            _fill_picture(slide, ph, path)
+        for ph, fig in zip(pictures, s["figures"]):
+            if not os.path.isfile(fig["path"]):
+                sys.exit(f"Diapo « {s['title']} » : figure introuvable — {fig['path']}")
+            _fill_picture(slide, ph, fig["path"])
+            if fig["licence"] == "restreint" and variante_figures == "vega":
+                a = fig["attribution"]
+                attribution_a_imprimer.append(
+                    f"{fig['rel']} : © {a['auteur']}, « {a['titre']} », {a['source']}, {a['annee']}"
+                )
 
-    if s["credit"] and disp_lower not in ("rappel", "comparaison"):
+    credit_texte = s["credit"]
+    if attribution_a_imprimer:
+        bloc = "\n".join(attribution_a_imprimer)
+        credit_texte = f"{credit_texte}\n{bloc}" if credit_texte else bloc
+    if credit_texte and disp_lower not in ("rappel", "comparaison"):
         body_ph_used_for_text = bool(bodies) and len(body_lines) > 1
         if len(bodies) > 1:
             credit_ph = bodies[1]
@@ -474,9 +570,9 @@ def build_slide(prs, s, avec_notes=True):
         else:
             credit_ph = None
         if credit_ph is not None:
-            _fill_text(credit_ph, s["credit"])
+            _fill_text(credit_ph, credit_texte)
         else:
-            sys.exit(f"Diapo « {s['title']} » : crédit déclaré (« {s['credit']} ») mais aucun "
+            sys.exit(f"Diapo « {s['title']} » : crédit déclaré (« {credit_texte} ») mais aucun "
                       f"placeholder CORPS/SOUS-TITRE disponible pour l'afficher dans le gabarit.")
 
     if avec_notes:
@@ -485,13 +581,13 @@ def build_slide(prs, s, avec_notes=True):
 
 OUT_ENSEIGNANT = os.path.join(HERE, f"{STEM}_enseignant.pptx")
 
-def _construire(slides, avec_notes):
+def _construire(slides, avec_notes, variante_figures="public"):
     """Presentation() indépendante par exemplaire -- pas de notes_slide créé du tout sur
-    l'exemplaire Vega (pas une suppression après coup : _notes() n'est simplement jamais
+    l'exemplaire public (pas une suppression après coup : _notes() n'est simplement jamais
     appelée), donc aucune part `notesSlide` dans le zip, pas seulement un texte vidé."""
     prs = Presentation(TEMPLATE)
     for s in slides:
-        build_slide(prs, s, avec_notes=avec_notes)
+        build_slide(prs, s, avec_notes=avec_notes, variante_figures=variante_figures)
     return prs
 
 def build():
@@ -507,29 +603,78 @@ def build():
 
     slides = parse_slides(SLIDES_MD)  # keep_rattrapage=False par défaut -- variante canonique
 
-    # Exemplaire Vega (défaut, nom court) : AUCUNE part notesSlide -- les notes d'orateur
-    # sont des notes de préparation pour l'enseignant, pas un contenu à donner aux
-    # étudiants qui liraient le deck sur Vega (LOT B, audit charte 11/09).
-    prs_vega = _construire(slides, avec_notes=False)
-    prs_vega.save(OUT)
+    # GARDE 2 (LOT 4, consigne du 18/09 "Consolidee_Figures-et-variante-Vega") : vérifiée
+    # ICI, EN AMONT de toute construction -- pas laissée à build_slide (un sys.exit() lancé
+    # au milieu de la construction publique tuerait tout le PROCESSUS Python, empêchant
+    # même la construction légitime de `vega`/`enseignant` pour ce même deck). Un deck qui
+    # emprunte une figure a droit à `vega` et `enseignant` ; il n'a pas droit à `public`.
+    diapos_restreintes = {
+        s["title"]: [fig["rel"] for fig in s["figures"] if fig["licence"] == "restreint"]
+        for s in slides if any(fig["licence"] == "restreint" for fig in s["figures"])
+    }
+    public_interdit = bool(diapos_restreintes)
 
-    # Exemplaire enseignant : notes d'orateur incluses, JAMAIS déposé sur Vega.
-    prs_ens = _construire(slides, avec_notes=True)
+    if public_interdit:
+        # Retire un exemplaire public PÉRIMÉ déjà sur disque (construit avant qu'une
+        # figure ne soit reclassée `restreint`) -- le laisser en place serait pire que
+        # ne rien générer : un fichier qui a l'air à jour mais embarque encore une image
+        # qui ne devrait plus jamais être publique (voir verifier_pptx_restreint.sh, le
+        # contrôle indépendant qui détecte précisément ce cas par le contenu).
+        if os.path.isfile(OUT):
+            os.remove(OUT)
+            print(f"SUPPRIMÉ -- {OUT} (périmé, construit avant reclassement `restreint`).", file=sys.stderr)
+        print(f"REFUS -- sortie PUBLIQUE (GARDE 2) : {sum(len(v) for v in diapos_restreintes.values())} "
+              f"figure(s) `restreint` trouvée(s), {OUT} NON généré :", file=sys.stderr)
+        for titre, figs in diapos_restreintes.items():
+            print(f"  diapo « {titre} » : {figs}", file=sys.stderr)
+        print("  -> utiliser Seances/<STEM>_vega.pptx (espace fermé) pour ce deck.", file=sys.stderr)
+    else:
+        # Exemplaire PUBLIC (défaut, nom court, celui qui part sur GitHub) : AUCUNE part
+        # notesSlide -- les notes de conduite sont des notes de préparation pour
+        # l'enseignant, pas un contenu à donner aux étudiants (LOT B, audit charte 11/09).
+        prs_public = _construire(slides, avec_notes=False, variante_figures="public")
+        prs_public.save(OUT)
+        print(f"OK -> {OUT}  ({len(slides)} diapositives, public/GitHub -- sans notes de conduite, aucune figure restreinte)")
+
+    # Exemplaire enseignant : notes de conduite incluses ET toutes les figures (y compris
+    # `restreint`, avec attribution imprimée) -- jamais déposé sur Vega ni sur GitHub.
+    prs_ens = _construire(slides, avec_notes=True, variante_figures="vega")
     prs_ens.save(OUT_ENSEIGNANT)
 
     n_notes = sum(1 for s in slides if s["notes"].strip())
-    print(f"OK -> {OUT}  ({len(slides)} diapositives, Vega -- sans notes d'orateur)")
-    print(f"OK -> {OUT_ENSEIGNANT}  ({n_notes}/{len(slides)} diapositives annotées -- enseignant, jamais sur Vega)")
+    print(f"OK -> {OUT_ENSEIGNANT}  ({n_notes}/{len(slides)} diapositives annotées -- enseignant, jamais publié)")
+
+    # Variante VEGA (LOT 4, consigne du 18/09 "Consolidee_Figures-et-variante-Vega") :
+    # espace fermé de l'école -- toutes les figures (attribution imprimée sur chaque
+    # `restreint`), sans notes de conduite (reste un support projeté, pas un cours à lire).
+    # Construite seulement si la source porte au moins une figure `restreint` : sinon
+    # cette variante serait un doublon strict de l'exemplaire public, jamais régénéré
+    # (la leçon même du LOT 9 de cette consigne -- deux sorties identiques, l'une des
+    # deux finit par diverger sans qu'on s'en rende compte).
+    if public_interdit:
+        out_vega = os.path.join(HERE, f"{STEM}_vega.pptx")
+        prs_vega = _construire(slides, avec_notes=False, variante_figures="vega")
+        prs_vega.save(out_vega)
+        print(f"OK -> {out_vega}  ({len(slides)} diapositives, Vega (espace fermé) -- "
+              f"toutes les figures, attribution imprimée sur chaque figure restreinte)")
 
     # Variante rattrapage (LOT 5, consigne du 15/09) : uniquement si la source porte le
     # marqueur -- détecté, jamais demandé par argument. Remplace generer_variantes_deck.py.
-    if has_rattrapage:
+    # Suppose elle-même un deck public (jamais construite si public_interdit) -- un deck
+    # avec rattrapage ET figure restreinte n'existe pas aujourd'hui ; le jour où ça
+    # arrivera, il faudra choisir sciemment, pas ajouter un cas ici par anticipation.
+    if has_rattrapage and not public_interdit:
         slides_avec = parse_slides(SLIDES_MD, keep_rattrapage=True)
         out_variante = os.path.join(HERE, f"{STEM}_groupes1-2.pptx")
-        prs_variante = _construire(slides_avec, avec_notes=False)
+        prs_variante = _construire(slides_avec, avec_notes=False, variante_figures="public")
         prs_variante.save(out_variante)
-        print(f"OK -> {out_variante}  ({len(slides_avec)} diapositives, Vega, "
+        print(f"OK -> {out_variante}  ({len(slides_avec)} diapositives, public, "
               f"AVEC le bloc rattrapage -- source contient le marqueur)")
+
+    if public_interdit:
+        print(f"ÉCHEC -- {OUT} non généré (GARDE 2, figure(s) restreinte(s) ci-dessus). "
+              f"{OUT_ENSEIGNANT} et la variante vega, eux, sont à jour.", file=sys.stderr)
+        sys.exit(1)
 
     print(f"Contrôle obligatoire : _Setup/verifier_deck.sh {OUT}")
 

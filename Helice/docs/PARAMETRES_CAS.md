@@ -18,28 +18,28 @@ la géométrie et le maillage à couches, précisé colonne « Fichier · ligne 
 | ω (vitesse de rotation) | 158 | rad/s | `Helice/case_kEpsilon/constant/dynamicMeshDict:29` | 15/09 |
 | ν (viscosité cinématique) | 1e-6 | m²/s | `Helice/case_kEpsilon/constant/transportProperties:19` | 15/09 |
 | V_inlet (vitesse imposée) | 5,000 | m/s | `Helice/case_kEpsilon/0.orig/U:28` (`uniform (0 -5 0)`) | 15/09 |
-| U_Ref (vitesse mesurée, t=0,06 s) | 5,165668 | m/s | `Helice/data/perf_kEpsilon.csv`, dernière ligne (colonne `URef`) | 15/09 |
+| U_aval (vitesse moyenne RELEVÉE en aval du disque, à 0,17 D derrière les pales ; ex-`URef` du solveur ; n'est pas une avance) | 5,1102 | m/s | `Helice/data/perf_kEpsilon.csv`, colonne `U_aval` en valeur absolue, moyenne pondérée du dernier tour complet (kOmegaSST 5,1099 ; laminar 5,0966) | 20/09 |
 | J imposé (=V_inlet/(nD)) | 0,8743 | — | calculé depuis les trois lignes ci-dessus (`5/(25,15×0,227378)`) | 15/09 |
-| J mesuré (=U_Ref/(nD), t=0,06 s) | 0,9033 | — | `Helice/data/perf_kEpsilon.csv`, dernière ligne (colonne `J`, déjà rééchelonnée) | 15/09 |
-| K_T (moyenne dernier tour, kEpsilon) | 0,2170 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kEpsilon` | 15/09 |
-| K_T (kOmegaSST) | 0,2221 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kOmegaSST` | 15/09 |
-| K_T (laminar) | 0,2261 | — | `Helice/Results/bilan_helice.txt`, ligne `case_laminar` | 15/09 |
-| 10K_Q (kEpsilon) | 0,5556 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kEpsilon` | 15/09 |
-| 10K_Q (kOmegaSST) | 0,5401 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kOmegaSST` | 15/09 |
-| 10K_Q (laminar) | 0,5371 | — | `Helice/Results/bilan_helice.txt`, ligne `case_laminar` | 15/09 |
-| η₀ (kEpsilon) | 0,5599 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kEpsilon` | 15/09 |
-| η₀ (kOmegaSST) | 0,5901 | — | `Helice/Results/bilan_helice.txt`, ligne `case_kOmegaSST` | 15/09 |
-| η₀ (laminar) | 0,6033 | — | `Helice/Results/bilan_helice.txt`, ligne `case_laminar` | 15/09 |
-| y+ propellerTip, min | 27,9 | — | `Helice/docs/ETAT-DES-LIEUX.md:34` (calcul pvbatch du 14/09, sans couches, t=0,06 s, pondéré par l'aire — pas de log brut ré-exploitable, résultat consigné directement) | 15/09 |
-| y+ propellerTip, médiane | 161 | — | `Helice/docs/ETAT-DES-LIEUX.md:34` | 15/09 |
-| y+ propellerTip, max | 1043 | — | `Helice/docs/ETAT-DES-LIEUX.md:34` | 15/09 |
-| y+ propellerTip, fraction dans [30;300] | 83,7 | % | `Helice/docs/ETAT-DES-LIEUX.md:34` | 15/09 |
+| J du solveur (=U_aval/(nD) ; PAS une avance, non utilisé) | ≈ 0,89 | — | calculé : `\|U_aval\|/(nD)` ; c'est ce que `propellerPerformance.dat` écrit dans sa colonne `J`. La colonne `J` de `data/perf_*.csv` est, elle, l'avance imposée (ligne ci-dessus) | 20/09 |
+| K_T (moyenne dernier tour, kEpsilon) | 0,2199 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| K_T (kOmegaSST) | 0,2248 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| K_T (laminar) | 0,2295 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| 10K_Q (kEpsilon) | 0,5606 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| 10K_Q (kOmegaSST) | 0,5452 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| 10K_Q (laminar) | 0,5437 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé | 20/09 |
+| η₀ (kEpsilon) | 0,5457 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé, avec l'avance imposée J = 0,8743 | 20/09 |
+| η₀ (kOmegaSST) | 0,5738 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé, avec l'avance imposée J = 0,8743 | 20/09 |
+| η₀ (laminar) | 0,5873 | — | `Helice/scripts/comparaison_modeles.py`, dernier tour complet [0,1193 ; 0,1591] s, moyenne pondérée par le temps, D corrigé, avec l'avance imposée J = 0,8743 | 20/09 |
+| y+ propellerTip, min | 27,9 | — | `Helice/docs/ETAT-DES-LIEUX.md:34`. **Provenance retrouvée et REPRODUITE le 18/09** (consigne "Cloture-et-passation" LOT 1) : `case_kEpsilon` (sans couches), champ `0.06/yPlus` écrit le 14/09 par `pimpleFoam -postProcess -func yPlus -time 0.06`, encore présent sur disque -- rejoué directement (sans ParaView) par `_Setup/outils/verifier_yplus_pondere_aire.py --cas Helice/case_kEpsilon --time 0.06 --patch propellerTip`, résultat identique à 4 décimales (27,8951) | 15/09 |
+| y+ propellerTip, médiane | 161 | — | idem -- reproduit à 161,11 (pondérée par l'aire) | 15/09 |
+| y+ propellerTip, max | 1043 | — | idem -- reproduit à 1043,0622 | 15/09 |
+| y+ propellerTip, fraction dans [30;300] | 83,7 | % | idem -- reproduit à 83,7073 % (fraction de l'AIRE ; fraction du nombre de faces, pour contexte : 76,05 %) | 15/09 |
 | Couverture des couches, propellerTip (demandé/obtenu) | 6 / 3,71 | couches | `Helice/case_kEpsilon_layers/log.snappyHexMesh.tipedge:2940` | 15/09 |
 | Couverture des couches, propellerTip (%) | 76,8 | % | `Helice/case_kEpsilon_layers/log.snappyHexMesh.tipedge:2940` | 15/09 |
 | nCells (maillage à couches, `case_kEpsilon_layers`) | 608463 | cellules | `Helice/case_kEpsilon_layers/constant/polyMesh/owner:13` | 15/09 |
-| Amplitude crête à crête K_T, fenêtre commune [0,022032;0,06] s (kEpsilon) | 0,0176 | — | `Helice/data/perf_kEpsilon.csv`, max−min sur la fenêtre (recalculé le 15/09 sur les données rééchelonnées le 14/09 — remplace la valeur pré-rééchelonnement 0,0294 citée au 13/09) | 15/09 |
-| Amplitude crête à crête K_T, même fenêtre (kOmegaSST) | 0,0223 | — | `Helice/data/perf_kOmegaSST.csv`, même méthode (remplace 0,0373) | 15/09 |
-| Amplitude crête à crête K_T, même fenêtre (laminar) | 0,0242 | — | `Helice/data/perf_laminar.csv`, même méthode (remplace 0,0404) | 15/09 |
+| Amplitude crête à crête K_T, dernier tour complet [0,1193;0,1591] s (kEpsilon) | 0,0039 | — | `Helice/data/perf_kEpsilon.csv`, max−min sur la fenêtre (`comparaison_modeles.py`) ; la valeur à 1,5 tour était gonflée par la mise en régime (voir l'historique en fin de fichier) | 20/09 |
+| Amplitude crête à crête K_T, même fenêtre (kOmegaSST) | 0,0048 | — | `Helice/data/perf_kOmegaSST.csv`, même méthode | 20/09 |
+| Amplitude crête à crête K_T, même fenêtre (laminar) | 0,0048 | — | `Helice/data/perf_laminar.csv`, même méthode (0,00393 / 0,00478 / 0,00481 à 5 chiffres : kOmegaSST et laminar ne se distinguent pas) | 20/09 |
 | Pas de temps naturel (sans couches) | 3,23e-5 | s | `case_kEpsilon` (`adjustTimeStep`, pas observé en régime établi) — voir `_Methodo/JOURNAL.md`, 13/09 « Pas fixe assumé » | 15/09 |
 | Période de rotation (=1/n) | 0,03977 | s | calculé depuis n=25,15 tr/s ci-dessus | 15/09 |
 | Pas par tour, pas naturel (=période/pas naturel) | 1231 | pas/tour | calculé (0,03977/3,23e-5) — **JUSTE**, les deux termes sont indépendamment sourcés dans ce tableau | 15/09 |
@@ -51,10 +51,26 @@ la géométrie et le maillage à couches, précisé colonne « Fichier · ligne 
 | S, accélération 4→16 rangs, sans couches | 1,97 | — | `_Methodo/JOURNAL.md`, 13/09 « LOT N (reprise) » : 152,73/77,35 s pour 50 pas — **rang de référence : 4→16, PAS 4→8** | 15/09 |
 | Débit, 4/8/16 rangs, AVEC couches | 17,2 / 27,8 / 32,8 | pas/min | `case_kEpsilon_layers/log.pimpleFoam.bench{4,8,16}`, dernière `ExecutionTime` (174,68 / 107,87 / 91,55 s), 50 pas chacun | 15/09 |
 | n, précision oméga/2π (pour tours/angle, LOT A3) | 25,146 | tr/s | calculé (`constant/dynamicMeshDict:29`, ω=158 rad/s, n=ω/2π) — plus précis que le n=25,15 arrondi ci-dessus, utilisé pour convertir temps→tours dans `data/perf_*.csv` | 15/09 |
-| Lignes de données, `perf_kEpsilon.csv` (1 seul segment, jamais repris) | 1853 | lignes | `Helice/data/perf_kEpsilon.csv` (`wc -l` moins l'en-tête) | 15/09 |
-| Tours couverts à t=0,06 s (=0,06×25,146) | 1,509 | tours | calculé depuis n=25,146 ci-dessus | 15/09 |
-| Pas par tour, mesuré directement sur le CSV (=1853/1,509) | 1228 | pas/tour | calculé, `Helice/data/perf_kEpsilon.csv` — **confirme indépendamment** la ligne « pas naturel » ci-dessous (deuxième méthode, deux sources primaires distinctes) | 15/09 |
+| Lignes de données, `perf_kEpsilon.csv` (deux segments, `0/` et `0.06/`) | 4874 | lignes | `Helice/data/perf_kEpsilon.csv` (`wc -l` moins l'en-tête) | 15/09 |
+| Tours couverts à t=0,159067 s (=0,159067×25,146) | 4,000 | tours | calculé depuis n=25,146 ci-dessus | 20/09 |
+| Pas par tour, mesuré directement sur le CSV (=4874/4,000) | 1218 | pas/tour | calculé, `Helice/data/perf_kEpsilon.csv` — **confirme à 1 % près** la ligne « pas naturel » ci-dessous (1231 ; le pas est adaptatif, il grandit un peu) | 15/09 |
 | Trou de données, `perf_kOmegaSST.csv` (segment repris) | 0,0138388 | s | `Helice/data/perf_kOmegaSST.csv`, saut entre 0,00819355 s et 0,0220323 s (`postProcessing/propellerInfo1/0/` s'arrête, `/0.022/` reprend) | 15/09 |
+| R mesuré sur `propellerTip.obj.gz` (rayon max des sommets) | 0,11372 | m | `Helice/case_kEpsilon/constant/triSurface/propellerTip.obj.gz`, mesuré par `_Setup/outils/mesurer_pas_pale.py` — écart à D/2=0,113689 ci-dessus : 0,000031 m (0,027 %). **Première confirmation de D INDÉPENDANTE de `system/propellerInfo`** : cette mesure lit la géométrie triangulée brute, jamais le radius déclaré dans le dict — les deux sources concordent | 17/09 |
+| P/D à r/R=0,5 (formule corrigée le 18/09, P/D=π·(r/R)·tanφ) | 1,2144 | — | `_Setup/outils/mesurer_pas_pale.py`, φ=-37,71°, dispersion 0,00° sur 4 pales (seuil 5°). **Correction du 18/09** : la valeur publiée le 17/09 (2,4287) était FAUSSE, formule erronée d'un facteur 2 (2π·(r/R)·tanφ au lieu de π·(r/R)·tanφ, confusion r/R et r/D à la dérivation) — voir JOURNAL 18/09 | 18/09 |
+| P/D à r/R=0,7 (formule corrigée le 18/09) | 1,1483 | — | `_Setup/outils/mesurer_pas_pale.py`, φ=-27,57°, dispersion 0,00° sur 4 pales. Remplace la valeur erronée du 17/09 (2,2967), même correction de facteur 2 | 18/09 |
+| P/D à r/R=0,9 (formule corrigée le 18/09) | 1,1156 | — | `_Setup/outils/mesurer_pas_pale.py`, φ=-21,53°, dispersion 0,00° sur 4 pales. Remplace la valeur erronée du 17/09 (2,2312), même correction de facteur 2 | 18/09 |
+| Pas de l'hélice : variable ou constant (0,5R→0,9R) | VARIABLE, décroissant | — | `_Setup/outils/mesurer_pas_pale.py` — φ décroît de 37,71° à 21,53° de 0,5R à 0,9R, P/D décroît de 1,214 à 1,116 (formule corrigée) — soit -8,1 % sur cette plage | 18/09 |
+
+**`FIG-fon-s7-reference-wageningen.png` (générée par `_Setup/outils/reference_wageningen.py`,
+suivie en git) — non-usage justifié (LOT 3, consigne du 18/09 « Cloture-et-passation »)** :
+compare K_T/10K_Q/η₀ de nos trois cas à la série B de Wageningen au P/D corrigé ci-dessus. La
+figure porte elle-même sa conclusion en légende : « Notre pale n'est pas une série B. Cette
+comparaison teste la vraisemblance, elle ne valide rien. » Le panneau η₀ affiche une divergence
+numérique brutale (jusqu'à ~60) près de J≈1,28 où l'extrapolation de la série B change de signe
+au dénominateur — un artefact de l'ajustement polynomial, pas une lecture pédagogique propre.
+Diagnostic enseignant (a motivé le gel de la piste série B, voir JOURNAL et
+`ENSM-Enseignement/_Reserve/pale-B4/`), pas une figure conçue pour un deck étudiant — non
+intégrée à un support pour cette raison, pas par oubli.
 
 **LOT A1 — chaîne solveur→figure, maillon cassé identifié (15/09)** : `system/
 propellerInfo` (functionObject natif, colonnes `Time n URef J KT 10*KQ eta0`, UNE
@@ -75,8 +91,8 @@ capturée en code. **Même maillon cassé pour `Results/bilan_helice.txt` et les
 */propellerPerformance.dat` (le brut périmé), PAS `data/perf_*.csv` — vérifié par
 exécution arithmétique de `average_last_revolution()` sur le brut (donne K_T=0,3625,
 J=1,0270 pour kEpsilon, les valeurs PÉRIMÉES) contre la même fonction appliquée à
-`data/perf_kEpsilon.csv` (donne K_T=0,2170, J=0,9007 — reproduit EXACTEMENT
-`Results/bilan_helice.txt` actuel). **Conclusion : `bilan_helice.py`, SI RELANCÉ
+`data/perf_kEpsilon.csv` (donne K_T=0,2170, J=0,9007 à 1,5 tour — reproduisait EXACTEMENT
+`Results/bilan_helice.txt` du 15/09, conservé sous `bilan_helice_1p5tours.txt`). **Conclusion : `bilan_helice.py`, SI RELANCÉ
 AUJOURD'HUI, régénérerait un `bilan_helice.txt` et deux .png PÉRIMÉS** — le script est
 trouvé, mais il n'est PAS reproductible en l'état contre les valeurs établies dans ce
 tableau. Ne jamais le relancer sans d'abord le corriger pour lire `data/perf_*.csv` au
@@ -89,7 +105,7 @@ référence « 4464 s/tour » qui, divisée par le coût mesuré 3,0546 s/pas (4
 couches), implique **1461 pas/tour**. Deux méthodes indépendantes contredisent ce
 chiffre : (1) pas naturel mesuré (3,23e-5 s) ÷ période de rotation (0,03977 s, depuis
 n=25,15 tr/s) = **1231 pas/tour** ; (2) lecture directe du CSV — 1853 lignes de données
-pour 1,509 tour couverts (t=0,06 s × n=25,146) = **1228 pas/tour**, une mesure PRIMAIRE,
+pour 1,509 tour couverts à l'époque (t=0,06 s × n=25,146) = **1228 pas/tour**, une mesure PRIMAIRE,
 pas un calcul dérivé. Les deux méthodes s'accordent à moins de 0,3 % l'une de l'autre et
 CONTREDISENT 1461 de 19 %. **1228-1231 est désormais positivement établi, pas seulement
 probable.** Le terme `3,0546 s/pas` lui-même est vérifié légitime : il mesure un coût de
@@ -104,7 +120,11 @@ plus une simple suspicion. **Conséquence pratique inchangée** : tout `T_total(
 avec 4464 s'appuie sur un pas/tour non soutenu par les données ; utiliser 1228-1231.
 
 **LOT D1 (16/09) — pas fixe retenu pour `case_kEpsilon_layers` : 2e-5 s, M et N
-recalculés, 1,031/6 CADUCS.** Trois essais bornés (200 pas, 4 rangs, maillage
+recalculés, 1,031/6 CADUCS.** **[CORRECTION 20/09 : le pas « retenu » ci-dessous, 2e-5 s, est celui des
+essais de 200 pas du 16/09. Le calcul complet de `case_kEpsilon_layers` a tourné à `deltaT 1e-5`,
+`adjustTimeStep no` (`system/controlDict`), 15 907 pas jusqu'à t = 0,15907 s (`propellerPerformance_0.dat`).
+Toute lecture « couches = pas fixe 2e-5 s » est fausse pour ce calcul ; `Helice/scripts/borne_pas_de_temps.py`
+chiffre l'effet de ce choix de pas.]** Trois essais bornés (200 pas, 4 rangs, maillage
 `case_kEpsilon_layers` déjà construit, rampe 5 ms conservée), `controlDict` sauvegardé
 et restauré (vérifié par `diff`/`md5sum` après chaque essai) :
 
@@ -165,3 +185,20 @@ des couches sur `propellerTipEdge`, ne correspond pas au maillage sur
 établi — M reste PROVISOIRE (0,763/2,5/1,03 selon la base de comparaison, aucune
 tranchée) et N reste PLAFONNÉ À 6 par construction, jamais 7 (voir LOT D1/17-09
 ci-dessus).**
+
+## Historique — valeurs à 1,5 tour (jusqu'au 19/09), remplacées le 20/09 par celles à 4,00 tours ci-dessus
+
+Les trois cas atteignent t = 0,159067 s (4,00 tours) depuis le 20/09 (`case_kOmegaSST` repris de 0,143 à
+0,159068 ; CSV régénérés, `Helice/scripts/extraire_kit_donnees.py`). Les valeurs du tableau principal sont les
+moyennes du **dernier tour complet** [0,1193 ; 0,1591] s (`Helice/scripts/comparaison_modeles.py`). La dérive
+d'un tour au suivant est ≤ 0,02 % sur K_T et K_Q, ≤ 0,05 % sur η₀. **Les valeurs à 1,5 tour, ci-dessous, étaient
+sous-estimées de 1,2 à 1,5 % (K_T) par la mise en régime** (leur fenêtre recouvrait le transitoire) et leurs amplitudes
+gonflées d'un facteur 4 à 5 ; elles sont tracées dans `Helice/Results/bilan_helice_1p5tours.txt` (local).
+
+| Grandeur (fenêtre à 1,5 tour, PÉRIMÉES) | kEpsilon | kOmegaSST | laminar |
+|---|---|---|---|
+| K_T | 0,2170 | 0,2221 | 0,2261 |
+| 10 K_Q | 0,5556 | 0,5401 | 0,5371 |
+| η₀ | 0,5599 | 0,5901 | 0,6033 |
+| Amplitude crête à crête de K_T, fenêtre commune [0,022032 ; 0,06] s | 0,0176 | 0,0223 | 0,0242 |
+| J (dernière ligne, t = 0,06 s) | 0,9033 | — | — |

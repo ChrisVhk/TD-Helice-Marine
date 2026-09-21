@@ -49,7 +49,8 @@ LABELS = {
 RE_TIME = re.compile(r"^Time\s*=\s*([\d.eE+\-]+)")
 RE_RES_P = re.compile(r"Solving for p,\s+Initial residual\s*=\s*([\d.eE+\-]+)")
 
-PERF_COLUMNS = ["time", "n", "URef", "J", "KT", "10KQ", "eta0"]
+# Colonnes du CSV du kit (extraire_kit_donnees.py) : `J` = avance imposée, `U_aval` = vitesse relevée en aval (ex-URef).
+PERF_COLUMNS = ["time", "n", "U_aval", "J", "KT", "10KQ", "eta0"]
 
 
 def parse_residuals(case_dir: Path):

@@ -16,8 +16,14 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
 
 ---
 
-## 01_geometrie.png
+## FIG-fon-s7-geometrie-helice.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4, consigne « Quatre-tours »)** : citée
+  par le deck de la séance 1, un support étudiant — ne peut plus
+  vivre sous `galerie/` (gitignoré en bloc, invisible sur GitHub pour un étudiant).
+  Vit désormais à la racine de `Helice/Images/`, SUIVIE en git. Ancien nom :
+  `01_geometrie.png`. Régénérée par `_Setup/outils/rendre_vues_helice.py`
+  (`--out-dir Helice/Images` désormais).
 - **Introduit** : l'objet, et un premier avertissement de méthode. Vue quasi axiale
   pour compter les 4 pales (erratum Z=4, 13/09).
 - **Corps solide** : Surface With Edges, contour sombre — se lit comme un objet.
@@ -28,30 +34,40 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   sur les données existantes.
 - **Cas / modèle / instant** : `case_kEpsilon` · k-ε · t = 0,06 s.
 
-## 02_geometrie_domaine.png
+## FIG-fon-s7-geometrie-domaine.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : citée par
+  le deck de la séance 1 — voir la note de `FIG-fon-s7-geometrie-
+  helice.png` ci-dessus, même raison, même mécanisme. Ancien nom :
+  `02_geometrie_domaine.png`.
 - **Introduit** : on calcule un volume de fluide (le cylindre), pas une hélice isolée.
   `inlet` (vert) / `outlet` (orange) marqués en couleurs franches.
 - **Cadrage volontairement large** : le sujet de CETTE image est le contraste
   d'échelle objet/domaine — le zoomer serait contredire son propre message. Pas de
   repère d'écoulement/échelle ajouté ici (voir réserve du rapport).
 
-## 03_maillage_coupe.png
+## FIG-fon-s7-maillage-coupe.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `03_maillage_coupe.png`.
 - **Introduit** : discrétiser a un coût, concentré près de la pale. Coupe plan
   (0,0,0)/normale z, **recadrée sur l'hélice + sillage proche** (LOT 3.3) au lieu du
   domaine entier. Corps solide (pale+moyeu) ajouté dans la même vue (LOT 3.4).
   Flèche d'écoulement + barre d'échelle (20 mm) ajoutées (LOT 3.6).
 
-## 04_interface_AMI.png
+## FIG-fon-s7-interface-AMI.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `04_interface_AMI.png`.
 - **Introduit** : le maillage glissant (AMI1 rouge/rotor, AMI2 bleu/stator). Écart
   radial entre les deux exagéré pour la lisibilité (rendu, pas le maillage réel).
   **Cadrage large conservé** (même arbitrage que 02) : le contexte du domaine fait
   partie du message ici aussi.
 
-## 05_pression_pales.png
+## FIG-fon-s7-pression-pales.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `05_pression_pales.png`.
 - **Introduit** : la pression diffère nettement entre les deux faces de la pale —
   origine physique de la poussée.
 - **Refonte du 14/09 (LOT 3.8)** : séparation par **orientation de la normale
@@ -67,8 +83,10 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
 - **Moyeu atténué** (opacité 0,35) : le sujet est la pale.
 - Pas de flèche d'écoulement ajoutée sur cette image (écart signalé, voir rapport).
 
-## 06_couches_prismes.png
+## FIG-fon-s7-couches-prismes.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `06_couches_prismes.png`.
 - **Introduit** : une couche limite se maille par une pile de prismes qui
   s'épaississent contre la paroi, avant un maillage de cœur bien plus grossier.
 - **Refonte complète du 14/09 (LOT 3.7)** : l'ancienne coupe (normale à l'axe Y) était
@@ -103,8 +121,14 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   garde la forme réelle de chaque cellule, robuste à cette ondulation.
 - **Cas / modèle** : `case_kEpsilon_layers` · maillage seul, aucun champ.
 
-## 06b_couches_epaisseurs.png
+## FIG-fon-s7-couches-epaisseurs.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4, consigne « Quatre-tours »)** : citée
+  par des supports étudiants (les decks des séances 2 et 3)
+  — ne peut plus vivre sous `galerie/` (gitignoré en bloc). Vit désormais à la racine
+  de `Helice/Images/`, SUIVIE en git. Ancien nom : `06b_couches_epaisseurs.png`.
+  Régénérée par `_Setup/outils/generer_figure_couches_epaisseurs.py` (sortie
+  redirigée).
 - **Introduit (15/09, LOT 5, variante quantitative de l'image 06)** : une image ne
   peut pas montrer à la fois la pale et l'épaisseur des couches (rupture d'échelle,
   voir ci-dessus) — ce graphe ne montre plus la géométrie du tout : épaisseur de
@@ -120,8 +144,10 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
 - **Cas / modèle** : `case_kEpsilon_layers` · lecture de `system/snappyHexMeshDict`
   seulement.
 
-## 07_vitesse.png
+## FIG-fon-s7-vitesse.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `07_vitesse.png`.
 - **Introduit** : le champ de vitesse (norme), lisse (interpolation POINTS),
   accélération marquée aux bouts de pale, sillage plus lent en aval du moyeu.
 - **Recadré** sur l'hélice + sillage proche, corps solide visible, barre dans le
@@ -130,8 +156,10 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   apparaissent au-dessus et en dessous de l'hélice — artefact de bord du `Clip` de
   cadrage, cosmétique, ne gêne pas la lecture du champ.
 
-## 08_turbulence.png
+## FIG-fon-s7-turbulence.png
 
+- **DÉPLACÉ hors de `galerie/` le 17/09 (LOT 4)** : même raison/mécanisme que
+  `FIG-fon-s7-geometrie-helice.png` ci-dessus. Ancien nom : `08_turbulence.png`.
 - **Introduit** : la turbulence (k) est **produite** au bout de pale, à un niveau **un
   ordre de grandeur au-dessus** du niveau ambiant. **Correction du 14/09** : dire
   qu'elle est « quasi nulle ailleurs » est faux — k ne descend jamais sous 0,033 nulle
@@ -158,7 +186,7 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   trois figures ne sont plus ici — elles vivent maintenant à la racine de
   `Helice/Images/` (convention `FIG-fon-s7-*`), TRACKÉES en git (pas gitignorées comme
   le reste de `galerie/`), car ce sont des supports de cours utilisés directement dans
-  les decks (`15_DECK-SEANCE1_Slides.md`), pas de la galerie d'introduction
+  les decks, pas de la galerie d'introduction
   régénérable. Entrée conservée ici pour l'historique de leur introduction.
 - **Introduit (15/09, LOT A5, consigne « Ensemble »)** : K_T, 10·K_Q, η₀ en fonction des
   TOURS (pas des secondes), trois fermetures de turbulence superposées. Transitoire

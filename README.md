@@ -33,4 +33,18 @@ bash 03_postprocess.sh  # compare KT, KQ, eta0 entre les 3 modèles
 bash 04_clean.sh        # nettoyage
 ```
 
+**Avant tout calcul long : pré-vol INV-23** (l'espace du disque HÔTE, jamais `df /` — le disque de la distro
+affiche des centaines de Go libres même quand l'hôte est plein).
+
+```bash
+bash _Setup/outils/preflight.sh                 # disque hôte, RAM ; sort en code != 0 et NOMME le seuil franchi
+bash _Setup/outils/preflight.sh Helice/case_X   # + vérifie qu'un calcul Foam est vivant sur ce cas
+```
+
+`_Setup/outils/preflight.sh` est une copie synchronisée du noyau ENSM (source de vérité :
+`ENSM-Enseignement/_Setup/outils/preflight.sh`, dépôt privé ; ce dépôt-ci ignore `_Setup/` sauf une liste
+d'outils propres). Sur une machine neuve, le recopier ou lancer
+`bash ~/ENSM-Enseignement/_Setup/synchroniser_noyau.sh <ce dépôt>`. Seuils : bloquant sous 15 Go libres sur
+l'hôte, alerte sous 40 Go.
+
 Chaque cas est autonome (mesh + solve), self-contained comme le tutoriel officiel dont il dérive.

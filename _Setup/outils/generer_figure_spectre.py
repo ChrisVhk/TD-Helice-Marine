@@ -9,7 +9,7 @@ Spectre de K_T (dernier tour complet) pour les deux cas sains distribués en sé
 (largeur = 1/durée de la fenêtre). Rend visuel le calcul attendu en question (b) de la diapo
 « Les trois pales » : ne PAS résoudre la question à l'avance -- cette figure est une diapo de
 REVEAL, à montrer seulement après que les binômes ont proposé leur propre calcul, jamais avant
-(cf. notes d'orateur de la diapo qui la porte).
+(cf. les notes de la diapo qui la porte).
 
 Méthode identique à celle du diagnostic LOT 0A (STATUT.md, 06/09) : ré-échantillonnage sur le
 pas de temps natif du dernier tour, fenêtre de Hann, FFT réelle -- pas une FFT brute sur un

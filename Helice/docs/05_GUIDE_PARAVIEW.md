@@ -69,8 +69,9 @@ mouvement de la même manière que les cas RANS.
    > `p` est la **pression cinématique** (m²/s²) : $p_{[Pa]} = p \times \rho$. Pour la comparaison
    > entre modèles, l'échelle en m²/s² suffit.
 4. **Rescale to Data Range**, noter min/max, imposer la même échelle sur les 3 cas.
-5. Orienter la caméra pour voir la **face en pression** (intrados, côté amont) puis la **face en
-   dépression** (extrados). Deux captures.
+5. Orienter la caméra pour voir la **face en pression** (l'intrados, la « face » en architecture navale :
+   côté **aval**, celui vers lequel l'eau est accélérée) puis la **face en dépression** (l'extrados, le
+   « dos » : côté **amont**). Deux captures.
 
 **À observer** : étendue de la zone de dépression sur l'extrados (c'est elle qui porte la poussée) ;
 présence de taches de dépression marquée en bord d'attaque (risque de décollement / cavitation en

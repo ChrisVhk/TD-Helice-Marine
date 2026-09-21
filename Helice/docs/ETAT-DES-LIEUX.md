@@ -39,40 +39,49 @@ trancherait -- pas le détail.
   mesure sourcée) ; ligne de provenance incrustée sur les images de
   `Helice/Images/galerie/`.
 
-- **Amplitude crête à crête de K_T, fenêtre COMMUNE aux trois modèles
-  [0,022032 ; 0,06] s** (exclut le trou de données du 13/09) :
-  laminaire 0,0242 > kOmegaSST 0,0223 > kEpsilon 0,0176 — ordre identique à celui
-  déjà publié. **Corrigé le 15/09** : ce bloc citait encore 0,040407/0,037294/0,029420,
-  calculées le 13/09 sur `data/perf_*.csv` AVANT le rééchelonnement de D du 14/09 —
-  valeurs pré-rééchelonnement, périmées comme toute grandeur en K_T non recopiée depuis
-  `Helice/docs/PARAMETRES_CAS.md`. L'ORDRE entre modèles est inchangé par construction
-  (le rééchelonnement multiplie les trois par le même facteur), seuls les chiffres
-  absolus l'étaient.
-  Source : `Helice/docs/PARAMETRES_CAS.md` (recalcul direct sur `data/perf_*.csv`
-  rééchelonnés, 15/09).
+- **Amplitude crête à crête de K_T, dernier tour complet [0,119300 ; 0,159067] s (4,00 tours),
+  fenêtre COMMUNE aux trois modèles :** kEpsilon 0,0039 < kOmegaSST 0,0048 ≈ laminaire 0,0048
+  (5 chiffres : 0,00393 / 0,00478 / 0,00481 — les deux derniers ne se départagent pas).
+  **Corrigé le 20/09** : ce bloc donnait « laminaire 0,0242 > kOmegaSST 0,0223 > kEpsilon 0,0176 »,
+  mesuré à 1,5 tour sur [0,022 ; 0,06] s. Cette fenêtre recouvrait la mise en régime (K_T croît de
+  +4 % entre les deux demi-tours de la fenêtre) : les amplitudes étaient gonflées d'un facteur 4 à 5,
+  et l'ordre à trois niveaux n'est pas conservé (kOmegaSST et laminaire sont à égalité). On y croyait parce
+  que la fenêtre était « commune » — elle l'était, mais commune ne veut pas dire en régime établi.
+  Source : `Helice/docs/PARAMETRES_CAS.md`, `Helice/scripts/comparaison_modeles.py` (20/09).
 
-- **η₀ = 0,5599 / 0,5901 / 0,6033** (kEpsilon / kOmegaSST / laminaire) — robuste à D et à ρ :
+- **η₀ = 0,5457 / 0,5738 / 0,5873** (kEpsilon / kOmegaSST / laminaire), dernier tour à 4,00 tours,
+  calculé avec l'avance IMPOSÉE J = 0,8743 (à 1,5 tour : valeurs périmées, fenêtre non établie) — robuste à D et à ρ :
   invariant exact par construction (`η₀ = J·K_T/(K_Q·2π)`, les puissances de D et le
-  facteur ρ s'annulent identiquement entre numérateur et dénominateur).
-  Source : `Helice/Results/bilan_helice.txt` (rééchelonné le 14/09, valeurs recalculées
-  identiques aux publiées à moins de 5.10⁻⁵) ; `_Methodo/JOURNAL.md`, entrée du 14/09.
+  facteur ρ s'annulent identiquement entre numérateur et dénominateur). **η₀ dépend en revanche de J** :
+  le J écrit par le solveur (`URef/(nD)`, `URef` relevée à 0,17 D en aval des pales) n'est pas une avance et
+  surestimait η₀ de 1,9 à 2,2 %.
+  Source : `Helice/docs/PARAMETRES_CAS.md` ; `_Methodo/JOURNAL.md`, entrées du 14/09 et du 20/09.
 
-- **La pale est un baffle (surface d'épaisseur nulle, deux patches coïncidents), pas un
-  volume solide.** `snappyHexMesh` le déclare explicitement : « Converting baffles back
-  into zoned faces ». Vérifié indépendamment le 15/09 par analyse de l'écart angulaire
-  entre centres de cellules fluides voisines à plusieurs rayons/tranches Y de la pale :
-  écart maximal observé 2,39°–4,09°, taille angulaire normale d'une cellule de cœur —
-  aucun trou en forme de pale à aucun rayon testé. Conséquence : les couches de prismes
-  croissent sur les deux faces coïncidentes (intrados, extrados), et « la pression sur la
-  pale » désigne ces deux faces de normales opposées, jamais une seule surface — d'où la
-  séparation intrados/extrados PAR ORIENTATION DE LA NORMALE, seule méthode possible ici.
-  Ce constat invalide rétroactivement quatre tentatives antérieures de rendu (« image
-  06 ») qui cherchaient un vide de la forme du profil de pale dans le maillage fluide :
-  la 5ᵉ tentative (coupe cylindrique, consigne du 15/09) a été abandonnée avant rendu dès
-  que cette vérification a montré la prémisse fausse.
-  Source : `Helice/case_kEpsilon_layers/log.snappyHexMesh` (« Converting baffles back
-  into zoned faces ») ; `_Methodo/JOURNAL.md`, entrée du 15/09 ; théorie complète
-  `Helice/docs/03_BASE_THEORIQUE.md`, section « La pale est un baffle, pas un volume ».
+- **La pale est un vrai volume dans le maillage, pas un baffle.** Correction du 20/09 : ce
+  paragraphe affirmait le contraire (deux patches coïncidents) et s'appuyait sur deux éléments qui ne
+  tiennent pas : la ligne « Converting baffles back into zoned faces » du log `snappyHexMesh` — la
+  table FaceZone/nBaffles qui l'accompagne ne concerne que `innerCylinderSmall` (l'AMI), aucune
+  occurrence ne concerne la pale — et l'analyse de l'écart angulaire du 15/09 (2,39°–4,09°), dont le
+  script a disparu du dépôt et qui n'est pas rejouable. Mesure directe du 19/09 sur les patches de
+  pale : la face de normale opposée la plus proche est à un décalage normal de 5,9 mm (0,3-0,5R) à
+  2,6 mm (0,95-1,01R), soit environ 0,85 fois l'épaisseur mesurée (10,1 mm à 0,3R, 3,5 mm à 0,9R) ;
+  un baffle donnerait 0. Même résultat sur cinq maillages d'essai ; en coupe, un vide d'environ 3 mm
+  entre deux parois (`_Setup/outils/mesurer_vide_pale.py`). Ce qui reste incomplet : les couches de
+  prismes sur `propellerTip` (3,71 sur 6, 76,8 % de l'épaisseur visée ; pile de couches sur 62,9 % de
+  l'aire des flancs, 1,7 % dans la bande 0,804-0,925R). Huit variantes de maillage seul (raffinement local,
+  3 couches, leur combinaison, troncature à 0,97R/0,99R, couches dégressives, et deux avec couches sur la
+  bande `Edge`, 20/09) : la combinaison couvre 69 % des flancs (81 % de `propellerTip` seul contre 74 % en
+  production) mais à 71 cellules à déterminant < 0,001 contre 11 et skewness 6,79 contre 4,32 ; la production
+  avec 6 couches sur l'`Edge` couvre 81,6 % (bande : 77,3 %) avec 7 cellules et la même skewness ; la combinaison
+  avec 3 couches sur l'`Edge` couvre 87,9 % (bande : 92,6 %) mais 43 cellules et skewness 6,79. Aucune ne réunit
+  couverture ≥ 80 % sur la bande ET qualité de la production. *(Le « 93-98 % des flancs » que cette phrase
+  portait était mesuré avec un proxy invalide, corrigé le 20/09.)* La bande 0,80R-0,925R reste sans couches
+  dans le cas calculé, par décision du 13/09.
+  Conséquence inchangée : séparer intrados et extrados PAR ORIENTATION DE LA NORMALE.
+  Les tentatives de rendu « image 06 » écartées le 15/09 cherchaient un vide de la forme du profil :
+  leur prémisse était juste, le vide existe (coupe de profil `rendre_couches_pale.py`).
+  Source : `_Methodo/JOURNAL.md`, entrées du 19/09 et du 20/09 ; tableaux complets dans
+  `Helice/docs/03_BASE_THEORIQUE.md`, section « La pale est un vrai volume dans le maillage ».
 
 - **Trois défauts de données connus, à ne jamais confondre entre eux** (détail complet
   et sources exactes : `Helice/docs/METHODO_DONNEES.md` §5) :
@@ -136,8 +145,12 @@ posée : dt ≥ 2,06.10⁻⁵ s. **PARTIELLEMENT TRANCHÉ le 16/09 (LOT D1)** : 
 mesuré stable (200 pas, `case_kEpsilon_layers`, 4 rangs) — au-dessus de la borne, mais
 dt=2,5e-5 s diverge (FPE), donc la marge au-dessus de 2e-5 s reste étroite et non
 cartographiée finement (rien entre 2e-5 et 2,5e-5 n'a été testé).
+(Correction du 20/09 : « le pas fixe retenu (2e-5 s) » ne décrit PAS le calcul qui a été fait. Le cas complet
+`case_kEpsilon_layers` (4 tours) a tourné à `deltaT 1e-5`, `adjustTimeStep no` (`system/controlDict`), soit
+15 907 pas jusqu'à t = 0,15907 s (`propellerPerformance_0.dat`) ; le 2e-5 s n'a servi qu'aux essais de 200 pas du
+16/09. Le pas 2e-5 « retenu » l'a été comme hypothèse de plan, jamais comme réglage du calcul de production.)
 
-**Trancherait** : mesurer le volume RÉEL écrit par un cas complet au pas 2e-5 s retenu
+**Trancherait** : mesurer le volume RÉEL écrit par un cas complet au pas de production (1e-5 s fixe, voir la correction du 20/09 ci-dessus)
 (pas seulement 200 pas exploratoires) avant d'arbitrer `§4` en entier — non fait ici,
 hors périmètre du 16/09 (borné à 200 pas/essai, aucune production).
 
@@ -156,10 +169,15 @@ pas projeté) — ni l'une ni l'autre tentée à ce jour.
 
 ## OÙ ON VA
 
-- **Séance 2** : l'argument amplitude contre écart tient et reste valable indépendamment
-  de toutes les incertitudes ci-dessus — l'oscillation crête-à-crête de K_T (0,0176 à
-  0,0242 selon le modèle, fenêtre commune) dépasse l'écart entre modèles qu'on cherche à
-  classer : comparer trois fermetures dans ces conditions n'a pas de sens statistique.
+- **Séance 2** : **le sens de l'argument s'est inversé le 20/09.** À 1,5 tour l'oscillation crête à
+  crête de K_T (0,018 à 0,024) dépassait l'écart entre modèles (ΔK_T ≈ 0,0096 à 4 tours) ; à 4 tours,
+  dernier tour établi, l'oscillation vaut 0,0039 à 0,0048 et c'est **l'écart entre modèles qui la dépasse de
+  2 à 2,5 fois**. Le message de séance devient : un écart entre modèles ne se lit qu'en régime établi et une fois
+  les autres incertitudes bornées. Sur le COUPLE, le maillage de paroi (couches sur 63 % de l'aire des flancs, aucune sur la bande 0,804-0,925R) déplace 10K_Q de +4,2 % contre 3,1 %
+  pour l'écart entre modèles ; sur K_T il ne se mesure pas (effet 6,6× plus petit que la borne du pas de temps).
+  Résultat encore à défendre : la zone 0,80–0,925R sans couches reste ouverte
+  (`_Reserve/comparaison-3-modeles/RAPPORT_comparaison_4tours_2026-09-20.md` §3.4 et §6).
+  Voir le deck de la séance 2.
 - **Séance 3** : Acte 1 — chaque binôme apporte un point de J (mesuré, pas nominal) →
   diagramme en eau libre collectif. Acte 2 — la courbe entrante dans un calcul
   d'auto-propulsion classique, SANS CFD (le calcul d'hélice reste en amont, jamais recalculé

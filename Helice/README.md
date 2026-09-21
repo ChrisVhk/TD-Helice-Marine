@@ -38,5 +38,4 @@ cd case_kOmegaSST && ./Allrun.pre && ./Allrun
 
 ## Docs
 
-Voir [`docs/STATUT.md`](docs/STATUT.md) pour l'état de la suite pédagogique (ce qui est rédigé,
-ce qui reste à faire).
+Voir [`docs/00_INDEX.md`](docs/00_INDEX.md) pour l'ordre de lecture des documents.

@@ -12,9 +12,56 @@ _Setup/outils/*
 !_Setup/outils/extraire_etat_des_lieux_public.py
 !_Setup/outils/verifier_valeurs_perimees.sh
 !_Setup/outils/tracer_series_temporelles.py
+!_Setup/outils/tester_regime_etabli.py
+!_Setup/outils/mesurer_pas_pale.py
+!_Setup/outils/reference_wageningen.py
+!_Setup/outils/generer_controle_G1.py
+!_Setup/outils/bilan_maillage_pale.py
+!_Setup/outils/generer_figures_mecanisme.py
+!_Setup/outils/verifier_avant_purge.sh
+!_Setup/outils/mesurer_fermeture_pale.py
+!_Setup/outils/verifier_pptx_perime.sh
+!_Setup/outils/verifier_pptx_restreint.sh
+!_Setup/outils/generer_figures_yplus.py
+!_Setup/outils/verifier_yplus_pondere_aire.py
+!_Setup/outils/generer_zone_bout_pale.py
+!_Setup/outils/mesurer_vide_pale.py
+!_Setup/outils/mesurer_couches_pale.py
+!_Setup/outils/rendre_couches_pale.py
+!_Setup/outils/carte_couverture_pale.py
+!_Setup/outils/geometrie_pale_essais.py
+!_Setup/outils/caler_exclusions.py
 
-# Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx) : regenerables,
+# Sorties de la chaine partagee (Seances/S<NN>_Slides.md -> .pptx/.pdf) : regenerables,
 # jamais commitees -- meme regime que Helice/*.pptx (LOT I, deck vers Vega, pas vers
-# git). Le rendu de controle (_rendu/) est local, jamais versionne non plus.
+# git). Le PDF (LOT 4, consigne du 18/09 "Supports-Vega") suit la meme regle : c'est
+# l'export d'affichage de Vega, pas une source. Le rendu de controle (_rendu/) est
+# local, jamais versionne non plus.
 Seances/*.pptx
+Seances/*.pdf
 Seances/_rendu/
+
+# SOURCES de séances (21/09, décision de l'enseignant) : Seances/S<NN>_Slides.md et l'ancienne source Helice/docs/15_DECK-SEANCE1_Slides.md
+# ne sont plus suivies. Motif : elles portent les notes de conduite du présentateur (en S03, la diapo 20 donne la réponse à une question
+# posée en séance) et sont lisibles dans un navigateur sans cloner. Elles restent SUR DISQUE : ce sont les sources de vérité de la chaîne
+# de génération. Leur trace versionnée vit dans le dépôt PRIVÉ ENSM-Enseignement (_Reserve/td-helice-enseignant/seances/, INV-11).
+Seances/S[0-9][0-9]_Slides.md
+Helice/docs/15_DECK-SEANCE1_Slides.md
+
+# Images "licence: restreint" (LOT 4, consigne du 18/09 "Consolidee_Figures-et-variante-
+# Vega") : source d'une figure empruntee (auteur/ouvrage/site tiers) -- ne DOIT jamais
+# atteindre le depot public. Le dossier entier est ignore, jamais un fichier par un
+# fichier : une figure restreinte oubliee ici serait la faute la plus grave possible.
+# *_vega.pptx est deja couvert par "Seances/*.pptx" ci-dessus (pas une entree separee).
+Helice/Images/restreint/
+
+# decks retires de la livraison (issus de sources supprimees) : jamais dans le depot public (notes de conduite)
+Seances/_archive_hors_livraison/
+
+# serie de nuit MRF : etat transitoire, cas A/B generes par le script
+Helice/_ETAT_SERIE.txt
+Helice/_serie_nuit.out
+
+# CSV de decomposition pression/frottement (seance 3, seconde partie) : distribues par l enseignant, pas depuis le depot public ; regenerables par Helice/scripts/decomposition_pression_frottement.py --csv ; copie archivee dans ENSM-Enseignement (prive)
+Helice/data/decomposition_*.csv
+__pycache__/

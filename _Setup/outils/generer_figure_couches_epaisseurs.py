@@ -20,8 +20,10 @@ couches 1 à 3 pleines, couche 4 à 71 % de sa hauteur DEMANDÉE, couches 5 et 6
 couche par couche, seule sa MOYENNE est mesurée), dite comme telle dans la légende.
 
 Usage : python3 _Setup/outils/generer_figure_couches_epaisseurs.py [--cas case_kEpsilon]
-Sortie : Helice/Images/galerie/06b_couches_epaisseurs.png (gitignoré, comme le reste de
-la galerie -- régénérable par ce script, jamais à la main).
+Sortie : Helice/Images/FIG-fon-s7-couches-epaisseurs.png -- SUIVIE en git (promue le
+17/09, LOT 4, consigne "Quatre-tours" : citée par des supports étudiants, S02 et
+S03_y-plus, elle ne peut plus vivre sous `Images/galerie/`, gitignoré en bloc et
+invisible sur GitHub pour un étudiant). Régénérable par ce script, jamais à la main.
 """
 import argparse
 import os
@@ -153,7 +155,7 @@ def main():
     # (constate le 15/09 -- l'aspect obtenu, 2,89, derivait du 2,68 vise, a cause de
     # ce recadrage). La taille de figure EXACTE (13,4x5,0 = 2,68) doit survivre
     # telle quelle pour correspondre au placeholder PICTURE du gabarit.
-    out = os.path.join(REPO, "Helice", "Images", "galerie", "06b_couches_epaisseurs.png")
+    out = os.path.join(REPO, "Helice", "Images", "FIG-fon-s7-couches-epaisseurs.png")
     fig.savefig(out, facecolor="white")
     print("écrit :", out)
 

@@ -21,23 +21,11 @@ Ordre de lecture :
 3. `02_QCM_PREREQUIS.md` — positionnement avant de commencer, PUBLIC.
 4. `03_BASE_THEORIQUE.md` — hélice en eau libre, fermetures de turbulence, et
    (ajouté le 15/09) théorie de paroi $y^+$/couches de prismes, PUBLIC.
-5. `04_GUIDE_PAS_A_PAS.md` — exécuter la chaîne OpenFOAM sur le cas fourni, PUBLIC.
-6. `05_GUIDE_PARAVIEW.md` — post-traiter les résultats, PUBLIC. Voir note de
+5. `05_GUIDE_PARAVIEW.md` — post-traiter les résultats, PUBLIC. Voir note de
    recouvrement ci-dessous.
-7. `07_AIDE_MEMOIRE.md` — référence rapide à garder ouverte pendant la séance, PUBLIC.
-8. `11_PORTANCE_TRAINEE_PALE.md` — séance 1-B, du torseur à la portance/traînée
+6. `11_PORTANCE_TRAINEE_PALE.md` — séance 1-B, du torseur à la portance/traînée
    d'une pale, PUBLIC.
-9. `06_QCM_FINAL.md` — fin de séance 1, PUBLIC.
-10. `13_CONTROLE-G1_SUJET.md` — contrôle d'ouverture (groupe 1 uniquement), PUBLIC.
-11. `15_DECK-SEANCE1_Slides.md` — source du deck projeté en séance 1, PUBLIC.
-   **Anomalie connue (documentée le 15/09, LOT 6)** : ce fichier vit dans `Helice/docs/`,
-   alors que les sources des séances 2 et 3 vivent dans `Seances/` (`S02_Slides.md`,
-   `S03_Arborescence-et-perspective_Slides.md`) — INTERDIT de le déplacer maintenant, les
-   étudiants ont cloné le dépôt et un lien mort casserait leur accès en cours de séquence
-   (règle générale de ce dépôt, `Helice/docs/` jamais renommé/déplacé en cours de TD). Il
-   rejoindra `Seances/` (renommé `S01_Slides.md` pour la cohérence) **après la dernière
-   séance**, quand plus aucun étudiant n'a besoin du lien actuel. Détail et convention
-   complète : `Seances/README.md`.
+7. `13_CONTROLE-G1_SUJET.md` — contrôle d'ouverture (groupe 1 uniquement), PUBLIC.
 
 **Enseignant, en regard de la séance 1** (non lus par les étudiants) :
 `08_CORRIGE_QCM.md`, `09_FICHE_ENSEIGNANT.md`, `14_CONTROLE-G1_ENSEIGNANT.md`,
@@ -46,18 +34,16 @@ préparation).
 
 ## Séance 2 — confronter
 
-12. `12_TRAVAUX_INTER_SEANCES.md` — travail à faire ENTRE la séance 1 et la
-    séance 2, PUBLIC.
-13. Deck projeté : `Seances/S02_Slides.md` (hors `docs/`, voir `Seances/README.md`).
+8. Deck projeté : celui de la séance 2 (distribué par Moodle ; voir `Seances/README.md`).
 
 **Enseignant** : `10_CORRIGE_ETUDIANT_DETAILLE.md` (corrigé détaillé, sert la
 confrontation de séance 2 — ne jamais distribuer avant).
 
 ## Séance 3 — arborescence, y⁺, perspective couches
 
-14. `PLAN_SEANCE-3.md` — déroulé complet (Acte 1 : diagramme en eau libre construit
+9. `PLAN_SEANCE-3.md` — déroulé complet (Acte 1 : diagramme en eau libre construit
     en classe ; Acte 2 : auto-propulsion ; piste avancée : maillage à couches), PUBLIC.
-15. Deck projeté : `Seances/S03_Arborescence-et-perspective_Slides.md` (hors `docs/`).
+10. Deck projeté : celui de la séance 3 (distribué par Moodle).
 
 ---
 
@@ -76,6 +62,12 @@ confrontation de séance 2 — ne jamais distribuer avant).
   `ETAT-DES-LIEUX_Enseignant.md`, gitignorée).
 - `ERRATUM.md` — correctif Z=4 (pas 3) du 13/09 : à lire dès qu'un ancien support
   ou une ancienne note évoque « trois pales ».
+- **Régime des images (règle posée le 17/09, LOT 4, consigne « Quatre-tours »)** :
+  `Helice/Images/galerie/*.png` est un atelier, intégralement gitignoré (invisible
+  sur GitHub). `Helice/Images/*.png` (convention `FIG-fon-s7-*`) est SUIVI. Toute
+  image citée par un support destiné aux étudiants (un deck de `Seances/`, un `.md`
+  public de ce dossier) doit vivre sous `Images/`, jamais sous `galerie/` — sinon le
+  renvoi ne se voit cassé qu'en clonant à froid. Détail : `Seances/README.md` §5.
 
 **Enseignant, hors séquence** : `FICHES-CONDUITE_Enseignant.md` (antisèche de
 conduite, onze contrastes pédagogiques, renvois vers `ETAT-DES-LIEUX.md`).
@@ -84,7 +76,7 @@ conduite, onze contrastes pédagogiques, renvois vers `ETAT-DES-LIEUX.md`).
 
 ## Recouvrement constaté, non corrigé (audit du 15/09)
 
-Six documents traitent de ParaView et/ou de l'installation, avec un recouvrement de
+Quatre documents traitent de ParaView et/ou de l'installation, avec un recouvrement de
 contenu réel :
 
 | Document | Occurrences ParaView/installation (audit) |
@@ -92,9 +84,7 @@ contenu réel :
 | `ANNEXE_Installation-OpenFOAM-ParaView.md` | 24/43 |
 | `05_GUIDE_PARAVIEW.md` | 12 |
 | `14_CONTROLE-G1_ENSEIGNANT.md` | 12 |
-| `12_TRAVAUX_INTER_SEANCES.md` | 11 |
 | `TUTORIEL_OpenFOAM-et-ParaView.md` | 10 |
-| `04_GUIDE_PAS_A_PAS.md` | 3 |
 
 *(Non listés ci-dessus : `13_CONTROLE-G1_SUJET.docx/.pdf`, `14_CONTROLE-G1_ENSEIGNANT.docx`,
 `DECK-SEANCE1.pptx` — artefacts binaires régénérés depuis leur `.md`/source, pas des
@@ -106,10 +96,9 @@ d'après les séances, hors périmètre de cette boucle) :
   autorité — c'est son objet explicite, et c'est le document le plus complet
   (1626 lignes).
 - Pour la **méthode ParaView** (post-traitement, pièges réellement rencontrés) :
-  `TUTORIEL_OpenFOAM-et-ParaView.md` fait autorité — c'est le seul des six
+  `TUTORIEL_OpenFOAM-et-ParaView.md` fait autorité — c'est le seul des quatre
   activement corrigé cette semaine (13-15/09, incidents réels sourcés) ;
   `05_GUIDE_PARAVIEW.md` (05/09, jamais retouché depuis) et les occurrences dans
-  `12_TRAVAUX_INTER_SEANCES.md`/`14_CONTROLE-G1_ENSEIGNANT.md`/`04_GUIDE_PAS_A_PAS.md`
-  sont plus anciens et n'ont pas été vérifiés contre les corrections récentes
+  `14_CONTROLE-G1_ENSEIGNANT.md` sont plus anciens et n'ont pas été vérifiés contre les corrections récentes
   (D, Z=4, y⁺, couches) — **à ne pas prendre pour argent comptant sans les
   recouper contre `PARAMETRES_CAS.md` et `TUTORIEL_OpenFOAM-et-ParaView.md`.**

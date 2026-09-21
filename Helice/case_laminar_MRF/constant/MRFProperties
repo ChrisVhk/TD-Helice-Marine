@@ -1,0 +1,18 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      MRFProperties;
+}
+// Repere tournant stationnaire (MRF), ESI v2412. Meme zone, meme axe, meme omega que constant/dynamicMeshDict du cas instationnaire.
+MRF1
+{
+    cellZone    innerCylinderSmall;
+    active      yes;
+    // Patches de la zone qui ne tournent pas : coupleurs AMI, entree, sortie, cylindre exterieur
+    nonRotatingPatches (inlet outlet outerCylinder AMI1 AMI2);
+    origin      (0 0 0);
+    axis        (0 1 0);
+    omega       158;            // rad/s
+}

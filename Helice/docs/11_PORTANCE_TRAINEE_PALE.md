@@ -67,7 +67,7 @@ $$\boxed{\ \mathrm{d}T = \mathrm{d}L\,\cos\varphi \;-\; \mathrm{d}D\,\sin\varphi
 $$\mathrm{d}Q = r\,\mathrm{d}F_\theta$$
 
 La poussée totale et le couple total s'obtiennent en intégrant du moyeu ($r_h$) au bout ($R$) et
-en multipliant par le nombre de pales $Z = 3$ :
+en multipliant par le nombre de pales $Z = 4$ :
 
 $$T = Z\!\int_{r_h}^{R}\!\mathrm{d}T, \qquad Q = Z\!\int_{r_h}^{R}\! r\,\mathrm{d}F_\theta$$
 
@@ -82,32 +82,33 @@ $$\eta_{\text{section}} = \frac{V_a\,\mathrm{d}T}{\Omega r\,\mathrm{d}F_\theta}
 
 Lisez cette formule :
 
-- **La poussée** $\mathrm{d}T \approx \mathrm{d}L\cos\varphi$ : portée par la **portance**, donc par
-  la pression sur le profil. Peu sensible au modèle de turbulence.
-- **Le couple** $\mathrm{d}F_\theta$ et le **rendement** dépendent de $\gamma$, donc de
-  $C_d/C_l$ : la **traînée** de section, c'est-à-dire le **frottement pariétal** que le modèle de
-  turbulence pilote directement.
+- **La poussée** $\mathrm{d}T = \mathrm{d}L\cos\varphi - \mathrm{d}D\sin\varphi$ est portée par la **portance**.
+- **Le couple** $\mathrm{d}F_\theta = \mathrm{d}L\sin\varphi + \mathrm{d}D\cos\varphi$ reçoit AUSSI de la portance
+  (à $r/R = 0{,}7$, $\sin\varphi \approx 0{,}37$ : la portance contribue fortement au couple) et de la traînée.
+  Le **rendement** de section dépend de $\gamma$, donc du rapport $C_d/C_l$ : une petite variation de traînée
+  se paie en rendement.
 
-C'est la même hiérarchie que celle mesurée sur les 3 cas : $K_T$ resserré (0,363–0,378), $\eta_0$
-et $K_Q$ dispersés. Le TD la fait retrouver *par le calcul global* en séance 2 ; ici on montre
-*d'où elle vient* à l'échelle de la section.
+**Attention à ne pas confondre deux décompositions.** Le solveur sépare la force sur la pale selon la façon dont
+elle arrive à la paroi : contrainte **normale** (« pression ») et cisaillement **tangentiel** (« frottement »).
+Ce n'est **pas** la décomposition portance / traînée : la traînée d'une section contient une part de pression
+(forme, induite), et le couple « de pression » du solveur est surtout la projection tangentielle de la
+**portance**. Ce que les trois calculs donnent, et ce qu'on en conclut, est traité en séance 3.
 
 ---
 
 ## 4. Exercice — section de référence $r/R = 0{,}7$
 
-Données : $R = 0{,}1$ m, $n = 25{,}15$ tr/s, $V_a \approx 5{,}1$ m/s (≈ `URef` du calcul,
-$J \approx 1{,}02$), $Z = 3$.
+Données : **celles du cas, à retrouver vous-mêmes dans les fichiers du dépôt** (aucune n'est donnée ici) : le rayon $R$
+(`system/propellerInfo`, ligne `radius`), la fréquence de rotation $n$ (`system/propellerInfo` ou `constant/dynamicMeshDict`), la
+vitesse d'avance $V_a$ (`0.orig/U`, patch `inlet`) et le nombre de pales $Z$.
 
 1. Calculez $\Omega r$, puis $\varphi$ et $W$ à $r/R = 0{,}7$.
 2. La courbe $C_l(\alpha)$ d'un profil mince donne $C_l \approx 2\pi\,\alpha$ (α en rad) tant qu'on
    ne décroche pas. Si la section est calée à $\beta = 40°$, quelle incidence $\alpha$ ? Quel $C_l$ ?
 3. Avec $c = 0{,}025$ m et $\rho_{\text{ref}} = 1{,}2$ (voir encadré), estimez $\mathrm{d}L/\mathrm{d}r$.
 4. En prenant une finesse réaliste $C_l/C_d = 40$, calculez $\gamma$ puis $\eta_{\text{section}}$.
-   Comparez à $\eta_0 = 0{,}59$ mesuré sur l'hélice entière. Commentez l'écart (induction,
+   Comparez à $\eta_0 \approx 0{,}55$ calculé sur l'hélice entière (0,546 à 0,587 selon le modèle, à $J = 0{,}874$). Commentez l'écart (induction,
    sections non optimales près du moyeu, pertes de bout de pale).
-
-*(Réponses détaillées : doc [`10`](10_CORRIGE_ETUDIANT_DETAILLE.md), non distribué.)*
 
 > ### ⚠ Encadré — quelle masse volumique ?
 > Le calcul du dépôt utilise $\rho_{\text{ref}} = 1{,}2$ kg/m³ (valeur héritée du tutoriel

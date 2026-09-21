@@ -4,9 +4,8 @@ Fait suite à la consigne « Correction-ensemble » du 13/09 (LOT E). `Helice/do
 est gitignoré (registre enseignant local, jamais suivi) : ce plan, lui, est **suivi**, pour
 que le contenu traverse un changement de compte ou de machine (INV-11).
 
-**Support de projection** : `Seances/S03_Arborescence-et-perspective_Slides.md` (deck,
-14/09) — couvre l'arborescence, les mécanismes d'erreur et la perspective couches
-détaillés ici.
+**Support de projection** : le deck de la séance 3 (distribué par Moodle) — couvre
+l'arborescence, les mécanismes d'erreur, le y⁺/couches et la perspective, détaillés ici.
 
 ---
 

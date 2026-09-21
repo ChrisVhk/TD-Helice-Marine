@@ -230,7 +230,7 @@ et « ρ » d'`ETAT-DES-LIEUX.md` §ÉTABLI.
 **Durée & nombre de tours** (`system/controlDict:25 endTime`, période = 1/n = 0,03977 s)
 | Coût | Précision |
 |---|---|
-| Linéaire en `endTime` : deux fois plus de tours, deux fois le temps mural. | Il faut couvrir assez de tours pour sortir du transitoire et mesurer une amplitude d'oscillation stable — la fenêtre commune utilisée pour l'amplitude K_T ([0,022032 ; 0,06] s) exclut délibérément le tout début du calcul. |
+| Linéaire en `endTime` : deux fois plus de tours, deux fois le temps mural. | Il faut couvrir assez de tours pour sortir du transitoire et mesurer une amplitude d'oscillation stable — l'amplitude de K_T se mesure sur le dernier tour complet ([0,1193 ; 0,1591] s) : les deux premiers tours sont un transitoire, exclu délibérément. |
 
 **Fréquence d'écriture** (`system/controlDict:31 writeInterval`, `:29 writeControl`)
 | Coût | Précision |
@@ -245,7 +245,7 @@ et « ρ » d'`ETAT-DES-LIEUX.md` §ÉTABLI.
 **Modèle de turbulence** (`constant/turbulenceProperties:16 RASModel`, ou `laminar`)
 | Coût | Précision |
 |---|---|
-| Chaque modèle testé est une exécution complète de plus : c'est le N du modèle de coût §6.2, linéaire en nombre de modèles lancés. | L'écart ENTRE modèles (ΔK_T ≈ 0,0091) est plus PETIT que l'oscillation propre à un seul modèle (amplitude 0,0176 à 0,0242) — lancer un modèle de plus ne réduit pas l'incertitude si cette dernière n'est pas d'abord maîtrisée (leçon de la Séance 2, `Seances/S02_Slides.md`). |
+| Chaque modèle testé est une exécution complète de plus : c'est le N du modèle de coût §6.2, linéaire en nombre de modèles lancés. | À 1,5 tour, l'écart ENTRE modèles (ΔK_T ≈ 0,009) était plus PETIT que l'oscillation apparente (0,018 à 0,024), parce que la fenêtre recouvrait la mise en régime ; à 4 tours, sur le dernier tour, il est environ 2 fois plus GRAND que l'oscillation (ΔK_T ≈ 0,0096, amplitude 0,004 à 0,005). Lancer un modèle de plus ne réduit pas l'incertitude tant que la fenêtre de mesure et le maillage de paroi ne sont pas maîtrisés (leçon de la Séance 2). |
 
 ### 6.2 Prédire le coût avant de lancer
 
@@ -353,7 +353,7 @@ d'environnement invisible).
 | Diamètre D | `system/propellerInfo`, ligne `radius` (D = 2×radius) | Rayon max $\sqrt{x^2+z^2}$ sur TOUS les points du patch de bout de pale, sur les 360° — vérifier que les Z pales donnent le MÊME rayon max (sinon, une pale diffère des autres, c'est un défaut à part). **Piège : ne jamais utiliser la boîte englobante (bounding box) — le point de rayon max n'est pas forcément aligné avec un axe.** | | | **D = 0,227 m, ÉTABLI** (voir réserve ci-dessous) |
 | Vitesse de rotation n | `system/propellerInfo` (`n`) ou `constant/dynamicMeshDict` (`omega`, avec n = ω/2π) | Les deux fichiers doivent donner la MÊME valeur (à la conversion près) — sinon, lequel pilote réellement la rotation ? | | | |
 | Masse volumique ρ | `grep -rn rhoInf` sur tout le cas — **ne pas s'arrêter au premier résultat** | Identifier lequel des `functionObjects` alimente RÉELLEMENT le résultat qu'on regarde (tracer le fichier de sortie jusqu'à sa source), pas supposer qu'un seul existe | | | |
-| Coefficient d'avance J | Dernière colonne utile de `postProcessing/propellerInfo1/*/propellerPerformance.dat` | Recalculer J = V_a/(nD) à la main avec le D **vérifié** (pas celui du fichier) et comparer | | | |
+| Coefficient d'avance J | La vitesse d'avance V_a est imposée dans `0.orig/U` (patch `inlet`). Le J écrit dans `postProcessing/propellerInfo1/*/propellerPerformance.dat` est calculé avec `URef`, une vitesse relevée en aval du disque : ce n'est pas une avance | Calculer J = V_a/(nD) à la main avec V_a imposée, n et le D **vérifié** (pas celui du fichier), et comparer au J du fichier : lequel des deux est une avance ? | | | |
 
 **Réserve sur D (établie le 14/09, boucle « Identité-galerie-tutoriel »)** : mesuré
 deux fois indépendamment sur ce cas (r_max = 0,113689 m sur le patch calculé,

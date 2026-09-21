@@ -4,11 +4,20 @@
 
 Usage :
     pvbatch _Setup/outils/rendre_vues_helice.py [--cas case_kEpsilon] [--time 0.06]
-                                                 [--out-dir Helice/Images/galerie]
+                                                 [--out-dir Helice/Images]
                                                  [--only 1,2,3,4,5,6]
 
 A executer depuis la racine du depot (TD-Helice-Marine/), les .foam et les
 chemins de cas etant relatifs a Helice/.
+
+**Sortie promue le 17/09 (LOT 4, consigne "Quatre-tours")** : ces huit images sont
+citees par `Seances/S01_Slides.md` (S00_Intro-CFD-Helice_Slides.md a l'epoque,
+fusionne dans S01 le 18/09), un support DESTINE AUX ETUDIANTS -- elles ne peuvent
+donc plus vivre sous `Images/galerie/` (gitignore en bloc, invisible sur GitHub pour
+un etudiant qui clone). Ecrites directement sous
+`Helice/Images/` (convention `FIG-fon-s7-*`, SUIVIES en git), plus `galerie/` du
+tout pour ces huit-la. Regle generale posee ce jour-la : `Seances/README.md` et
+`Helice/docs/00_INDEX.md`.
 
 API PINNEE : ParaView 5.11.2 (paraview.simple), verifie sur ce poste le 13/09.
 PIEGE D'API CONNU SUR 5.11 : appeler ColorBy(rep, None) leve
@@ -348,7 +357,7 @@ def image_01(args):
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- D mesure 0,227378 m (corrige le 14/09, etait 0,2 m)")
     Render(view)
-    save(view, os.path.join(args.out_dir, "01_geometrie.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-geometrie-helice.png"))
 
 
 # --------------------------------------------------------------------------- #
@@ -400,7 +409,7 @@ def image_02(args):
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- domaine : outerCylinder + inlet/outlet")
     Render(view)
-    save(view, os.path.join(args.out_dir, "02_geometrie_domaine.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-geometrie-domaine.png"))
 
 
 # --------------------------------------------------------------------------- #
@@ -466,7 +475,7 @@ def image_03(args):
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- coupe maillage (zoom pres helice), plan (0,0,0)/normale z")
     Render(view)
-    save(view, os.path.join(args.out_dir, "03_maillage_coupe.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-maillage-coupe.png"))
 
 
 # --------------------------------------------------------------------------- #
@@ -525,7 +534,7 @@ def image_04(args):
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- AMI1 (rouge) / AMI2 (bleu), interface de maillage glissant")
     Render(view)
-    save(view, os.path.join(args.out_dir, "04_interface_AMI.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-interface-AMI.png"))
 
 
 # --------------------------------------------------------------------------- #
@@ -719,7 +728,7 @@ def image_05(args):
 
     Render(view_a)
     Render(view_b)
-    save(layout, os.path.join(args.out_dir, "05_pression_pales.png"))
+    save(layout, os.path.join(args.out_dir, "FIG-fon-s7-pression-pales.png"))
     print(f"  image 5 : angle entre les deux normales moyennes = {angle_deg:.1f} deg"
           f" (180 = separation parfaite) ; p_moyen face A={p_mean0:.2f}, face B={p_mean1:.2f}")
 
@@ -1030,7 +1039,7 @@ def image_06(args):
 
     Render(view_l)
     Render(view_r)
-    out_path = os.path.join(args.out_dir, "06_couches_prismes.png")
+    out_path = os.path.join(args.out_dir, "FIG-fon-s7-couches-prismes.png")
     save(layout, out_path)
 
     # ---- Trait de rappel entre les deux panneaux (LOT 5, consigne du 15/09) ----
@@ -1132,7 +1141,7 @@ def image_07(args):
     add_provenance(view, provenance_line(args.cas, args.time, ETAT_DEMO)
                    + " -- champ de vitesse (norme), coupe pres helice, plan (0,0,0)/normale z")
     Render(view)
-    save(view, os.path.join(args.out_dir, "07_vitesse.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-vitesse.png"))
 
 
 def image_08(args):
@@ -1208,7 +1217,7 @@ def image_08(args):
                    + " -- k produite au bout de pale, 1 ordre de grandeur au-dessus"
                      " du niveau ambiant (image = >p85, pas un seuil physique)")
     Render(view)
-    save(view, os.path.join(args.out_dir, "08_turbulence.png"))
+    save(view, os.path.join(args.out_dir, "FIG-fon-s7-turbulence.png"))
 
 
 IMAGES = {
@@ -1229,7 +1238,7 @@ def parse_args(argv):
                    help="cas de reference pour les images 1-5 (ex: case_kEpsilon). "
                         "L'image 6 (bonus) lit <cas>_layers si ce dossier existe.")
     p.add_argument("--time", type=float, default=0.06, help="instant a lire (deja sur disque)")
-    p.add_argument("--out-dir", default="Helice/Images/galerie", help="dossier de sortie des PNG")
+    p.add_argument("--out-dir", default="Helice/Images", help="dossier de sortie des PNG")
     p.add_argument("--only", default=None, help="sous-ensemble d'images a regenerer, ex: 1,5")
     return p.parse_args(argv)
 

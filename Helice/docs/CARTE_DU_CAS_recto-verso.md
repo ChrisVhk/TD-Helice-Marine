@@ -64,7 +64,7 @@ case_kEpsilon/
 |---|---|---|
 | Rotation | `dynamicMeshDict:29 omega`, axe `:28` | 158 rad/s, (0 1 0) |
 | Vitesse entrée | `0.orig/U:28 value` | 5,000 m/s |
-| Durée | `system/controlDict:25 endTime` | 0,06 s |
+| Durée | `system/controlDict:25 endTime` | 0,06 s dans le fichier livré ; calcul prolongé à 0,159068 s (4,00 tours) par `scripts/reprise_cas.sh` |
 | Fréq. écriture | `controlDict:31 writeInterval` | 0,001 s |
 | Sous-domaines | `decomposeParDict:14 numberOfSubdomains`, `:18 coeffs.n` | 4, (1 4 1) |
 | Turbulence | `turbulenceProperties:16 RASModel` | kEpsilon |

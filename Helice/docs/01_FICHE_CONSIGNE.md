@@ -16,8 +16,8 @@
   décomposition du torseur des efforts, passage à la portance/traînée d'une section, triangle des
   vitesses.
 - **Différence des résultats selon le modèle de turbulence** — séance 2 : non pas « classer les
-  modèles » mais **savoir quand une différence n'en est pas une** (l'incertitude numérique du calcul
-  dépasse l'écart entre fermetures).
+  modèles » mais **savoir quand une différence n'en est pas une** (transitoire, maillage de paroi, pas de
+  temps : d'autres sources d'écart peuvent peser autant que le choix de la fermeture).
 - **Lecture critique d'un résultat de simulation** — séances 1 et 3 : distinguer le signal physique
   du bruit numérique, relier une image de champ à un chiffre.
 
@@ -49,8 +49,7 @@ de turbulence sur géométrie/maillage/CL **identiques**) ont déjà tourné. Un
 On distribue **deux** séries temporelles pour cette question — `perf_kEpsilon.csv` et
 `perf_laminar.csv` (kit `data/`) — **sans cours préalable**. `perf_kOmegaSST.csv` rejoint le kit à
 la séance 2 : sa fenêtre « dernier tour » est trop courte pour une mesure de fréquence fiable
-(incident de calcul du 05/09, diagnostiqué le 06/09 — voir `docs/STATUT.md` et
-`docs/10_CORRIGE_ETUDIANT_DETAILLE.md` §4 ; ses moyennes $K_T$/$K_Q$/$\eta_0$, elles, restent
+(incident de calcul du 05/09, diagnostiqué le 06/09 ; ses moyennes $K_T$/$K_Q$/$\eta_0$, elles, restent
 valides). Vous lirez d'abord le dernier instant ; le tracé vous montrera que ça **oscille**.
 À vous de trouver qu'il faut **moyenner**, et **sur quelle fenêtre**.
 
@@ -63,7 +62,7 @@ Puis la question qui fait la séance :
 > Lequel ? Proposez un test qui séparerait les deux causes.
 
 Zéro manipulation logicielle : du raisonnement, et une compétence d'ingénieur — **distinguer le
-signal physique du bruit de son propre calcul**. Support : doc [`04`](04_GUIDE_PAS_A_PAS.md).
+signal physique du bruit de son propre calcul**.
 
 ### B. Du torseur à la pale (1 h) — sur papier
 
@@ -73,7 +72,7 @@ d'aile du cours de méca flux. Support : doc [`11`](11_PORTANCE_TRAINEE_PALE.md)
 
 > **Inter-séance A** (~1 h) — chaque binôme reçoit **une** fermeture et caractérise son cas seul
 > (moyennes, amplitudes, allure de la courbe), puis termine la décomposition des efforts commencée
-> en 1-B. Consigne détaillée : doc [`12`](12_TRAVAUX_INTER_SEANCES.md).
+> en 1-B.
 
 ---
 
@@ -85,21 +84,25 @@ Chaque groupe pose ses chiffres au tableau. On reconstitue le tableau comparatif
 
 ### B. Le classement impossible (1 h 30) — cœur du TD
 
-Vous allez vouloir classer les modèles. Vous devez découvrir que :
+Vous allez vouloir classer les modèles. Vous devez découvrir que, sur le dernier tour d'un calcul de
+4 tours (régime établi) :
 
 | | valeur |
 |---|---|
-| écart entre les 3 fermetures | $\Delta K_T \approx 0{,}015$ |
-| amplitude de l'oscillation | 0,029 à 0,040 — **2 à 2,7 fois plus grande** |
+| écart entre les 3 fermetures | $\Delta K_T \approx 0{,}0096$ (4,3 %) |
+| amplitude de l'oscillation | 0,0039 à 0,0048 — l'écart est **2 à 2,5 fois plus grand** |
 | origine de cette oscillation | **indéterminée** entre passage de pale et interface numérique — les deux prédisent la même fréquence |
 
-**On ne compare pas trois modèles de turbulence quand l'incertitude numérique dépasse leur écart.**
-C'est la leçon du TD : elle est démontrée par vos propres mesures, et elle vaut mieux qu'un
-classement.
+À 1,5 tour, sur la fenêtre qu'on croyait « le dernier tour », c'était l'inverse (oscillation 0,017 à 0,024,
+plus grande que l'écart) : cette fenêtre recouvrait la mise en régime. **Un écart entre modèles ne se lit
+qu'en régime établi, et une fois les autres incertitudes bornées** — par exemple, sur le couple, changer le
+maillage de paroi déplace $10\,K_Q$ de +4,2 % sur un cas test (couches de prismes sur 63 % seulement de la surface de pale), contre 3,1 % entre les trois modèles (résultat
+à confirmer, l'enseignant y reviendra). C'est la leçon du TD : elle est démontrée par vos
+propres mesures, et elle vaut mieux qu'un classement.
 
 > **Inter-séance B** — installation de **ParaView** (script de vérification, page « ça n'a pas
 > marché », repli : un poste qui marche par binôme suffit). Chaque binôme prépare **une** question
-> à poser aux images. Consigne : doc [`12`](12_TRAVAUX_INTER_SEANCES.md).
+> à poser aux images.
 
 ---
 
@@ -122,8 +125,7 @@ Chaque binôme répond devant les autres à la question qu'il avait préparée s
 
 - **Calcul en séance : aucun.** Poste étudiant : un tableur (séances 1–2), ParaView en lecture
   seule (séance 3). Données fournies : < 1 Mo (séances 1–2), puis ~750 Mo (séance 3).
-- **QCM** : [`02`](02_QCM_PREREQUIS.md) en début de séance 1, [`06`](06_QCM_FINAL.md) en fin de
-  séance 3. Aide-mémoire : [`07`](07_AIDE_MEMOIRE.md).
+- **QCM** : [`02`](02_QCM_PREREQUIS.md) en début de séance 1.
 - **Rendu de binôme** : la caractérisation de fermeture (inter-séance A), la décomposition d'efforts
   (1-B + inter-séance A), et une demi-page sur « le classement impossible » (séance 2).
 
@@ -138,5 +140,3 @@ Chaque binôme répond devant les autres à la question qu'il avait préparée s
 - **Séance 3** — le laminaire est interprété comme un **cas dégradé assumé** (Reynolds hélice réel
   ≫ régime laminaire), relié à l'image (sillage, dissipation), pas comme une erreur de calcul.
 
-*Documents enseignant : [`08`](08_CORRIGE_QCM.md), [`09`](09_FICHE_ENSEIGNANT.md),
-[`10`](10_CORRIGE_ETUDIANT_DETAILLE.md).*

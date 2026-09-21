@@ -1,7 +1,7 @@
 # QCM de positionnement — TD Hélice marine en eau libre (OpenFOAM)
 
 > **Ce n'est pas une note.** C'est un auto-diagnostic : savez-vous ce qu'il faut savoir
-> *avant* de lancer le TD ? Répondez sans support, puis vérifiez avec `08_CORRIGE_QCM.md`.
+> *avant* de lancer le TD ? Répondez sans support.
 > Durée conseillée : 10 min. Une seule réponse par question.
 
 ---

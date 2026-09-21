@@ -17,6 +17,43 @@ case_*/log.*
 case_*/*.foam
 case_*/_bench_logs*/
 
+# Champs de qualité de maillage écrits par `checkMesh -writeFields` (et centres de cellules par
+# writeCellCentres) DIRECTEMENT dans case_*/constant/ -- pas dans constant/polyMesh/, donc hors
+# de portée de la règle plus haut. Binaires volumineux (jusqu'à plusieurs Mo), régénérables en
+# relançant checkMesh sur le maillage. Noms énumérés un à un, pas de motif nu dans constant/ :
+# constant/dynamicMeshDict, transportProperties, turbulenceProperties, eux, sont suivis.
+case_*/constant/aspectRatio
+case_*/constant/cellAspectRatio
+case_*/constant/cellDeterminant
+case_*/constant/cellRegion
+case_*/constant/cellShapes
+case_*/constant/cellToRegion
+case_*/constant/cellVolume
+case_*/constant/cellVolumeRatio
+case_*/constant/cellZone
+case_*/constant/faceWeight
+case_*/constant/faceZone
+case_*/constant/minPyrVolume
+case_*/constant/minTetVolume
+case_*/constant/nonOrthoAngle
+case_*/constant/skewness
+case_*/constant/C
+case_*/constant/Cx
+case_*/constant/Cy
+case_*/constant/Cz
+# Volumes de cellules, sortie de `postProcess -func writeCellVolumes -constant` (meme mecanisme).
+case_*/constant/V
+
+# Copie d'un maillage de référence gardée dans un cas d'essai (ex. polyMesh.origine_608463, 86 Mo,
+# dans l'ancien case_kEpsilon_layers_test-level56, supprimé le 20/09) : même nature que constant/polyMesh/.
+case_*/constant/polyMesh.origine_*/
+
+# Journal d'un gardien détaché (`suivi_calcul.sh` en boucle) : un relevé toutes les 5 min, pur
+# bruit une fois le calcul fini (18/09 : 469 relevés, 0 alerte). Le bilan va au JOURNAL, pas le
+# log. Motif limité à gardien_*.log : checkMesh_layers.log / allrun_pre.log, eux, sont suivis
+# (pièce brute du maillage de la Porte A, remplacé depuis, non régénérable à l'identique).
+case_*/gardien_*.log
+
 # Galerie d'images d'introduction (pvbatch, _Setup/outils/rendre_vues_helice.py) :
 # PNG régénérables depuis les cas, jamais versionnés. Le script et les légendes,
 # eux, sont suivis (traçabilité, pas de gonflement du dépôt).
@@ -47,6 +84,10 @@ data/paraview_kit/
 # traverse : la ligne de REGISTRE_FIGURES.md et l'image RECADRÉE déposée directement dans Images/.
 Images/_a_traiter/
 
+# Figures de diagnostic non validees (rendre_couches_pale.py, coupes de pale avant/apres) : locales
+# tant que l'enseignant ne les a pas validees ; une figure validee est copiee dans Images/.
+Images/_brouillon/
+
 # supports binaires -> Vega, jamais dans le depot public
 *.docx
 *.pdf
@@ -62,6 +103,7 @@ Images/_a_traiter/
 /docs/*ENSEIGNANT*
 /docs/FICHES-CONDUITE_Enseignant.md
 /docs/ETAT-DES-LIEUX_Enseignant.md
+/docs/LISTE_figures-S9-a-trancher_Enseignant.md
 
 # corriges etudiants : retires du depot avant la seance 2 (LOT I, decision enseignant
 # 12/09) -- la seance 2 demande de decouvrir ce que ces fichiers donnent en reponse.
@@ -79,3 +121,20 @@ Images/_a_traiter/
 # audit du calcul (LOT K, 12/09) : document enseignant -- il dit ce que le TD affirme
 # sans preuve, jamais un livrable etudiant. Regle structurelle, pas fichier par fichier.
 /_audit/
+_serie_MRF_modeles.out
+
+# Sorties de visualisation des cas (foamToVTK) : 95 et 98 Mo par cas, jamais dans le dépôt public (21/09). Régénérables : `foamToVTK`.
+/case_*/VTK/
+
+# Cas d'essai, cas de contrôle et journaux de calcul (21/09, décision de l'enseignant) : le dépôt public ne garde que les sept cas qui
+# correspondent aux sept perf_*.csv (case_kEpsilon, case_kOmegaSST, case_laminar, case_kEpsilon_layers, case_*_MRF). Les autres restent sur
+# disque, archivés dans le dépôt privé (_Reserve/td-helice-enseignant/cas-essais/) : ils rendaient l'arborescence illisible pour un exercice
+# de recherche d'information.
+/case_kEpsilon_layers_test-*/
+/case_kEpsilon_iter_n*/
+/case_kEpsilon_MRF_A/
+/case_kEpsilon_MRF_B/
+/case_kEpsilon_MRF_TA/
+/case_kEpsilon_MRF_wallcheck/
+/_*_rapport.log
+/case_kEpsilon_MRF/RESULTAT_*.txt

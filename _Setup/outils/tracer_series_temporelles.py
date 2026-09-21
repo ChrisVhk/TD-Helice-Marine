@@ -46,14 +46,14 @@ CASES = ["kEpsilon", "kOmegaSST", "laminar"]
 LABELS = {"kEpsilon": "k-epsilon (RAS)", "kOmegaSST": "k-omega SST (RAS)", "laminar": "laminaire"}
 COLORS = {"kEpsilon": "#1f77b4", "kOmegaSST": "#d62728", "laminar": "#2ca02c"}
 
-# Sourcé Helice/docs/PARAMETRES_CAS.md (15/09) -- PAS le rappel périmé de la consigne.
-AMPLITUDE_CC = {"kEpsilon": 0.0176, "kOmegaSST": 0.0223, "laminar": 0.0242}
-
+# 20/09 : les fenêtres, les moyennes et l'amplitude de K_T sont DÉDUITES des données (fin commune des
+# trois séries, dernier tour complet), plus des constantes du jeu à 1,5 tour. Ces constantes
+# (T_END = 0,06 ; amplitudes 0,0176 / 0,0223 / 0,0242) étaient valides pour des séries arrêtées à 0,06 s ;
+# leurs amplitudes étaient gonflées par le transitoire des deux premiers tours (à 4 tours, l'amplitude
+# crête-à-crête du dernier tour est 4 à 5 fois plus petite).
 N_TR_S = 158 / (2 * 3.141592653589793)  # dynamicMeshDict:29, omega/2pi
 PERIOD_S = 1.0 / N_TR_S  # 0,039767 s
-T_END = 0.06
-FENETRE_COMMUNE = (0.022032, T_END)  # exclut le trou kOmegaSST -- METHODO_DONNEES.md §6
-DERNIER_TOUR = (T_END - PERIOD_S, T_END)  # 0,020233 -- 0,06 s
+T_DEBUT_COMMUN = 0.022032  # exclut le trou kOmegaSST -- METHODO_DONNEES.md §6
 
 TROU_KOMEGASST = (0.00819355, 0.0220323)  # METHODO_DONNEES.md §5
 
@@ -101,15 +101,26 @@ def casser_trous(temps, tours, y, facteur=5):
 
 
 def moyenne_fenetre(rows, key, t0, t1):
-    vals = [float(r[key]) for r in rows if t0 <= float(r["time"]) <= t1]
-    return sum(vals) / len(vals) if vals else None
+    """Moyenne TEMPORELLE (trapèzes) sur [t0, t1] -- même définition que Helice/scripts/comparaison_modeles.py
+    (le pas de kOmegaSST est adaptatif : une moyenne sur les lignes n'est pas une moyenne temporelle)."""
+    pts = [(float(r["time"]), float(r[key])) for r in rows if t0 - 1e-12 <= float(r["time"]) <= t1 + 1e-12]
+    if len(pts) < 3:
+        return None
+    s = sum(0.5 * (pts[i][0] - pts[i - 1][0]) * (pts[i][1] + pts[i - 1][1]) for i in range(1, len(pts)))
+    return s / (pts[-1][0] - pts[0][0])
+
+
+def crete_a_crete(rows, key, t0, t1):
+    vals = [float(r[key]) for r in rows if t0 - 1e-12 <= float(r["time"]) <= t1 + 1e-12]
+    return max(vals) - min(vals) if vals else None
 
 
 def plot_grandeur(rows_by_case, key, label, out_name):
-    fig, ax = plt.subplots(figsize=(11, 5.5))
+    fig, ax = plt.subplots(figsize=(9, 5.4))
 
-    t0_c, t1_c = FENETRE_COMMUNE
-    t0_d, t1_d = DERNIER_TOUR
+    t_end = min(float(rows[-1]["time"]) for rows in rows_by_case.values())  # fin COMMUNE des trois séries
+    t0_c, t1_c = T_DEBUT_COMMUN, t_end
+    t0_d, t1_d = t_end - PERIOD_S, t_end  # dernier tour complet
     ax.axvspan(t0_c * N_TR_S, t1_c * N_TR_S, color="#f0e6d2", alpha=0.6, zorder=0,
                label="fenêtre commune")
     ax.axvspan(t0_d * N_TR_S, t1_d * N_TR_S, color="#d2e6f0", alpha=0.5, zorder=0,
@@ -125,21 +136,21 @@ def plot_grandeur(rows_by_case, key, label, out_name):
         y = [float(r[key]) for r in rows]
         tours, y = casser_trous(temps, tours, y)
         ax.plot(tours, y, lw=1.0, color=COLORS[case], label=LABELS[case])
-        moy = moyenne_fenetre(rows, key, *FENETRE_COMMUNE)
+        moy = moyenne_fenetre(rows, key, t0_d, t1_d)  # moyenne du dernier tour complet
         if moy is not None:
             ax.axhline(moy, color=COLORS[case], lw=1.2, ls="--", alpha=0.8)
 
     ymin, ymax = ax.get_ylim()
     ax.text((tg0 + tg1) / 2 * N_TR_S, ymin + 0.08 * (ymax - ymin),
-             "trou kOmegaSST\n(13,8 ms)", ha="center", va="bottom", fontsize=8,
+             "trou kOmegaSST\n(13,8 ms)", ha="center", va="bottom", fontsize=10,
              color="#8a0000")
 
     if key == "KT":
         for i, case in enumerate(CASES):
-            amp = AMPLITUDE_CC[case]
-            ax.annotate(f"{LABELS[case]} : amplitude {amp:.4f}".replace(".", ","),
+            amp = crete_a_crete(rows_by_case[case], key, t0_d, t1_d)
+            ax.annotate(f"{LABELS[case]} : amplitude crête à crête, dernier tour, {amp:.4f}".replace(".", ","),
                         xy=(0.02, 0.97 - i * 0.055), xycoords="axes fraction",
-                        fontsize=8, color=COLORS[case])
+                        fontsize=10.5, color=COLORS[case])
 
     max_tour = max(float(r["tours"]) for rows in rows_by_case.values() for r in rows)
     ax.set_xticks(range(0, int(max_tour) + 2))
@@ -148,12 +159,12 @@ def plot_grandeur(rows_by_case, key, label, out_name):
     ax.set_xlabel("Tours (n × temps, n = 25,146 tr/s)")
     ax.set_ylabel(label)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc="upper right", fontsize=8)
+    ax.legend(loc="upper right", fontsize=10)
     ax.set_title(f"{label} en fonction des tours — trois fermetures de turbulence")
     fig.text(0.01, 0.01,
-              "Source : Helice/data/perf_*.csv (augmenté) · fenêtre commune "
-              "[0,022032 ; 0,06] s · dernier tour [0,020233 ; 0,06] s",
-              fontsize=7, color="#555555")
+              f"Source : Helice/data/perf_*.csv · fenêtre commune [{t0_c:.6f} ; {t1_c:.6f}] s · "
+              f"dernier tour complet [{t0_d:.6f} ; {t1_d:.6f}] s (traits pointillés : moyenne de ce dernier tour)".replace(".", ","),
+              fontsize=8, color="#555555")
     fig.tight_layout(rect=(0, 0.03, 1, 1))
     out = OUT_DIR / out_name
     fig.savefig(out, dpi=140)

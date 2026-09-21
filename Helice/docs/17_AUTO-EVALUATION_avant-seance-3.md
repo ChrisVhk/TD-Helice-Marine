@@ -18,10 +18,10 @@ demander de l'aide : c'est le réflexe que la séance notée évalue.
    → `0.orig/U` et `0/U` ; mécanisme décrit dans `Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md` §3, étape 5.
 
 3. **Deux vitesses qui portent presque le même nom.** Le J que vous IMPOSEZ en réglant
-   la vitesse d'entrée et le J que le calcul RAPPORTE dans son fichier de résultats
+   la vitesse d'entrée et le J que le solveur ÉCRIT dans son fichier de résultats
    sont-ils rigoureusement identiques ? Si non, dans quel fichier lit-on chacun des
-   deux, et pourquoi un écart entre les deux n'est-il pas une erreur ?
-   → `0.orig/U` (imposé) et `postProcessing/propellerInfo1/*/propellerPerformance.dat`, colonne `URef` (mesuré).
+   deux, où est relevée la vitesse qui sert au second, et lequel des deux est une avance ?
+   → `0.orig/U` (imposé) et `postProcessing/propellerInfo1/*/propellerPerformance.dat`, colonne `URef` (elle s'appelle `U_aval` dans `data/perf_*.csv`, dont la colonne `J` est celle que vous devez définir vous-mêmes : voir `data/README.md`) ; position de relevé : `system/propellerInfo`.
 
 4. **Une masse volumique qui ne sert à rien — ou presque.** Le solveur utilisé dans ce
    TD est-il incompressible ou compressible ? Deux fichiers du cas déclarent chacun une
@@ -57,9 +57,10 @@ demander de l'aide : c'est le réflexe que la séance notée évalue.
    → `Helice/docs/ETAT-DES-LIEUX.md`, section « Convergence en maillage ».
 
 10. **Le contrôle qui trahit une confusion.** Le fichier `data/perf_kEpsilon.csv`
-    contient 1853 lignes. Le dossier du cas contient 62 répertoires de temps
-    (`0`, `0.001`, … `0.06`). Ces deux nombres mesurent-ils la même chose ? Combien de
+    contient 4874 lignes et couvre 4,00 tours. Le solveur écrit les champs complets
+    toutes les 0,001 s (`writeInterval` dans `system/controlDict`), soit au plus 159 écritures
+    (`0.001`, … `0.159`). Ces deux nombres mesurent-ils la même chose ? Combien de
     lignes du CSV couvrent, en moyenne, UN SEUL tour complet d'hélice — et que vaut ce
-    même calcul si on le fait, par erreur, à partir du nombre de répertoires plutôt que
+    même calcul si on le fait, par erreur, à partir du nombre d'écritures de champs plutôt que
     du nombre de lignes ?
     → `Helice/docs/METHODO_DONNEES.md` §2-3.

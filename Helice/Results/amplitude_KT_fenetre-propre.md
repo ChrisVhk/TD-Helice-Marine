@@ -20,7 +20,8 @@ sur l'ensemble retenu. Aucun calcul relancé — lecture seule des CSV déjà su
 | `kOmegaSST`  | 1168 | 0,0373 | 0,037294 | −0,000006 |
 | `kEpsilon`   | 1168 | 0,0294 | 0,029420 | +0,000020 |
 
-¹ `Seances/S02_Slides.md`, notes d'orateur diapo 2 : « amplitude K_T (crête à crête)
+¹ Deck de la séance 2, diapo 3, valeurs de référence du présentateur (diapo 2 avant la
+restructuration du 18/09) : « amplitude K_T (crête à crête)
 0,0294 / 0,0404 / 0,0373 — re-vérifiées par exécution sur les CSV du dépôt, dernier tour ».
 
 **Ordre inchangé** : `laminar` (0,0404) > `kOmegaSST` (0,0373) > `kEpsilon` (0,0294),

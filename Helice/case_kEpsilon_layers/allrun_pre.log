@@ -1,0 +1,11 @@
+Running blockMesh on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+Running surfaceFeatureExtract on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+Running snappyHexMesh on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+Running renumberMesh on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+Running topoSet on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+Running createPatch on /home/chrisvhk/Work_ENSM/TD-Helice-Marine/Helice/case_kEpsilon_layers
+
+real	5m29.731s
+user	5m19.124s
+sys	0m10.170s
+rc=0
