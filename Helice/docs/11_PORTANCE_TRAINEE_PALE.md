@@ -65,11 +65,15 @@ nulle).
 $`L`$ est $`\perp W`$ et $`D`$ est $`\parallel W`$ : on les projette sur l'axe (poussée) et sur la
 tangente (couple) en tournant de $`\varphi`$ :
 
-```math
-\boxed{\ \mathrm{d}T = \mathrm{d}L\,\cos\varphi \;-\; \mathrm{d}D\,\sin\varphi\ }
-\qquad
-\boxed{\ \mathrm{d}F_\theta = \mathrm{d}L\,\sin\varphi \;+\; \mathrm{d}D\,\cos\varphi\ }
-```
+**Les deux relations à retenir :**
+
+> ```math
+> \mathrm{d}T = \mathrm{d}L\,\cos\varphi \;-\; \mathrm{d}D\,\sin\varphi
+> ```
+>
+> ```math
+> \mathrm{d}F_\theta = \mathrm{d}L\,\sin\varphi \;+\; \mathrm{d}D\,\cos\varphi
+> ```
 
 ```math
 \mathrm{d}Q = r\,\mathrm{d}F_\theta
