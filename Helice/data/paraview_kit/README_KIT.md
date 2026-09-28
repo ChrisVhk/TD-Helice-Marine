@@ -1,5 +1,8 @@
 # Kit ParaView — laminaire vs turbulent (séance 3)
 
+> ParaView s'ouvre sur les dossiers de l'ARCHIVE (champs à 0,158 s). Les `.foam` du dépôt
+> cloné servent si vous maillez ou copiez des pas de temps vous-mêmes.
+
 Sept cas, chacun s'ouvre seul (`<cas>.foam` à sa racine). Les chiffres de référence
 (K_T, 10K_Q, η₀…) ne sont PAS recopiés ici : voir `Helice/docs/PARAMETRES_CAS.md`,
 source unique de vérité.
@@ -11,7 +14,7 @@ source unique de vérité.
 | `case_kEpsilon` | 0,158 s | U, p, Q, k, nut, epsilon | comparaison laminaire / turbulent |
 | `case_kOmegaSST` | 0,158 s | U, p, Q, k, nut, omega | comparaison laminaire / turbulent |
 | `case_laminar` | 0,158 s | U, p, Q | comparaison laminaire / turbulent (pas de nut : pas de viscosité turbulente) |
-| `case_kOmegaSST` (série) | 0,155 → 0,159 s | U, p, Q, k, nut, omega | le sillage qui tourne, un tour vu en 5 images |
+| `case_kOmegaSST` (série) | 0,155 → 0,159 s | U, p, Q, k, nut, omega | le sillage qui tourne, 5 images sur 36° de rotation (0,004 s = 0,10 tour), soit 0,4 passage de pale (Z = 4) |
 | `case_kEpsilon_layers` | 0,158 s | U, p, Q, k, nut, epsilon | la paroi, comparée à `case_kEpsilon` (sans couches) au même instant |
 | `case_kEpsilon_MRF`, `case_kOmegaSST_MRF`, `case_laminar_MRF` | itération 1500 | U, p, Q (+ k/nut/epsilon\|omega selon le modèle) | le même problème traité en stationnaire (rotor figé) |
 

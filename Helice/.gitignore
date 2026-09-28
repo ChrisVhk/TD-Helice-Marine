@@ -15,6 +15,21 @@ case_*/constant/triSurface/
 case_*/dynamicCode/
 case_*/log.*
 case_*/*.foam
+
+# Sept .foam publics suivis (consigne du 28/09, "suivre les .foam des sept cas du dépôt") :
+# fichier VIDE, point d'entrée ParaView pour ouvrir le cas de travail directement (pas
+# seulement le pack). Ouvert avant maillage ou sans pas de temps reconstruit, le cas
+# apparaît vide dans ParaView -- c'est normal, ce n'est pas un fichier corrompu. Motif exact,
+# un par cas : un cas d'essai (ignoré en bloc plus bas, ex. /case_kEpsilon_layers_test-*/)
+# ne doit jamais matcher une de ces lignes.
+!case_kEpsilon/case_kEpsilon.foam
+!case_kOmegaSST/case_kOmegaSST.foam
+!case_laminar/case_laminar.foam
+!case_kEpsilon_layers/case_kEpsilon_layers.foam
+!case_kEpsilon_MRF/case_kEpsilon_MRF.foam
+!case_kOmegaSST_MRF/case_kOmegaSST_MRF.foam
+!case_laminar_MRF/case_laminar_MRF.foam
+
 case_*/_bench_logs*/
 
 # Champs de qualité de maillage écrits par `checkMesh -writeFields` (et centres de cellules par
