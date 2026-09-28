@@ -77,7 +77,10 @@ Images/galerie/*.png
 # Sauvegardes de session : pas de temps corrompus déplacés + sorties de run temporaires.
 # Les SCRIPTS de reprise, eux, sont versionnés (scripts/reprise_cas.sh) — un outil qui
 # produit un résultat traverse le dépôt (INV-11). L'ancien _resume_kOmegaSST.sh est gardé
-# comme trace de la reprise qui a mené 0,034 → 0,055.
+# comme trace de la reprise qui a mené 0,034 → 0,055 -- déplacé en coulisses le 28/09
+# (_resume_kOmegaSST.sh et .out : _Coulisses-depots-publics/TD-Helice-Marine/Helice/).
+# _corrupt_backup/ (136 Ko, pas de temps corrompus) déplacé en coulisses le 28/09 ->
+# _Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/_corrupt_backup/.
 _corrupt_backup/
 _resume_*.out
 
@@ -135,15 +138,23 @@ Images/_brouillon/
 /docs/10_CORRIGE_ETUDIANT_DETAILLE.md
 
 # versant enseignant : registres, statut, notes de preparation, outillage
+# REGISTRE_FIGURES.md reste ICI (pas en coulisses, decision du 28/09) : lu a son chemin
+# public par l'agent ranger-projet et par la convention Images/REGISTRE_FIGURES.md des
+# skills creer-cours/rediger-master-cours -- un deplacement casserait ce chemin relatif.
 /Images/REGISTRE_FIGURES.md
 /docs/STATUT.md
 /docs/MATERIAU-INTRO_TD-Helice.md
+# _resume_*.sh et MATIERE_EXTERNE.md deplaces en coulisses le 28/09
+# (_Coulisses-depots-publics/TD-Helice-Marine/Helice/) : aucun lecteur vivant a ce chemin.
 /_resume_*.sh
 /MATIERE_EXTERNE.md
 
 # audit du calcul (LOT K, 12/09) : document enseignant -- il dit ce que le TD affirme
 # sans preuve, jamais un livrable etudiant. Regle structurelle, pas fichier par fichier.
+# Rapports texte (<5 Mo, .md/.txt/.log/.csv/.py/.sh/.dat) copies en coulisses le 28/09,
+# le reste (7,6 Go, champs et processor*) reste UNIQUEMENT ici -- voir le LISEZ-MOI coulisses.
 /_audit/
+# _serie_MRF_modeles.out deplace en coulisses le 28/09.
 _serie_MRF_modeles.out
 
 # Sorties de visualisation des cas (foamToVTK) : 95 et 98 Mo par cas, jamais dans le dépôt public (21/09). Régénérables : `foamToVTK`.
