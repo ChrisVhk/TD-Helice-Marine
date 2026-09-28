@@ -151,8 +151,8 @@ _serie_MRF_modeles.out
 
 # Cas d'essai, cas de contrôle et journaux de calcul (21/09, décision de l'enseignant) : le dépôt public ne garde que les sept cas qui
 # correspondent aux sept perf_*.csv (case_kEpsilon, case_kOmegaSST, case_laminar, case_kEpsilon_layers, case_*_MRF). Les autres restent sur
-# disque, archivés dans le dépôt privé (_Reserve/td-helice-enseignant/cas-essais/) : ils rendaient l'arborescence illisible pour un exercice
-# de recherche d'information.
+# disque, archivés dans le dépôt privé (_Coulisses-depots-publics/TD-Helice-Marine/Helice/, INV-11 — chemin corrigé le 28/09,
+# ancien _Reserve/td-helice-enseignant/cas-essais/) : ils rendaient l'arborescence illisible pour un exercice de recherche d'information.
 /case_kEpsilon_layers_test-*/
 /case_kEpsilon_iter_n*/
 /case_kEpsilon_MRF_A/

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Séquence de nuit MRF du 20/09 : RUN A (nombre d'itérations) puis RUN B (schémas alignés). Critères et prévisions écrits AVANT :
-#   ENSM-Enseignement/_Reserve/comparaison-3-modeles/NUIT_serie_A-B_critere.md
+#   ENSM-Enseignement/_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/comparaison-3-modeles/NUIT_serie_A-B_critere.md
 # Le script écrit lui-même son état dans Helice/_ETAT_SERIE.txt ; il n'y a AUCUN gardien détaché : il attend son propre run par PID
 # (kill -0) et se termine avec lui. Arrêts : espace libre de l'hôte < 15 Go, code de retour != 0 (un run qui échoue n'enchaîne pas le
 # suivant), durée maximale dépassée.

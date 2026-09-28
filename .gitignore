@@ -44,7 +44,8 @@ Seances/_rendu/
 # SOURCES de séances (21/09, décision de l'enseignant) : Seances/S<NN>_Slides.md et l'ancienne source Helice/docs/15_DECK-SEANCE1_Slides.md
 # ne sont plus suivies. Motif : elles portent les notes de conduite du présentateur (en S03, la diapo 20 donne la réponse à une question
 # posée en séance) et sont lisibles dans un navigateur sans cloner. Elles restent SUR DISQUE : ce sont les sources de vérité de la chaîne
-# de génération. Leur trace versionnée vit dans le dépôt PRIVÉ ENSM-Enseignement (_Reserve/td-helice-enseignant/seances/, INV-11).
+# de génération. Leur trace versionnée vit dans le dépôt PRIVÉ ENSM-Enseignement
+# (_Coulisses-depots-publics/TD-Helice-Marine/Seances/, INV-11 — chemin corrigé le 28/09, ancien _Reserve/td-helice-enseignant/seances/).
 Seances/S[0-9][0-9]_Slides.md
 Helice/docs/15_DECK-SEANCE1_Slides.md
 

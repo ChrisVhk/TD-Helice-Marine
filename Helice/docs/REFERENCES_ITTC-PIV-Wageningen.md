@@ -56,7 +56,7 @@ pour un usage futur éventuel (inter-séance B, ParaView vs. essai réel).
 ## Série B Wageningen — offsets géométriques
 
 **Toujours bloqué**, comme constaté le 17/09 — voir
-`ENSM-Enseignement/_Reserve/pale-B4/BLOQUANT_source-offsets.md` (note complète,
+`ENSM-Enseignement/_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/pale-B4/BLOQUANT_source-offsets.md` (note complète,
 tentatives documentées : Kuiper 1992 MARIN Publication 92-001, CiteSeerX,
 scholarworks.uno.edu, générateur interactif `wageningen-b-series-propeller.com`,
 `BladeX`). Non retenté le 18/09 : rien dans le contexte de cette consigne ne change

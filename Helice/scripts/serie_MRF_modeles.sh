@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # MRF en kOmegaSST puis en laminaire, dans la configuration EXACTE de case_kEpsilon_MRF (20/09 soir).
 # Critère, variables tenues égales / qui bougent, prévisions et risque laminaire écrits AVANT :
-#   ENSM-Enseignement/_Reserve/comparaison-3-modeles/LOT4b_MRF_kOmegaSST_laminaire_critere.md
+#   ENSM-Enseignement/_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/comparaison-3-modeles/LOT4b_MRF_kOmegaSST_laminaire_critere.md
 # Deux cas en SÉQUENCE, un seul lancement chacun, aucune reprise ni réglage : un run qui diverge ou plafonne est un résultat, pas un défaut.
 # État écrit par le script lui-même dans Helice/_ETAT_SERIE.txt ; aucun gardien détaché (attente par PID, kill -0).
 # Arrêts : espace libre de l'hôte < 15 Go, durée maximale par cas dépassée. Un rc != 0 est CONSIGNÉ (c'est un résultat) et n'empêche pas de lancer le second cas.

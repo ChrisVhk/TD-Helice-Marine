@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """MRF contre instationnaire, par modèle de turbulence : l'écart de méthode dépend-il du modèle ? -- 20/09 soir.
 
-Critère et seuils écrits AVANT les calculs : ENSM-Enseignement/_Reserve/comparaison-3-modeles/LOT4b_MRF_kOmegaSST_laminaire_critere.md
+Critère et seuils écrits AVANT les calculs : ENSM-Enseignement/_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/comparaison-3-modeles/LOT4b_MRF_kOmegaSST_laminaire_critere.md
 Pour chaque cas MRF présent (`case_<modele>_MRF`), sur les 200 dernières itérations :
   - K_T, 10 K_Q (propellerPerformance.dat), leur dérive (200 dernières contre les 200 précédentes) et leur pente sur 500 itérations ;
   - amplitude crête-à-crête sur les 500 dernières itérations (un état permanent la ramène à ~0) ;

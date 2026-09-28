@@ -24,7 +24,7 @@ from pathlib import Path
 from paraview.simple import (
     OpenFOAMReader, UpdatePipeline, Slice, Contour, CellDatatoPointData,
     Show, Hide, ColorBy, GetColorTransferFunction, GetActiveViewOrCreate,
-    ResetCamera, SaveScreenshot, GetDisplayProperties, Render,
+    SaveScreenshot, GetDisplayProperties, Render,
     RenameSource, GetAnimationScene,
 )
 
@@ -51,6 +51,28 @@ BORNES = {
 ISO_Q = 1000.0  # valeur du setup (05_GUIDE_PARAVIEW.md) -- confirmee ou remplacee, voir rapport
 
 PATCHS_PALE = ["patch/propellerTip", "patch/propellerStem1", "patch/propellerStem2", "patch/propellerStem3"]
+
+# ─────────────────────────────────────────────────────────────────────────
+# LOT 2a (consigne du 28/09 "Correctifs-fiche18-foam-coulisses") -- UNE seule
+# caméra par vue, commune à TOUS les cas (fermetures, série, layers, MRF).
+# Avant : ResetCamera() par cas donnait des cotes différentes (ex. V3 aval
+# -0,730 sur case_kEpsilon_layers contre -0,696 sur les 3 fermetures) -- les
+# comparaisons demandées en partie C ne se superposaient pas. Valeurs figées
+# ici = celles du CAS LE PLUS GRAND relevées au run précédent (elles cadrent
+# large, rien n'est coupé sur les cas plus petits -- vérifié en LOT 2, voir
+# rapport) :
+#   V3 aval/amont  : case_kEpsilon_layers (le plus distant des 4 cas AMI)
+#   V4             : case_kEpsilon_MRF (le plus distant des 7 cas)
+#   V1/V2          : déjà identiques sur les 7 cas au run précédent
+# ─────────────────────────────────────────────────────────────────────────
+CAMERA_V1V2 = {"Position": (0.0, -0.3, 2.2529), "FocalPoint": (0.0, -0.3, 0.0),
+               "ViewUp": (0.0, 1.0, 0.0), "ViewAngle": 30.0}
+CAMERA_V3_AVAL = {"Position": (0.0, -0.7304, 0.0), "FocalPoint": (0.0, 0.0695, 0.0),
+                  "ViewUp": (0.0, 0.0, 1.0), "ViewAngle": 30.0}
+CAMERA_V3_AMONT = {"Position": (0.0, 0.8694, 0.0), "FocalPoint": (0.0, 0.0695, 0.0),
+                   "ViewUp": (0.0, 0.0, 1.0), "ViewAngle": 30.0}
+CAMERA_V4 = {"Position": (0.0, -0.2521, 1.8739), "FocalPoint": (0.0, -0.2521, 0.0),
+             "ViewUp": (0.0, 1.0, 0.0), "ViewAngle": 30.0}
 
 CAMERAS = {}  # rempli au fil du script, imprime a la fin
 
@@ -110,18 +132,16 @@ def colorer(display, view, nom, bornes, log=False):
     display.SetScalarBarVisibility(view, True)
 
 
-def fixer_direction(view, direction, view_up):
-    """Fixe la direction de vue AVANT ResetCamera -- sans ça, ResetCamera() PRÉSERVE la
-    direction laissée par l'appel précédent sur cette même vue (la vue active est réutilisée
-    d'un cas à l'autre) : la caméra V1 du premier cas rendu et celle des cas suivants
-    finissaient dans deux directions différentes, l'une d'elles quasi à plat sur la coupe.
-    Corrigé : direction et view_up imposés ici, la même pour tous les cas d'une même vue."""
+def appliquer_camera(view, cam):
+    """Caméra FIXE, commune à tous les cas d'une même vue (LOT 2a du 28/09) -- plus de
+    ResetCamera() par cas : les cotes différaient d'un cas à l'autre (ex. V3 aval -0,730 sur
+    case_kEpsilon_layers contre -0,696 sur les 3 fermetures), rendant les comparaisons
+    demandées en partie C non superposables. cam = un des CAMERA_* ci-dessus."""
     c = view.GetActiveCamera()
-    norme = sum(x * x for x in direction) ** 0.5
-    d = tuple(x / norme for x in direction)
-    c.SetPosition(d[0] * 10, d[1] * 10, d[2] * 10)
-    c.SetFocalPoint(0.0, 0.0, 0.0)
-    c.SetViewUp(*view_up)
+    c.SetPosition(*cam["Position"])
+    c.SetFocalPoint(*cam["FocalPoint"])
+    c.SetViewUp(*cam["ViewUp"])
+    c.SetViewAngle(cam["ViewAngle"])
 
 
 def camera_info(view):
@@ -153,8 +173,7 @@ def vue_v1_sillage(case: str, t, suffixe: str):
     view = nouvelle_vue()
     disp = Show(sl, view)
     colorer(disp, view, "U", BORNES["U_mag"])
-    fixer_direction(view, (0, 0, 1), (0, 1, 0))  # face-on la coupe (normale Z), Y vertical
-    ResetCamera(view)
+    appliquer_camera(view, CAMERA_V1V2)
     capturer(view, f"V1_sillage_{suffixe}.png", f"V1_{suffixe}")
     Hide(sl, view)
     del r, pdata, sl, view
@@ -174,8 +193,7 @@ def vue_v2_nut(case: str, t, suffixe: str):
     view = nouvelle_vue()
     disp = Show(sl, view)
     colorer(disp, view, "nut", BORNES["nut"], log=True)
-    fixer_direction(view, (0, 0, 1), (0, 1, 0))  # même caméra que V1 : vues comparables
-    ResetCamera(view)
+    appliquer_camera(view, CAMERA_V1V2)  # même caméra que V1 : vues comparables
     capturer(view, f"V2_nut_{suffixe}.png", f"V2_{suffixe}")
     Hide(sl, view)
     del r, pdata, sl, view
@@ -188,19 +206,12 @@ def vue_v3_pression(case: str, t, suffixe: str):
     view = nouvelle_vue()
     disp = Show(pdata, view)
     colorer(disp, view, "p", BORNES["p"])
-    # Caméra "aval" (face en pression, l'intrados) : vue depuis -Y vers +Y, imposée AVANT
-    # ResetCamera -- sinon la distance calculée par ResetCamera vient d'une direction
-    # différente (silhouette de la pale bien plus large vue de côté que vue depuis l'axe).
-    fixer_direction(view, (0, -1, 0), (0, 0, 1))
-    ResetCamera(view)
+    # Caméra "aval" (face en pression, l'intrados) puis "amont" (face en dépression,
+    # l'extrados) : deux caméras FIXES (LOT 2a), communes aux 3 fermetures ET à
+    # case_kEpsilon_layers (partie C1) -- plus de ResetCamera() par cas.
+    appliquer_camera(view, CAMERA_V3_AVAL)
     capturer(view, f"V3_pression_aval_{suffixe}.png", f"V3_aval_{suffixe}")
-    # Caméra "amont" (face en dépression, l'extrados) : même distance, côté opposé.
-    c = view.GetActiveCamera()
-    fp = c.GetFocalPoint()
-    dist = c.GetDistance()
-    c.SetPosition(fp[0], fp[1] + dist, fp[2])
-    c.SetViewUp(0, 0, 1)
-    Render(view)
+    appliquer_camera(view, CAMERA_V3_AMONT)
     capturer(view, f"V3_pression_amont_{suffixe}.png", f"V3_amont_{suffixe}")
     Hide(pdata, view)
     del r, pdata, view
@@ -226,8 +237,7 @@ def vue_v4_isoQ(case: str, t, suffixe: str):
     ColorBy(disp_pale, None)
     disp_pale.AmbientColor = [0.6, 0.6, 0.6]
     disp_pale.DiffuseColor = [0.6, 0.6, 0.6]
-    fixer_direction(view, (0, 0, 1), (0, 1, 0))  # même caméra que V1/V2
-    ResetCamera(view)
+    appliquer_camera(view, CAMERA_V4)  # caméra fixe, commune à A/B/C2 (LOT 2a)
     capturer(view, f"V4_isoQ_{suffixe}.png", f"V4_{suffixe}")
     Hide(contour, view)
     Hide(r2, view)

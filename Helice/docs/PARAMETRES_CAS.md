@@ -69,7 +69,7 @@ comparaison teste la vraisemblance, elle ne valide rien. » Le panneau η₀ aff
 numérique brutale (jusqu'à ~60) près de J≈1,28 où l'extrapolation de la série B change de signe
 au dénominateur — un artefact de l'ajustement polynomial, pas une lecture pédagogique propre.
 Diagnostic enseignant (a motivé le gel de la piste série B, voir JOURNAL et
-`ENSM-Enseignement/_Reserve/pale-B4/`), pas une figure conçue pour un deck étudiant — non
+`ENSM-Enseignement/_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/pale-B4/`), pas une figure conçue pour un deck étudiant — non
 intégrée à un support pour cette raison, pas par oubli.
 
 **LOT A1 — chaîne solveur→figure, maillon cassé identifié (15/09)** : `system/

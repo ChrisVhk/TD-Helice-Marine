@@ -176,7 +176,7 @@ pas projeté) — ni l'une ni l'autre tentée à ce jour.
   les autres incertitudes bornées. Sur le COUPLE, le maillage de paroi (couches sur 63 % de l'aire des flancs, aucune sur la bande 0,804-0,925R) déplace 10K_Q de +4,2 % contre 3,1 %
   pour l'écart entre modèles ; sur K_T il ne se mesure pas (effet 6,6× plus petit que la borne du pas de temps).
   Résultat encore à défendre : la zone 0,80–0,925R sans couches reste ouverte
-  (`_Reserve/comparaison-3-modeles/RAPPORT_comparaison_4tours_2026-09-20.md` §3.4 et §6).
+  (`_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/comparaison-3-modeles/RAPPORT_comparaison_4tours_2026-09-20.md` §3.4 et §6).
   Voir le deck de la séance 2.
 - **Séance 3** : Acte 1 — chaque binôme apporte un point de J (mesuré, pas nominal) →
   diagramme en eau libre collectif. Acte 2 — la courbe entrante dans un calcul

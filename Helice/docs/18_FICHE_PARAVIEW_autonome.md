@@ -22,13 +22,23 @@ dessous ou très au-dessus, ce n'est pas anormal en soi, mais notez l'écart.
   (voir `data/paraview_kit/README_KIT.md` pour le format et le contenu exact — ne le recopiez
   pas ici). Décompressez l'archive où vous voulez sur votre poste ; chaque dossier de cas
   contient déjà un fichier `<cas>.foam` (vide, c'est normal — c'est un point d'entrée pour
-  ParaView, pas un fichier de données).
-- **Ouvrir les trois fermetures dans UNE session ParaView** :
+  ParaView, pas un fichier de données). **Pour cette fiche, ouvrez les dossiers de l'ARCHIVE**
+  (les champs y sont à 0,158 s) — **les `.foam` du dépôt cloné** (dans `Helice/case_*/`)
+  servent seulement si vous maillez ou copiez des pas de temps vous-mêmes, pas pour ce travail.
+- **Ouvrir les trois fermetures dans UNE session ParaView.** En ligne de commande (Linux/WSL) :
   ```bash
   paraview case_kEpsilon/case_kEpsilon.foam case_kOmegaSST/case_kOmegaSST.foam case_laminar/case_laminar.foam &
   ```
-  Pour chacun des trois : dans *Properties*, cocher **Reconstructed Case** (le pack est déjà
-  reconstruit, mais la case existe toujours dans l'interface), puis **Apply**.
+  Ou depuis l'interface (ParaView natif Windows, ou si vous préférez ne pas passer par le
+  terminal) : **File → Open**, naviguez jusqu'au dossier d'un cas, sélectionnez son `.foam`,
+  **OK**. Répétez pour les trois cas (certains gestionnaires de fichiers du dialogue *Open*
+  permettent de sélectionner plusieurs fichiers d'un coup avec Ctrl+clic — si le vôtre le
+  permet, sélectionnez les trois `.foam` en une seule fois ; sinon, un `.foam` à la fois, ça
+  revient au même).
+  Pour chacun des trois : dans *Properties*, le champ **Case Type** propose **Decomposed Case**
+  et **Reconstructed Case** (vérifié sur ParaView 5.11.2) — cocher/choisir **Reconstructed
+  Case** (le pack est déjà reconstruit, mais l'option existe toujours dans l'interface), puis
+  **Apply**.
 - **Se placer à t = 0,158 s — SAISI au clavier, jamais le bouton ⏭.** Dans la barre
   d'animation, tapez `0.158` dans le champ *Time* et validez. **Piège à connaître avant de
   commencer** : sur `case_kOmegaSST` uniquement, le dernier pas du pack est **0,159**, pas
@@ -97,10 +107,13 @@ Vue que `05_GUIDE_PARAVIEW.md` n'avait pas.
 **Sur cette vue (kEpsilon et kOmegaSST)** :
 - Qu'observez-vous : où `nut` est-il grand, où est-il petit, par rapport à la forme du sillage
   vue en V1 ?
-- **Sans le dire pour vous** : reliez les zones où `nut` est grand aux endroits où les vues V1 et
-  V4 diffèrent (ou pas) entre `laminar` et les deux fermetures RANS. Qu'est-ce que ce
-  rapprochement vous permet de conclure ?
-- Qu'est-ce qu'il ne permet pas de conclure ?
+- Qu'est-ce que cette seule observation (V1 + V2, sans V4) vous permet déjà de conclure sur où
+  se situe la turbulence engendrée par l'hélice ?
+
+> La question qui relie V2 à V4 (le rapprochement entre `nut` et les vues de la partie
+> « structures tourbillonnaires ») est posée **en fin de V4, plus bas** — « Retour sur V2 » :
+> V4 n'a pas encore été vue à ce stade, répondre à cette question maintenant reviendrait à
+> deviner.
 
 ### V3 — Pression sur la pale (deux caméras)
 
@@ -111,12 +124,17 @@ Vue que `05_GUIDE_PARAVIEW.md` n'avait pas.
 3. *Coloring* : **p**. **Rescale to Custom Range** → **−34 à 16**. (Ici aussi, le min/max brut du
    champ va de −111 à +99 — un pic très localisé au bord d'attaque — et écrase toute la pale en
    deux couleurs plates si vous l'utilisez ; −34/16 est la plage où 96 % des valeurs de la pale
-   vivent réellement, sur les trois fermetures.)
+   vivent réellement, sur les trois fermetures.) **`p` est la pression CINÉMATIQUE (m²/s²), pas
+   la pression en Pa** : `p_[Pa] = ρ · p`. Les bornes −34/16 sont donc en m²/s² — ne convertissez
+   pas et n'inventez pas de valeur de ρ pour l'affichage ; ce cas porte deux valeurs de `rhoInf`
+   différentes qui n'ont pas d'incidence sur les coefficients publiés
+   (`ETAT-DES-LIEUX.md` §ÉTABLI « ρ (rhoInf) n'intervient pas dans K_T/K_Q »,
+   `TUTORIEL_OpenFOAM-et-ParaView.md` §5, piège 5).
 4. **Caméra « aval » (face en pression, l'intrados — l'eau y est accélérée)** : Position
-   (0 ; −0,696 ; 0), Focal Point (0 ; 0,070 ; 0), View Up (0 ; 0 ; 1), View Angle 30°. Capture :
+   (0 ; −0,730 ; 0), Focal Point (0 ; 0,070 ; 0), View Up (0 ; 0 ; 1), View Angle 30°. Capture :
    `V3_pression_aval_<cas>_t0158.png`.
 5. **Caméra « amont » (face en dépression, l'extrados)** : mêmes Focal Point/View Up/Angle,
-   **Position (0 ; 0,835 ; 0)**. Capture : `V3_pression_amont_<cas>_t0158.png`.
+   **Position (0 ; 0,869 ; 0)**. Capture : `V3_pression_amont_<cas>_t0158.png`.
 
 Répétez sur `kOmegaSST` et `laminar` (mêmes réglages).
 
@@ -136,12 +154,17 @@ Répétez sur `kOmegaSST` et `laminar` (mêmes réglages).
    pas besoin d'en changer.)
 3. *Coloring* de l'iso-surface : **U → Magnitude**, **Rescale to Custom Range 0 à 10** (même
    plage qu'en V1).
-4. Ajoutez la pale en gris : dupliquez la source `kEpsilon` (clic droit → *Add representation to
-   view* ou rechargez le `.foam`), gardez seulement les Mesh Regions `propellerTip` +
-   `propellerStem1/2/3`, **Apply**, *Coloring* → **Solid Color** gris clair.
-5. Caméra : **Position (0 ; −0,243 ; 1,83)**, **Focal Point (0 ; −0,243 ; 0)**, **View Up
-   (0 ; 1 ; 0)**, **View Angle 30°**. (La cote y varie de quelques millimètres d'un cas à
-   l'autre selon l'étendue exacte de l'iso-surface — sans conséquence visible sur le cadrage.)
+4. Ajoutez la pale en gris : **File → Open**, rouvrez le **même** fichier `<cas>.foam` une
+   seconde fois — cela crée une deuxième source indépendante dans le *Pipeline Browser*.
+   Renommez-la `<cas>_pale`. Dans ses *Properties → Mesh Regions*, décochez tout sauf
+   `propellerTip`, `propellerStem1`, `propellerStem2`, `propellerStem3`. **Apply**. *Coloring* →
+   **Solid Color**, choisissez un gris clair.
+   > Testé avant d'écrire cette fiche : *Filters → Extract Block* (l'autre méthode possible en
+   > théorie) **ne fonctionne pas** sur ce lecteur — la sélection par nom de patch ne renvoie
+   > aucun bloc (ce lecteur ne construit pas la hiérarchie nommée que ce filtre attend). La
+   > méthode ci-dessus (rouvrir la source, cocher les Mesh Regions) est la seule vérifiée.
+5. Caméra : **Position (0 ; −0,252 ; 1,874)**, **Focal Point (0 ; −0,252 ; 0)**, **View Up
+   (0 ; 1 ; 0)**, **View Angle 30°** — la même sur les 7 cas du pack (fermetures, série, MRF).
 6. Capture : `V4_isoQ_<cas>_t0158.png`.
 
 Répétez sur `kOmegaSST` et `laminar`.
@@ -154,6 +177,11 @@ Répétez sur `kOmegaSST` et `laminar`.
 - Qu'est-ce que cela ne vous permet **pas** de conclure — pensez à l'échelle de temps couverte
   par une seule image (voir README_KIT.md) et à la question de synthèse plus bas.
 
+**Retour sur V2** : reliez maintenant les zones où `nut` était grand (V2, sur `kEpsilon` et
+`kOmegaSST`) aux endroits où les vues V1 et V4 diffèrent — ou ne diffèrent pas — entre `laminar`
+et les deux fermetures RANS. Qu'est-ce que ce rapprochement vous permet de conclure ? Qu'est-ce
+qu'il ne permet pas de conclure ?
+
 ---
 
 ## Partie B — Ce qu'une image ne dit pas (≈ 25 min)
@@ -163,10 +191,8 @@ tour**, soit **0,4 passage de pale** (l'hélice a Z = 4 pales, un passage de pal
 `PARAMETRES_CAS.md`, ligne « Z (nombre de pales) »).
 
 Pour chacun des 5 pas (0,155 · 0,156 · 0,157 · 0,158 · 0,159), reproduisez **V1** et **V4** sur
-`case_kOmegaSST` avec les mêmes réglages qu'en partie A (bornes, filtres). Caméra V1 :
-identique à la partie A. Caméra V4 : **Position (0 ; −0,242 ; 1,82)**, **Focal Point
-(0 ; −0,242 ; 0)**, **View Up (0 ; 1 ; 0)**, **View Angle 30°** (quasi identique au t = 0,158 s
-de la partie A). Nommage : `V1_sillage_kOmegaSST_t<temps>.png` /
+`case_kOmegaSST` avec les mêmes réglages qu'en partie A (bornes, filtres, **caméras identiques
+à la partie A, sans exception**). Nommage : `V1_sillage_kOmegaSST_t<temps>.png` /
 `V4_isoQ_kOmegaSST_t<temps>.png` (ex. `t155`, `t156`…).
 
 **Questions** :
@@ -184,9 +210,8 @@ Choisissez **C1 ou C2** (pas besoin des deux).
 ### C1 — Couches de prismes vs sans couches, à t = 0,158 s
 
 Reproduisez **V1** et **V3** (les deux caméras) sur `case_kEpsilon_layers`, à comparer à
-`case_kEpsilon` (déjà fait en partie A). Réglages V1 identiques à la partie A. Réglages V3 :
-mêmes bornes de pression, caméras **aval Position (0 ; −0,730 ; 0)** et **amont Position
-(0 ; 0,869 ; 0)**, mêmes Focal Point/View Up/Angle qu'en partie A.
+`case_kEpsilon` (déjà fait en partie A). Réglages V1 et V3 **identiques à la partie A, y
+compris les caméras** (mêmes chiffres, aucune variante pour ce cas).
 
 > ⚠️ **Avant de conclure quoi que ce soit** : lisez l'avertissement de
 > `data/paraview_kit/README_KIT.md` sur ce cas — le maillage à couches n'est **pas une
@@ -200,9 +225,8 @@ mêmes bornes de pression, caméras **aval Position (0 ; −0,730 ; 0)** et **am
 
 Reproduisez **V1** et **V4** sur les trois cas `case_kEpsilon_MRF`, `case_kOmegaSST_MRF`,
 `case_laminar_MRF`, à l'**itération 1500** (tapez `1500` dans le champ Time — pas une seconde,
-un numéro d'itération, cas stationnaire). Mêmes réglages V1/V4 qu'en partie A ; caméra V4 :
-**Position (0 ; −0,252 ; 1,87)**, **Focal Point (0 ; −0,252 ; 0)**, **View Up (0 ; 1 ; 0)**,
-**View Angle 30°**.
+un numéro d'itération, cas stationnaire). Réglages V1/V4 et **caméras identiques à la partie A,
+sans exception**.
 
 > ⚠️ **MRF et AMI ne se comparent pas pas à pas** : le MRF n'a pas de temps physique — c'est un
 > état stationnaire convergé (rotor figé, repère tournant), pas un instant du même calcul que
