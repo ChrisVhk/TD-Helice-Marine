@@ -12,10 +12,16 @@ Deux sorties, indépendantes :
             disque (ex-`URef` du solveur) ; `eta0` recalculé avec ce J. Voir le paragraphe suivant.
             VERSIONNÉ. Sert aux séances 1 et 2 et à l'inter-séance A.
 
-  --champs  data/paraview_kit/          — sélection de pas de temps reconstruits pour
-            ParaView (séance 3). ~750 Mo. NON versionné (gitignore) — à régénérer /
-            distribuer à part. Par défaut : 5 pas du dernier tour sur case_kOmegaSST
-            + 1 pas (t=0,06) sur les deux autres.
+  --champs  data/paraview_kit/          — pas de temps reconstruits pour ParaView (séance 3),
+            sélection DÉCLARÉE dans SELECTION_CHAMPS (LOT 2, consigne du 28/09 « Pack-ParaView-
+            4-tours » -- remplace l'ancienne règle codée en dur « 5 derniers pas sur kOmegaSST +
+            dernier pas ailleurs », qui aurait copié un répertoire tronqué tel quel après le
+            passage à 4,00 tours). Instant de comparaison commun aux cas AMI à instant unique :
+            t=0,158 s (et non 0,159 : seul instant présent dans les quatre cas AMI, cas à
+            couches compris). Champs copiés : U, p, Q, k, nut, epsilon|omega, polyMesh (dont
+            <t>/polyMesh/points pour les cas AMI, le rotor tourne) -- pas phi, Uf, meshPhi,
+            uniform/, yPlus (allégement mesuré et rapporté par make_champs()). NON versionné
+            (gitignore) — à régénérer / distribuer à part (archive séparée).
 
 ## Le rééchelonnement (décision enseignant du 15/09, INV-19)
 
@@ -373,44 +379,163 @@ def make_csv_supplementaires(noms: list[str] | None = None) -> None:
               f"V_inlet={v_inlet:g} m/s, {'stationnaire : time = itération' if stationnaire else 'instationnaire'})")
 
 
-def _reconstructed_times(case_dir: Path) -> list[str]:
-    return sorted(
-        (p.name for p in case_dir.iterdir() if p.is_dir() and _isfloat(p.name) and p.name != "0"),
-        key=float,
-    )
+# ─────────────────────────────────────────────────────────────────────────
+# LOT 2 (28/09, consigne « Pack-ParaView-4-tours ») — sélection DÉCLARÉE, plus
+# de règle implicite (« 5 derniers pas sur kOmegaSST + dernier pas ailleurs »,
+# qui aurait copié un répertoire tronqué tel quel après le passage à 4 tours).
+# Gardes (f)-(i) : elles REFUSENT (sys.exit, code non nul, fichier nommé),
+# elles ne corrigent jamais — même esprit que (a)-(e) plus haut.
+# ─────────────────────────────────────────────────────────────────────────
+
+SELECTION_CHAMPS = {
+    "case_kEpsilon": ["0.158"],
+    "case_kOmegaSST": ["0.155", "0.156", "0.157", "0.158", "0.159"],
+    "case_laminar": ["0.158"],
+    "case_kEpsilon_layers": ["0.158"],
+    "case_kEpsilon_MRF": ["1500"],
+    "case_kOmegaSST_MRF": ["1500"],
+    "case_laminar_MRF": ["1500"],
+}
+
+# Champs attendus par cas — ce que la garde (g) vérifie avant de copier un pas
+# (le piège yPlus-seul : le répertoire existe, mais un post-traitement ponctuel
+# -- y+, Q -- l'a écrit seul, sans les champs du solveur).
+CHAMPS_ATTENDUS = {
+    "case_kEpsilon": {"U", "p", "Q", "k", "nut", "epsilon"},
+    "case_kOmegaSST": {"U", "p", "Q", "k", "nut", "omega"},
+    "case_laminar": {"U", "p", "Q"},  # pas de modèle de turbulence
+    "case_kEpsilon_layers": {"U", "p", "Q", "k", "nut", "epsilon"},
+    "case_kEpsilon_MRF": {"U", "p", "Q", "k", "nut", "epsilon"},
+    "case_kOmegaSST_MRF": {"U", "p", "Q", "k", "nut", "omega"},
+    "case_laminar_MRF": {"U", "p", "Q"},
+}
+
+# Cas AMI (rotor tournant) : le pas gardé emporte aussi <t>/polyMesh/points.
+# Les cas MRF (rotor figé) n'ont pas de polyMesh par pas, seulement constant/.
+CAS_AMI = {"case_kEpsilon", "case_kOmegaSST", "case_laminar", "case_kEpsilon_layers"}
+
+# (h) Trous de champs déjà documentés (METHODO_DONNEES.md §5, défaut ②) : un
+# instant demandé dans un trou connu se refuse, il ne se contourne pas — le
+# champ n'existe nulle part, dans aucun cas.
+TROUS_CHAMPS_CONNUS = {
+    "case_laminar": [(0.048, 0.059)],
+}
+
+# (i) instant commun : ces cas se comparent au MÊME instant (même angle de
+# rotor, les vues sont superposables). case_kOmegaSST est exempté : sa
+# sélection est une SÉRIE déclarée (le sillage qui tourne), pas une
+# comparaison à instant unique.
+CAS_INSTANT_COMMUN = ["case_kEpsilon", "case_laminar", "case_kEpsilon_layers"]
+
+# Champs copiés depuis un pas de temps — ce que ParaView lit réellement.
+# Exclus explicitement : phi, Uf, meshPhi, uniform/, yPlus (post-traitement
+# ponctuel, jamais un champ de comparaison).
+CHAMPS_A_COPIER = {"U", "p", "Q", "k", "nut", "epsilon", "omega"}
 
 
-def _isfloat(s: str) -> bool:
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
+def _garde_temps_absent(case: str, t: str) -> Path:
+    """(f) Le pas demandé n'existe pas sur disque — refus, jamais un pas voisin choisi à sa place."""
+    src_t = ROOT / case / t
+    if not src_t.is_dir():
+        sys.exit(f"GARDE (f) -- {case}/{t} : instant absent (aucun répertoire reconstruit) -- "
+                 f"lancer reconstructPar -time {t} d'abord.")
+    return src_t
 
 
-def make_champs(n_last: int = 5) -> None:
+def _garde_champ_manquant(case: str, t: str, src_t: Path) -> None:
+    """(g) Le piège yPlus-seul : un répertoire existe mais un post-traitement ponctuel (y+, Q)
+    l'a écrit seul, sans les champs du solveur — refus, jamais copié tel quel."""
+    presents = {p.name for p in src_t.iterdir()}
+    manquants = CHAMPS_ATTENDUS[case] - presents
+    if manquants:
+        sys.exit(f"GARDE (g) -- {case}/{t} : champ(s) attendu(s) absent(s) du pas copié : "
+                 f"{sorted(manquants)} (présents : {sorted(presents & CHAMPS_ATTENDUS[case])}) -- "
+                 f"pas tronqué (post-traitement ponctuel), à reconstruire en entier avant usage.")
+
+
+def _garde_trou_connu(case: str, t: str) -> None:
+    """(h) L'instant demandé tombe dans un trou de champs déjà documenté
+    (METHODO_DONNEES.md §5, défaut ②) — refus, le champ n'existe nulle part, dans aucun cas."""
+    t_val = float(t)
+    for t0, t1 in TROUS_CHAMPS_CONNUS.get(case, []):
+        if t0 <= t_val <= t1:
+            sys.exit(f"GARDE (h) -- {case}/{t} : instant dans un trou de champs connu "
+                     f"[{t0} ; {t1}] (METHODO_DONNEES.md §5, défaut ②) -- aucun champ n'existe ici.")
+
+
+def _garde_instant_commun(selection: dict) -> None:
+    """(i) Les cas AMI comparés à instant unique doivent partager le MÊME instant (même angle de
+    rotor) — refus sinon. case_kOmegaSST est exempté : sa sélection est une série déclarée."""
+    temps_par_cas = {}
+    for case in CAS_INSTANT_COMMUN:
+        temps = selection.get(case, [])
+        if len(temps) != 1:
+            sys.exit(f"GARDE (i) -- {case} : {len(temps)} instant(s) déclaré(s), un seul attendu "
+                     f"pour la comparaison à instant commun (hors série case_kOmegaSST, déclarée).")
+        temps_par_cas[case] = temps[0]
+    distinct = set(temps_par_cas.values())
+    if len(distinct) > 1:
+        sys.exit(f"GARDE (i) -- instant commun incohérent entre cas AMI : {temps_par_cas} -- "
+                 f"{CAS_INSTANT_COMMUN} doivent partager le même instant.")
+
+
+def _copier_pas_allege(src_t: Path, dst_t: Path, case: str) -> int:
+    """Ne copie que ce que ParaView lit : CHAMPS_A_COPIER, plus polyMesh (dont <t>/polyMesh/points
+    pour les cas AMI -- le rotor tourne). Exclut phi, Uf, meshPhi, uniform/, yPlus. Retourne le
+    nombre d'octets copiés (pour mesurer le gain de l'allégement)."""
+    dst_t.mkdir(parents=True)
+    total = 0
+    for item in sorted(src_t.iterdir()):
+        if item.name == "polyMesh":
+            if case in CAS_AMI and item.is_dir():
+                shutil.copytree(item, dst_t / "polyMesh")
+                total += sum(f.stat().st_size for f in (dst_t / "polyMesh").rglob("*") if f.is_file())
+            continue
+        if item.name in CHAMPS_A_COPIER and item.is_file():
+            shutil.copy2(item, dst_t / item.name)
+            total += item.stat().st_size
+    return total
+
+
+def make_champs() -> None:
+    """Produit data/paraview_kit/ à partir de SELECTION_CHAMPS. Gardes (f)-(i) avant toute copie ;
+    seuls U, p, Q, k, nut, epsilon|omega et polyMesh sont copiés (allégement, CHAMPS_A_COPIER)."""
+    _garde_instant_commun(SELECTION_CHAMPS)
+
     kit = DATA / "paraview_kit"
     if kit.exists():
         shutil.rmtree(kit)
-    for case in CASES:
+
+    volume_allege = 0
+    volume_brut = 0
+    for case, temps in SELECTION_CHAMPS.items():
         src = ROOT / case
-        times = _reconstructed_times(src)
-        if not times:
-            print(f"  ⚠ {case} : aucun pas reconstruit — lancer reconstructPar d'abord.")
-            continue
-        keep = times[-n_last:] if case == "case_kOmegaSST" else times[-1:]
+        if not src.is_dir():
+            sys.exit(f"{case} : dossier de cas introuvable sous {ROOT}.")
         dst = kit / case
         dst.mkdir(parents=True)
         for sub in ("constant", "system"):
             if (src / sub).exists():
                 shutil.copytree(src / sub, dst / sub, ignore=shutil.ignore_patterns("polyMesh"))
         shutil.copytree(src / "constant" / "polyMesh", dst / "constant" / "polyMesh")
-        for t in keep:
-            shutil.copytree(src / t, dst / t)
+
+        copies = []
+        for t in temps:
+            _garde_trou_connu(case, t)
+            src_t = _garde_temps_absent(case, t)
+            _garde_champ_manquant(case, t, src_t)
+            volume_brut += sum(f.stat().st_size for f in src_t.rglob("*") if f.is_file())
+            volume_allege += _copier_pas_allege(src_t, dst / t, case)
+            copies.append(t)
         (dst / f"{case}.foam").touch()
-        print(f"  {dst.relative_to(ROOT)} : pas {keep}")
+        print(f"  {dst.relative_to(ROOT)} : pas {copies}")
+
     total = sum(f.stat().st_size for f in kit.rglob("*") if f.is_file()) / 1e6
-    print(f"  total kit champs : {total:.0f} Mo")
+    brut_mo = volume_brut / 1e6
+    allege_mo = volume_allege / 1e6
+    gain = (1 - allege_mo / brut_mo) * 100 if brut_mo else 0.0
+    print(f"  total kit champs : {total:.0f} Mo (pas de temps allégés : {allege_mo:.0f} Mo "
+          f"contre {brut_mo:.0f} Mo non allégés -- gain {gain:.0f} %)")
 
 
 if __name__ == "__main__":
@@ -418,8 +543,9 @@ if __name__ == "__main__":
     ap.add_argument("--csv", action="store_true", help="produit data/perf_*.csv (versionné)")
     ap.add_argument("--csv-supplementaires", action="store_true", dest="supp",
                     help="produit data/perf_kEpsilon_layers.csv et data/perf_<modele>_MRF.csv (versionnés)")
-    ap.add_argument("--champs", action="store_true", help="produit data/paraview_kit/ (~750 Mo, non versionné)")
-    ap.add_argument("--n-last", type=int, default=5, help="nb de pas du dernier tour pour case_kOmegaSST")
+    ap.add_argument("--champs", action="store_true",
+                     help="produit data/paraview_kit/ (sélection déclarée dans SELECTION_CHAMPS, "
+                          "instant commun t=0,158 s ; non versionné)")
     ap.add_argument("--verifier", metavar="CASE_DIR",
                      help="lance seulement les gardes (a)-(e) sur ce dossier de cas, sans produire de CSV "
                           "(utile pour un cas hors de CASES, ex. case_kEpsilon_layers)")
@@ -436,4 +562,4 @@ if __name__ == "__main__":
         make_csv_supplementaires()
     if a.champs:
         print("Champs ParaView (séance 3) :")
-        make_champs(a.n_last)
+        make_champs()

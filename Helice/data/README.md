@@ -3,7 +3,8 @@
 **État au 20/09 : sept séries `perf_*.csv`, une par configuration de calcul.** Les trois séries instationnaires du départ
 couvrent 4,00 tours (t = 0,159067 s) ; la fenêtre du dernier tour, [0,1193 ; 0,1591] s, est celle des moyennes de
 `docs/PARAMETRES_CAS.md`. Les deux premiers tours sont un transitoire de mise en régime. Les champs pour ParaView (séance 3,
-plus bas) sont, eux, à t = 0,056–0,06 s.
+plus bas) sont, eux, à t = 0,158 s (instant commun aux quatre cas AMI ; série 0,155–0,159 s sur `case_kOmegaSST` ;
+itération 1500 pour les trois cas MRF).
 
 Le calcul OpenFOAM ne tourne **pas** en séance (un cas = ~2 h sur 4 cœurs et 12–14 Go). Les
 résultats sont fournis ici. Tout est régénérable depuis les cas du dépôt via
@@ -74,17 +75,21 @@ surestimait η₀ de 1,9 à 2,2 %. K_T et K_Q ne dépendent que de n et D : ils 
 
 Régénérer : `python3 scripts/extraire_kit_donnees.py --csv` (les trois premiers), `--csv-supplementaires` (couches et MRF).
 
-## Séance 3 — champs pour ParaView (NON versionné, ~1 Go)
+## Séance 3 — champs pour ParaView (NON versionné, ~1,1 Go ; archive de distribution ~700 Mo)
 
-`data/paraview_kit/` : 5 pas du dernier tour sur `case_kOmegaSST` + le pas final ($t = 0{,}06$) sur
-`case_kEpsilon` et `case_laminar`, avec maillage. Un fichier `<case>.foam` par cas pour l'ouverture
-ParaView.
+`data/paraview_kit/` : sélection DÉCLARÉE dans `SELECTION_CHAMPS` (`scripts/extraire_kit_donnees.py`,
+LOT 2 de la consigne du 28/09) — instant commun **t = 0,158 s** sur les quatre cas AMI (`case_kEpsilon`,
+`case_laminar`, `case_kEpsilon_layers`, et un des cinq pas de `case_kOmegaSST`), série 0,155→0,159 s sur
+`case_kOmegaSST` (le sillage qui tourne, un tour vu en 5 images), itération 1500 sur les trois cas MRF
+(stationnaire, rotor figé). Un fichier `<case>.foam` par cas pour l'ouverture ParaView ; voir
+`data/paraview_kit/README_KIT.md` (suivi, PUBLIC, pour l'étudiant).
 
-> ⚠️ **Piège de régénération (constaté le 20/09).** Les champs complets n'existent que jusqu'à t = 0,06 s
-> sur `case_kEpsilon` et `case_laminar`, alors que `case_kOmegaSST` en a jusqu'à 0,159 s. Relancer
-> `--champs` tel quel prendrait donc les 5 derniers pas de kOmegaSST à t ≈ 0,155–0,159 s et le pas
-> t = 0,06 s des deux autres : trois cas à des instants différents, non comparables. Le kit actuellement sur
-> disque (t = 0,056–0,06 s pour les trois) est cohérent ; ne le régénérer qu'après avoir aligné les instants.
+> ⚠️ **Ancien piège de régénération (constaté le 20/09, corrigé le 28/09).** Avant le 28/09, la règle
+> codée en dur (« 5 derniers pas sur kOmegaSST + dernier pas ailleurs ») aurait pris un pas tronqué
+> (post-traitement ponctuel y+ ou Q sans les champs du solveur) ou des instants non comparables entre
+> cas AMI. Les gardes (f)-(i) de `make_champs()` refusent désormais ces deux situations (temps absent,
+> champ manquant, trou de données connu, instant incohérent entre cas AMI) — elles ne corrigent pas,
+> elles arrêtent le script avec le fichier en cause nommé.
 
 À produire **avant la séance 3** (pas dans le dépôt — trop lourd, régénérable) :
 
@@ -92,5 +97,5 @@ ParaView.
 python3 scripts/extraire_kit_donnees.py --champs
 ```
 
-Distribution : archiver `data/paraview_kit/` et le diffuser hors dépôt (kDrive, clé USB, partage
-réseau école).
+Distribution : `data/paraview_kit_4tours.zip` (archive de distribution, également gitignorée), à
+diffuser hors dépôt (kDrive, clé USB, partage réseau école).

@@ -76,8 +76,15 @@ Results/*
 !Results/amplitude_KT_fenetre-propre.md
 
 # Kit de données étudiant : les CSV (data/perf_*.csv) SONT versionnés (petits, distribués) ;
-# le kit de champs ParaView (~1 Go) est régénérable par scripts/extraire_kit_donnees.py --champs
-data/paraview_kit/
+# le kit de champs ParaView (~1,1 Go) est régénérable par scripts/extraire_kit_donnees.py --champs.
+# Motif data/paraview_kit/* pas data/paraview_kit/ -- même piège que Results/* et _Setup/ plus haut
+# (une négation ne peut pas re-inclure un fichier dans un dossier déjà exclu par un motif finissant
+# en "/"). README_KIT.md est suivi (petit, PUBLIC, pour l'étudiant) ; le reste ne l'est pas.
+data/paraview_kit/*
+!data/paraview_kit/README_KIT.md
+
+# Archive de distribution du kit — même artefact régénérable, jamais versionné.
+data/paraview_kit_4tours.zip
 
 # Figures — régime manuel (_Methodo/CONSIGNE_FIGURES_a_traiter.md, 01/09) : la page source PDF
 # rendue va dans Images/_a_traiter/, gitignorée (ce sont des pages d'un support tiers). Ce qui

@@ -110,7 +110,8 @@ propres mesures, et elle vaut mieux qu'un classement.
 
 ### A. Session ParaView guidée (1 h 15)
 
-Jeu de données allégé (`data/`, ~750 Mo), **une seule session collective**. Sillage, tourbillons de
+Jeu de données allégé (`data/`, ~1,1 Go ; archive de distribution ~700 Mo), **une seule session
+collective**. Sillage, tourbillons de
 bout de pale, critère $Q$. Objectif unique : **expliquer pourquoi le laminaire surestime $\eta_0$**
 (pas de dissipation turbulente → moins de pertes de couple). On relie l'image au chiffre de la
 séance 2. Support : doc [`05`](05_GUIDE_PARAVIEW.md).
@@ -124,7 +125,8 @@ Chaque binôme répond devant les autres à la question qu'il avait préparée s
 ## Moyens et évaluation
 
 - **Calcul en séance : aucun.** Poste étudiant : un tableur (séances 1–2), ParaView en lecture
-  seule (séance 3). Données fournies : < 1 Mo (séances 1–2), puis ~750 Mo (séance 3).
+  seule (séance 3). Données fournies : < 1 Mo (séances 1–2), puis ~1,1 Go (séance 3 ; archive de
+distribution ~700 Mo).
 - **QCM** : [`02`](02_QCM_PREREQUIS.md) en début de séance 1.
 - **Rendu de binôme** : la caractérisation de fermeture (inter-séance A), la décomposition d'efforts
   (1-B + inter-séance A), et une demi-page sur « le classement impossible » (séance 2).
