@@ -80,7 +80,8 @@ Régénérer : `python3 scripts/extraire_kit_donnees.py --csv` (les trois premie
 `data/paraview_kit/` : sélection DÉCLARÉE dans `SELECTION_CHAMPS` (`scripts/extraire_kit_donnees.py`,
 LOT 2 de la consigne du 28/09) — instant commun **t = 0,158 s** sur les quatre cas AMI (`case_kEpsilon`,
 `case_laminar`, `case_kEpsilon_layers`, et un des cinq pas de `case_kOmegaSST`), série 0,155→0,159 s sur
-`case_kOmegaSST` (le sillage qui tourne, un tour vu en 5 images), itération 1500 sur les trois cas MRF
+`case_kOmegaSST` (le sillage qui tourne, 5 images sur 36° de rotation = 0,10 tour, soit 0,4 passage
+de pale à Z = 4), itération 1500 sur les trois cas MRF
 (stationnaire, rotor figé). Un fichier `<case>.foam` par cas pour l'ouverture ParaView ; voir
 `data/paraview_kit/README_KIT.md` (suivi, PUBLIC, pour l'étudiant).
 

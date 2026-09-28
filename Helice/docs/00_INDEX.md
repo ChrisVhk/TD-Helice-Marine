@@ -44,6 +44,12 @@ confrontation de séance 2 — ne jamais distribuer avant).
 9. `PLAN_SEANCE-3.md` — déroulé complet (Acte 1 : diagramme en eau libre construit
     en classe ; Acte 2 : auto-propulsion ; piste avancée : maillage à couches), PUBLIC.
 10. Deck projeté : celui de la séance 3 (distribué par Moodle).
+11. `18_FICHE_PARAVIEW_autonome.md` — travail ParaView en autonomie (inter-séance, pack à
+    4 tours, laminaire vs turbulent), PUBLIC. Fait autorité pour le travail sur le pack —
+    voir la note de recouvrement ci-dessous. Remplace `05_GUIDE_PARAVIEW.md` pour cet usage.
+
+**Enseignant, en regard de la séance 3** : `18_FICHE_PARAVIEW_CORRIGE_Enseignant.md` (corrigé
+par question, renvoi à `Images/galerie/`, proposition de barème à valider).
 
 ---
 
@@ -102,3 +108,8 @@ d'après les séances, hors périmètre de cette boucle) :
   `14_CONTROLE-G1_ENSEIGNANT.md` sont plus anciens et n'ont pas été vérifiés contre les corrections récentes
   (D, Z=4, y⁺, couches) — **à ne pas prendre pour argent comptant sans les
   recouper contre `PARAMETRES_CAS.md` et `TUTORIEL_OpenFOAM-et-ParaView.md`.**
+- **Mise à jour du 28/09** : pour le travail sur le **pack ParaView** (`data/paraview_kit/`,
+  4 tours, t = 0,158 s), c'est **`18_FICHE_PARAVIEW_autonome.md`** qui fait autorité —
+  `05_GUIDE_PARAVIEW.md` porte un bandeau renvoyant vers elle et n'est plus à jour pour cet
+  usage (3 cas à t = 0,06 s, réponses en clair). `TUTORIEL_OpenFOAM-et-ParaView.md` garde son
+  rôle de référence méthode générale (pièges ParaView), indépendant du pack.

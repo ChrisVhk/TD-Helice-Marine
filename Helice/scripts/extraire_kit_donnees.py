@@ -20,8 +20,12 @@ Deux sorties, indépendantes :
             t=0,158 s (et non 0,159 : seul instant présent dans les quatre cas AMI, cas à
             couches compris). Champs copiés : U, p, Q, k, nut, epsilon|omega, polyMesh (dont
             <t>/polyMesh/points pour les cas AMI, le rotor tourne) -- pas phi, Uf, meshPhi,
-            uniform/, yPlus (allégement mesuré et rapporté par make_champs()). NON versionné
-            (gitignore) — à régénérer / distribuer à part (archive séparée).
+            uniform/, yPlus (allégement mesuré et rapporté par make_champs()). constant/ copié
+            en LISTE BLANCHE (LOT 1b, consigne du 28/09 « Fiche-ParaView-autonome ») :
+            CONSTANT_A_COPIER + polyMesh seulement -- ni triSurface/, ni extendedFeatureEdgeMesh/,
+            ni les champs de diagnostic d'un ancien `checkMesh -writeFields` sur
+            `case_kEpsilon_layers`. NON versionné (gitignore) — à régénérer / distribuer à part
+            (archive séparée).
 
 ## Le rééchelonnement (décision enseignant du 15/09, INV-19)
 
@@ -432,6 +436,14 @@ CAS_INSTANT_COMMUN = ["case_kEpsilon", "case_laminar", "case_kEpsilon_layers"]
 # ponctuel, jamais un champ de comparaison).
 CHAMPS_A_COPIER = {"U", "p", "Q", "k", "nut", "epsilon", "omega"}
 
+# Fichiers de constant/ copiés — LISTE BLANCHE (LOT 1b, consigne du 28/09 « Fiche-ParaView-
+# autonome ») : polyMesh est géré à part. Exclus explicitement, jamais copiés : triSurface/,
+# extendedFeatureEdgeMesh/, et tout champ de diagnostic écrit par `checkMesh -writeFields`
+# (aspectRatio, cellAspectRatio, cellDeterminant, cellShapes, nonOrthoAngle, skewness…, présents
+# sur `case_kEpsilon_layers/constant/` -- un étudiant seul les verrait dans ParaView sans savoir
+# quoi en faire).
+CONSTANT_A_COPIER = {"dynamicMeshDict", "MRFProperties", "transportProperties", "turbulenceProperties"}
+
 
 def _garde_temps_absent(case: str, t: str) -> Path:
     """(f) Le pas demandé n'existe pas sur disque — refus, jamais un pas voisin choisi à sa place."""
@@ -499,12 +511,19 @@ def _copier_pas_allege(src_t: Path, dst_t: Path, case: str) -> int:
 
 def make_champs() -> None:
     """Produit data/paraview_kit/ à partir de SELECTION_CHAMPS. Gardes (f)-(i) avant toute copie ;
-    seuls U, p, Q, k, nut, epsilon|omega et polyMesh sont copiés (allégement, CHAMPS_A_COPIER)."""
+    seuls U, p, Q, k, nut, epsilon|omega et polyMesh sont copiés (allégement, CHAMPS_A_COPIER).
+    README_KIT.md est le seul fichier SUIVI de ce dossier par ailleurs gitignoré (voir .gitignore) --
+    préservé à travers la régénération, jamais écrasé par le rmtree ci-dessous."""
     _garde_instant_commun(SELECTION_CHAMPS)
 
     kit = DATA / "paraview_kit"
+    readme = kit / "README_KIT.md"
+    readme_contenu = readme.read_text(encoding="utf-8") if readme.is_file() else None
     if kit.exists():
         shutil.rmtree(kit)
+    kit.mkdir(parents=True)
+    if readme_contenu is not None:
+        readme.write_text(readme_contenu, encoding="utf-8")
 
     volume_allege = 0
     volume_brut = 0
@@ -514,9 +533,13 @@ def make_champs() -> None:
             sys.exit(f"{case} : dossier de cas introuvable sous {ROOT}.")
         dst = kit / case
         dst.mkdir(parents=True)
-        for sub in ("constant", "system"):
-            if (src / sub).exists():
-                shutil.copytree(src / sub, dst / sub, ignore=shutil.ignore_patterns("polyMesh"))
+        if (src / "system").exists():
+            shutil.copytree(src / "system", dst / "system")
+        (dst / "constant").mkdir()
+        for name in sorted(CONSTANT_A_COPIER):
+            item = src / "constant" / name
+            if item.is_file():
+                shutil.copy2(item, dst / "constant" / name)
         shutil.copytree(src / "constant" / "polyMesh", dst / "constant" / "polyMesh")
 
         copies = []

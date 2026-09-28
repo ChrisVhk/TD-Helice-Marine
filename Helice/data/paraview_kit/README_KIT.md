@@ -3,6 +3,9 @@
 > ParaView s'ouvre sur les dossiers de l'ARCHIVE (champs à 0,158 s). Les `.foam` du dépôt
 > cloné servent si vous maillez ou copiez des pas de temps vous-mêmes.
 
+> **Manipulation pas à pas, échelles et caméras imposées, questions : voir
+> `Helice/docs/18_FICHE_PARAVIEW_autonome.md`.**
+
 Sept cas, chacun s'ouvre seul (`<cas>.foam` à sa racine). Les chiffres de référence
 (K_T, 10K_Q, η₀…) ne sont PAS recopiés ici : voir `Helice/docs/PARAMETRES_CAS.md`,
 source unique de vérité.

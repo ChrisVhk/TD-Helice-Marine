@@ -1,5 +1,9 @@
 # Guide ParaView — TD Hélice marine en eau libre
 
+> **Remplacé par `18_FICHE_PARAVIEW_autonome.md` pour le travail sur le pack à 4 tours (28/09)
+> — celui-ci reste à t = 0,06 s, sur 3 cas (pas 7), réponses écrites en clair.**
+> **Conservé pour l'historique, à ne plus utiliser pour le travail en autonomie.**
+
 > Réécrit pour **ce cas précis** (hélice `propeller`, 3 fermetures de turbulence). Objectif : produire
 > **3 vues comparables** des 3 cas (même instant, même échelle de couleurs) pour la restitution.
 > Le guide s'appuie sur les champs réellement écrits par ce setup : `U`, `p`, `Q`.
