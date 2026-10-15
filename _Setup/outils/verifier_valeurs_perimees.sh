@@ -30,14 +30,10 @@ PATTERNS=(
     'D ?= ?0,2\b'
     '0,2 m'
     'radius 0\.1\b'
-    '0,3625'
     '1,024'
     '60 ?%'
     '4,42'
     '82,7'
-    '0,0404'
-    '0,0373'
-    '0,0294'
     'M=1,031'
     'N=6 '
     '2,4287'
@@ -45,17 +41,20 @@ PATTERNS=(
     '2,2312'
     'P/D≈2,3'
     # 20/09 -- valeurs à 1,5 tour (fenêtre recouvrant la mise en régime), remplacées par celles à 4,00 tours
-    '0,2170|0,2221|0,2261'        # K_T à 1,5 tour
-    '0,5556|0,5401|0,5371'        # 10K_Q à 1,5 tour
-    '0,5599|0,5901|0,6033'        # eta_0 à 1,5 tour
-    '0,0176|0,0223|0,0242'        # amplitudes K_T à 1,5 tour
-    '0,9033'                      # J à t=0,06 s
     '0,029 à 0,040|2 à 2,7 fois|ΔK_T ?≈ ?0,015'   # forme 13/09 de la comparaison amplitude/écart (fiche consigne), jamais recopiée de PARAMETRES_CAS
     # 20/09 (soir) -- J et eta_0 du solveur : URef est relevée à 0,17 D EN AVAL des pales (induction), pas une avance.
-    # J correct = avance imposée 0,8743 (les quatre cas) ; eta_0 correct 0,5457 / 0,5738 / 0,5873 (couches 0,5245).
-    '0,8936|0,8912|0,8922'        # J du solveur (URef mesuré en aval)
-    '0,5578|0,5864|0,5986|0,5352'  # eta_0 calculé avec ce J
+    # J correct = avance imposée (les quatre cas) ; eta_0 recalculé avec elle (valeurs : coulisses privées).
 )
+
+# Valeurs-réponses périmées (K_T, 10K_Q, eta_0, amplitudes, J à 1,5 tour et valeurs pré-rééchelonnées) : motifs
+# conservés HORS de ce dépôt public (coulisses privées, E-168). Sans ce fichier, le contrôle s'arrête avec un
+# message explicite (code 3) : un clone public seul ne peut pas l'exécuter.
+if ! PRIVES_TXT="$(python3 "$HERE/valeurs_privees.py" patterns)"; then
+    echo "ARRÊT : motifs de valeurs périmées indisponibles (voir message ci-dessus) ; contrôle non exécuté." >&2
+    exit 3
+fi
+mapfile -t PRIVES <<< "$PRIVES_TXT"
+PATTERNS+=("${PRIVES[@]}")
 
 # Citations historiques légitimes (LOT 2, consigne du 15/09) -- chaque entrée porte sa
 # raison. Format : "chemin:ligne". Revérifié le 15/09 : chaque ligne listée ici porte
@@ -104,7 +103,7 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:7"    # idem
     "Helice/docs/PARAMETRES_CAS.md:79"   # "reste au stade PRÉ-correction de D (D=0,2 m..." -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/PARAMETRES_CAS.md:80"   # "radius 0.1 -- vérifié" -- suite du même contraste
-    "Helice/docs/PARAMETRES_CAS.md:92"   # "donne K_T=0,3625 ... les valeurs PÉRIMÉES" -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/PARAMETRES_CAS.md:92"   # "donne K_T ... les valeurs PÉRIMÉES" -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/PARAMETRES_CAS.md:179"  # section "valeurs explicitement PÉRIMÉES, à ne jamais recopier" (lignes décalées le 17/09 par la correction M/N)
     "Helice/docs/PARAMETRES_CAS.md:180"  # idem
     "Helice/docs/PARAMETRES_CAS.md:181"  # idem
@@ -114,9 +113,9 @@ EXCLUSIONS=(
     "Seances/S03_Slides.md:344"  # même rétractation sourcée JOURNAL (ex-S03_Arborescence-et-perspective:162)
     "Helice/docs/ETAT-DES-LIEUX.md:95"    # brut jamais réécrit (INV-19), D=0,2 y reste vrai par décision -- pas une valeur périmée à corriger (ligne décalée par LOT 4 du 18/09, section baffle)
     "Helice/docs/METHODO_DONNEES.md:22"   # idem, LOT défauts de données du 15/09
-    "Helice/docs/METHODO_DONNEES.md:167"  # idem (ligne décalée par LOT 2 du 17/09, ajout §3)
+    "Helice/docs/METHODO_DONNEES.md:166"  # idem (ligne décalée par LOT 2 du 17/09, ajout §3)
     "Helice/docs/ETAT-DES-LIEUX_Enseignant.md:105"  # idem (ligne décalée par LOT 4 du 18/09, section baffle)
-    "Helice/docs/METHODO_DONNEES.md:46"  # "K_T=0,3625/J=1,0270 ... au lieu de 0,2170/0,9007" -- contraste explicite, LOT A1 du 15/09
+    "Helice/docs/METHODO_DONNEES.md:46"  # "K_T/J pré-rééchelonnés ... au lieu des valeurs à 1,5 tour" -- contraste explicite, LOT A1 du 15/09
     "Helice/docs/TUTORIEL_OpenFOAM-et-ParaView.md:284"  # "M=1,031 et N=6 ... sont CADUCS" -- contraste explicite, LOT D1 du 16/09
     "Helice/docs/PARAMETRES_CAS.md:173"  # "si N=6 tient réellement sous 20h" -- discussion du plafond, LOT 17/09, pas une valeur publiée comme un fait
     "Helice/docs/PARAMETRES_CAS.md:174"  # "N=6 dépasserait 20h" -- idem
@@ -154,17 +153,17 @@ EXCLUSIONS=(
     "Helice/docs/PARAMETRES_CAS.md:202"  # 20/09 : valeur à 1,5 tour citée comme périmée / historique (section « Historique » de PARAMETRES_CAS pour 196-200)
     "Helice/docs/PARAMETRES_CAS.md:203"  # 20/09 : valeur à 1,5 tour citée comme périmée / historique (section « Historique » de PARAMETRES_CAS pour 196-200)
     "Helice/docs/PARAMETRES_CAS.md:204"  # 20/09 : valeur à 1,5 tour citée comme périmée / historique (section « Historique » de PARAMETRES_CAS pour 196-200)
-    "Seances/S03_Slides.md:520"  # 20/09 soir : diapo 26, « le solveur affichait 0,8936 » -- citation étiquetée de la valeur corrigée
-    "Seances/S03_Slides.md:521"  # 20/09 soir : diapo 26, « 0,5578 au lieu de 0,5457 » -- citation étiquetée de la valeur corrigée
-    "Helice/docs/MATERIAU-INTRO_TD-Helice.md:46"  # 20/09 soir : « J mesuré 0,8936 » présenté comme J du calcul, FAUX ; GELÉ, E-60
+    "Seances/S03_Slides.md:520"  # 20/09 soir : diapo 26, « le solveur affichait un J erroné » -- citation étiquetée de la valeur corrigée
+    "Seances/S03_Slides.md:521"  # 20/09 soir : diapo 26, « eta_0 erroné au lieu du corrigé » -- citation étiquetée de la valeur corrigée
+    "Helice/docs/MATERIAU-INTRO_TD-Helice.md:46"  # 20/09 soir : « J mesuré » présenté comme J du calcul, FAUX ; GELÉ, E-60
     "Helice/docs/09_FICHE_ENSEIGNANT.md:60"  # 20/09 soir : tableau J et eta_0 du solveur, FAUX ; GELÉ, E-60
     "Helice/docs/09_FICHE_ENSEIGNANT.md:61"  # idem, E-60
     "Helice/docs/09_FICHE_ENSEIGNANT.md:62"  # idem, E-60
-    "Helice/docs/09_FICHE_ENSEIGNANT.md:77"  # 20/09 soir : « eta_0 le plus haut (0,5986) » avec le J du solveur, FAUX (0,5873) ; GELÉ, E-60
+    "Helice/docs/09_FICHE_ENSEIGNANT.md:77"  # 20/09 soir : « eta_0 le plus haut (valeur retirée) » avec le J du solveur, FAUX ; GELÉ, E-60
     "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:48"  # 20/09 soir : tableau J et eta_0 du solveur, FAUX ; document GELÉ, à corriger au dégel, E-60
     "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:49"  # 20/09 soir : idem ; document GELÉ, à corriger au dégel, E-60
     "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:50"  # 20/09 soir : idem ; document GELÉ, à corriger au dégel, E-60
-    "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:81"  # 20/09 soir : « eta_0 le plus élevé (0,5986) » avec le J du solveur, FAUX (0,5873) ; document GELÉ, à corriger au dégel, E-60
+    "Helice/docs/10_CORRIGE_ETUDIANT_DETAILLE.md:81"  # 20/09 soir : « eta_0 le plus élevé (valeur retirée) » avec le J du solveur, FAUX ; document GELÉ, à corriger au dégel, E-60
 )
 
 is_excluded() {

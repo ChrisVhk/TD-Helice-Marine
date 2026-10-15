@@ -38,14 +38,14 @@ except RecollementError:
 
 # 4. deux rayons d'en-tête différents (D=0,2 puis D correct) : les valeurs BRUTES diffèrent (x0,6) mais la
 #    SORTIE rééchelonnée coïncide -> accepté (cas réel du 20/09 : reprise de kOmegaSST au rayon corrigé)
-a = seg("0.06/p.dat", [0.01, 0.02, 0.03], kt=0.3707)
-b = seg("0.02/p.dat", [0.02, 0.03, 0.04], kt=0.3707 * 0.5986)          # brut au rayon corrigé, plus petit
-a["sortie"] = [dict(r, KT=str(0.3707 * 0.5986)) for r in a["brut"]]    # rééchelonné au même D
+a = seg("0.06/p.dat", [0.01, 0.02, 0.03], kt=0.3)
+b = seg("0.02/p.dat", [0.02, 0.03, 0.04], kt=0.3 * 0.6)          # brut au rayon corrigé, plus petit
+a["sortie"] = [dict(r, KT=str(0.3 * 0.6)) for r in a["brut"]]    # rééchelonné au même D
 rows, _ = recoller([a, b]); assert temps(rows) == [0.01, 0.02, 0.03, 0.04]
 #    ... et la comparaison fautive d'origine (rééchelonné d'un côté, brut de l'autre) serait refusée :
-a2 = seg("0.06/p.dat", [0.01, 0.02, 0.03], kt=0.3707)
-b2 = seg("0.02/p.dat", [0.02, 0.03, 0.04], kt=0.3707)
-a2["sortie"] = [dict(r, KT="0.2219") for r in a2["brut"]]              # rééchelonné, alors que b2 ne l'est pas
+a2 = seg("0.06/p.dat", [0.01, 0.02, 0.03], kt=0.3)
+b2 = seg("0.02/p.dat", [0.02, 0.03, 0.04], kt=0.3)
+a2["sortie"] = [dict(r, KT="0.18") for r in a2["brut"]]              # rééchelonné, alors que b2 ne l'est pas
 try:
     recoller([a2, b2]); raise SystemExit("ECHEC : sortie non homogène acceptée")
 except RecollementError:

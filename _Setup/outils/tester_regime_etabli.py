@@ -38,29 +38,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 DATA = ROOT / "Helice" / "data"
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from valeurs_privees import charger_privees  # noqa: E402
+
 N_TR_S = 158 / (2 * 3.141592653589793)  # dynamicMeshDict, omega/2pi -- METHODO_DONNEES.md §3
 PERIOD_S = 1.0 / N_TR_S  # 0,039767 s
 
 # Démarrage impulsif : même filtre que bilan_helice.py/tracer_series_temporelles.py.
 T_TRANSIENT_SKIP = 0.001
 
-# Amplitude crête-à-crête de K_T, fenêtre commune -- sourcé PARAMETRES_CAS.md,
-# jamais recalculée ici (dépend de la fenêtre de mesure, voir METHODO_DONNEES.md §6).
-# CONTEXTE seulement depuis le 18/09 -- ne décide plus rien (voir docstring).
-# 20/09 : amplitude crête-à-crête de K_T dans le DERNIER TOUR COMPLET à 4,00 tours ([0,1193 ; 0,1591] s,
-# Helice/scripts/comparaison_modeles.py). Les valeurs antérieures (0,0176 / 0,0223 / 0,0242, fenêtre
-# commune à 1,5 tour) étaient GONFLÉES par le transitoire des deux premiers tours : 4 à 5 fois trop grandes.
-AMPLITUDE_CC = {"kEpsilon": 0.0039, "kOmegaSST": 0.0048, "laminar": 0.0048}
+# Amplitude crête-à-crête de K_T, fenêtre commune -- jamais recalculée ici (dépend de la fenêtre de
+# mesure, voir METHODO_DONNEES.md §6). CONTEXTE seulement depuis le 18/09 -- ne décide plus rien.
+# Valeurs du DERNIER TOUR COMPLET à 4,00 tours : document enseignant, lues dans les coulisses privées
+# (valeurs_privees.py) ; sans ce fichier, le script s'arrête avec un message explicite.
+AMPLITUDE_CC = charger_privees()["amplitude_cc"]
 
 # L'EFFET cherché, celui qui décide -- deux comparaisons distinctes dans ce TD :
 # (a) séance 2, les trois fermetures de turbulence entre elles : écart max-min
-#     de K_T (0,2261-0,2170=0,0091 ; 0,00914 cité par la consigne du 18/09,
-#     écart d'arrondi négligeable) ;
+#     de K_T (valeur du 18/09 à 1,5 tour, périmée) ;
 # (b) la comparaison avec/sans couches : écart K_T avec-sans, PROVISOIRE (LOT 2,
 #     consigne du 18/09, mesuré sur une fenêtre commune alors qu'AUCUN des deux
 #     cas n'était établi -- à refaire une fois les deux le seront).
 # 20/09 : 0,0096 = K_T laminar - K_T kEpsilon, moyennes du dernier tour complet à 4,00 tours
-# (0,2295 - 0,2199 ; comparaison_modeles.py). Remplace 0,00914 (fenêtre à 1,5 tour, 0,2261 - 0,2170).
+# (comparaison_modeles.py). Remplace la valeur de la fenêtre à 1,5 tour.
 EFFET_INTER_MODELES = 0.0096
 EFFET_COUCHES = 0.00281
 

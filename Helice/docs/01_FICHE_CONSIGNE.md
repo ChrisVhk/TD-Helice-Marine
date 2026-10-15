@@ -90,10 +90,10 @@ Vous allez vouloir classer les modèles. Vous devez découvrir que, sur le derni
 | | valeur |
 |---|---|
 | écart entre les 3 fermetures | $\Delta K_T \approx 0{,}0096$ (4,3 %) |
-| amplitude de l'oscillation | 0,0039 à 0,0048 — l'écart est **2 à 2,5 fois plus grand** |
+| amplitude de l'oscillation | [valeur retirée] — l'écart est **2 à 2,5 fois plus grand** |
 | origine de cette oscillation | **indéterminée** entre passage de pale et interface numérique — les deux prédisent la même fréquence |
 
-À 1,5 tour, sur la fenêtre qu'on croyait « le dernier tour », c'était l'inverse (oscillation 0,017 à 0,024,
+À 1,5 tour, sur la fenêtre qu'on croyait « le dernier tour », c'était l'inverse (oscillation de 4 à 5 fois la valeur en régime établi,
 plus grande que l'écart) : cette fenêtre recouvrait la mise en régime. **Un écart entre modèles ne se lit
 qu'en régime établi, et une fois les autres incertitudes bornées** — par exemple, sur le couple, changer le
 maillage de paroi déplace $10\,K_Q$ de +4,2 % sur un cas test (couches de prismes sur 63 % seulement de la surface de pale), contre 3,1 % entre les trois modèles (résultat

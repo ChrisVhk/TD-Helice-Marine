@@ -68,7 +68,7 @@ def recoller(segments: list[dict], tol: float = 1e-6):
     Contrôles, qui REFUSENT plutôt que de corriger (RecollementError) :
       - aux temps exactement communs, les valeurs (KT, 10KQ, eta0) doivent coïncider à `tol` près,
         comparées dans la MÊME UNITÉ : sortie contre sortie. Jamais une valeur rééchelonnée contre une
-        valeur brute (faux positif constaté le 20/09 : 0,2219 contre 0,3707 sur kOmegaSST, écart nul en
+        valeur brute (faux positif constaté le 20/09 sur kOmegaSST, écart nul en
         réalité), et jamais brut contre brut entre deux segments de rayon d'en-tête différent (le
         segment de reprise post-14/09 est écrit au rayon corrigé : ses valeurs brutes valent ~0,6 fois
         celles d'avant, à raison) ;

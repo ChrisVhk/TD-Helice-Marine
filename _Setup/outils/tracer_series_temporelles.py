@@ -21,9 +21,9 @@ segment droit dans le fond ombré -- moins honnête (une droite suggère une don
 interpolée qui n'existe pas). Repris ici : la ligne est coupée, pas reliée.
 
 **Réserve amplitude (15/09)** : la consigne de cette boucle rappelait les amplitudes
-crête-à-crête 0,0404 / 0,0373 / 0,0294 -- ce sont les valeurs PRÉ-rééchelonnement du
+crête-à-crête pré-rééchelonnées (valeurs retirées) -- ce sont les valeurs PRÉ-rééchelonnement du
 13/09 (D=0,2 m), explicitement PÉRIMÉES dans `Helice/docs/PARAMETRES_CAS.md` depuis le
-15/09 (remplacées par 0,0176 / 0,0223 / 0,0242, D=0,227378 m). Ce script annote les
+15/09 (remplacées par les valeurs courantes, D=0,227378 m ; valeurs retirées). Ce script annote les
 valeurs COURANTES, sourcées, jamais le rappel périmé -- voir JOURNAL 15/09.
 """
 import csv
@@ -48,7 +48,7 @@ COLORS = {"kEpsilon": "#1f77b4", "kOmegaSST": "#d62728", "laminar": "#2ca02c"}
 
 # 20/09 : les fenêtres, les moyennes et l'amplitude de K_T sont DÉDUITES des données (fin commune des
 # trois séries, dernier tour complet), plus des constantes du jeu à 1,5 tour. Ces constantes
-# (T_END = 0,06 ; amplitudes 0,0176 / 0,0223 / 0,0242) étaient valides pour des séries arrêtées à 0,06 s ;
+# (T_END = 0,06 ; amplitudes à 1,5 tour, valeurs retirées) étaient valides pour des séries arrêtées à 0,06 s ;
 # leurs amplitudes étaient gonflées par le transitoire des deux premiers tours (à 4 tours, l'amplitude
 # crête-à-crête du dernier tour est 4 à 5 fois plus petite).
 N_TR_S = 158 / (2 * 3.141592653589793)  # dynamicMeshDict:29, omega/2pi

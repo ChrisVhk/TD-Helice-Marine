@@ -4,7 +4,7 @@
 **Pourquoi ce module existe.** Le *function object* `propellerInfo` calcule le J qu'il affiche avec
 `URef`, la vitesse MOYENNE relevée par `sampleDisk` dans le plan y = -0,1 m, à 0,17 D EN AVAL du bord
 aval des pales : c'est-à-dire DANS la zone d'induction de l'hélice, pas en amont. Ce n'est pas une vitesse
-d'avance. Le J affiché (0,8936) était donc plus grand que l'avance réellement imposée (0,8743), et
+d'avance. Le J affiché (valeur retirée) était donc plus grand que l'avance réellement imposée (0,8743), et
 η₀ = J K_T / (2 π K_Q), qui en dépend linéairement, surestimé de 1,9 à 2,2 % selon le cas.
 K_T = T / (rho n^2 D^4) et K_Q = Q / (rho n^2 D^5) ne font intervenir que n et D : ils ne changent pas.
 

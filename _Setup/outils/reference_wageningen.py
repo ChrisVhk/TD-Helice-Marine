@@ -125,7 +125,7 @@ def _moyennes_dernier_tour(modele):
 
 
 # Nos trois points : moyenne du dernier tour complet (4,00 tours), lue dans les CSV du kit. Le J est l'avance IMPOSÉE,
-# identique pour les trois cas ; le J « mesuré » du solveur (0,8936 / 0,8936 / 0,8912) reposait sur URef, vitesse
+# identique pour les trois cas ; le J « mesuré » du solveur (valeurs retirées) reposait sur URef, vitesse
 # relevée à 0,17 D en aval des pales, dans l'induction : ce n'était pas une avance (voir avance_imposee.py).
 NOS_POINTS = {
     nom: {**_moyennes_dernier_tour(nom), "color": couleur}

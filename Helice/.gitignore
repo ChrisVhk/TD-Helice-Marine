@@ -78,9 +78,8 @@ Images/galerie/*.png
 # Les SCRIPTS de reprise, eux, sont versionnés (scripts/reprise_cas.sh) — un outil qui
 # produit un résultat traverse le dépôt (INV-11). L'ancien _resume_kOmegaSST.sh est gardé
 # comme trace de la reprise qui a mené 0,034 → 0,055 -- déplacé en coulisses le 28/09
-# (_resume_kOmegaSST.sh et .out : _Coulisses-depots-publics/TD-Helice-Marine/Helice/).
-# _corrupt_backup/ (136 Ko, pas de temps corrompus) déplacé en coulisses le 28/09 ->
-# _Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/_corrupt_backup/.
+# (_resume_kOmegaSST.sh et .out : conservés hors de ce dépôt, document enseignant).
+# _corrupt_backup/ (136 Ko, pas de temps corrompus) déplacé hors de ce dépôt le 28/09 (document enseignant).
 _corrupt_backup/
 _resume_*.out
 
@@ -145,7 +144,7 @@ Images/_brouillon/
 /docs/STATUT.md
 /docs/MATERIAU-INTRO_TD-Helice.md
 # _resume_*.sh et MATIERE_EXTERNE.md deplaces en coulisses le 28/09
-# (_Coulisses-depots-publics/TD-Helice-Marine/Helice/) : aucun lecteur vivant a ce chemin.
+# (conservés hors de ce dépôt) : aucun lecteur vivant a ce chemin.
 /_resume_*.sh
 /MATIERE_EXTERNE.md
 
@@ -162,8 +161,7 @@ _serie_MRF_modeles.out
 
 # Cas d'essai, cas de contrôle et journaux de calcul (21/09, décision de l'enseignant) : le dépôt public ne garde que les sept cas qui
 # correspondent aux sept perf_*.csv (case_kEpsilon, case_kOmegaSST, case_laminar, case_kEpsilon_layers, case_*_MRF). Les autres restent sur
-# disque, archivés dans le dépôt privé (_Coulisses-depots-publics/TD-Helice-Marine/Helice/, INV-11 — chemin corrigé le 28/09,
-# ancien _Reserve/td-helice-enseignant/cas-essais/) : ils rendaient l'arborescence illisible pour un exercice de recherche d'information.
+# disque, archivés hors de ce dépôt (documents enseignant) : ils rendaient l'arborescence illisible pour un exercice de recherche d'information.
 /case_kEpsilon_layers_test-*/
 /case_kEpsilon_iter_n*/
 /case_kEpsilon_MRF_A/

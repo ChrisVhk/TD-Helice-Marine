@@ -36,8 +36,8 @@ préparation).
 
 8. Deck projeté : celui de la séance 2 (distribué par Moodle ; voir `Seances/README.md`).
 
-**Enseignant** : `10_CORRIGE_ETUDIANT_DETAILLE.md` (corrigé détaillé, sert la
-confrontation de séance 2 — ne jamais distribuer avant).
+**Enseignant** : corrigé détaillé (document enseignant, non distribué ; sert la
+confrontation de séance 2).
 
 ## Séance 3 — arborescence, y⁺, perspective couches
 

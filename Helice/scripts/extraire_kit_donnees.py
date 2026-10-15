@@ -174,7 +174,7 @@ def _garde_octets_nuls(path: Path) -> None:
 # GARDE (c) (recouvrement incohérent) vit désormais dans compare_turbulence.recoller : elle comparait
 # ICI une valeur déjà rééchelonnée du segment précédent à la valeur BRUTE du suivant, ce qui donnait un
 # faux positif dès que deux segments se recouvraient avec un rayon d'en-tête différent de D_correct
-# (kOmegaSST, 20/09 : « 0,2219 contre 0,3707 », écart brut réel nul).
+# (kOmegaSST, 20/09, écart brut réel nul).
 
 
 def _garde_trous(case: str, rows: list[dict]) -> None:

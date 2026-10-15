@@ -16,15 +16,15 @@ sur l'ensemble retenu. Aucun calcul relancé — lecture seule des CSV déjà su
 
 | Modèle       | Points dans la fenêtre | Ancienne valeur publiée¹ | Nouvelle valeur (fenêtre propre) | Écart |
 |---|---|---|---|---|
-| `laminar`    | 1194 | 0,0404 | 0,040407 | +0,000007 |
-| `kOmegaSST`  | 1168 | 0,0373 | 0,037294 | −0,000006 |
-| `kEpsilon`   | 1168 | 0,0294 | 0,029420 | +0,000020 |
+| `laminar`    | 1194 | [valeur retirée] | [valeur retirée] | [valeur retirée] |
+| `kOmegaSST`  | 1168 | [valeur retirée] | [valeur retirée] | [valeur retirée] |
+| `kEpsilon`   | 1168 | [valeur retirée] | [valeur retirée] | [valeur retirée] |
 
 ¹ Deck de la séance 2, diapo 3, valeurs de référence du présentateur (diapo 2 avant la
 restructuration du 18/09) : « amplitude K_T (crête à crête)
-0,0294 / 0,0404 / 0,0373 — re-vérifiées par exécution sur les CSV du dépôt, dernier tour ».
+[valeur retirée] / [valeur retirée] / [valeur retirée] — re-vérifiées par exécution sur les CSV du dépôt, dernier tour ».
 
-**Ordre inchangé** : `laminar` (0,0404) > `kOmegaSST` (0,0373) > `kEpsilon` (0,0294),
+**Ordre inchangé** : `laminar` ([valeur retirée]) > `kOmegaSST` ([valeur retirée]) > `kEpsilon` ([valeur retirée]),
 identique à l'ordre publié.
 
 ## Constat, pas une correction
@@ -45,6 +45,6 @@ cf. JOURNAL.md) mais **n'a pas corrompu cette métrique d'amplitude précise**.
 
 | Modèle | KT min | KT max | Amplitude |
 |---|---|---|---|
-| `kEpsilon`  | 0,3435849 | 0,3730054 | 0,0294205 |
-| `kOmegaSST` | 0,3459818 | 0,3832759 | 0,0372941 |
-| `laminar`   | 0,3512840 | 0,3916908 | 0,0404068 |
+| `kEpsilon`  | [valeur retirée] | [valeur retirée] | [valeur retirée] |
+| `kOmegaSST` | [valeur retirée] | [valeur retirée] | [valeur retirée] |
+| `laminar`   | [valeur retirée] | [valeur retirée] | [valeur retirée] |

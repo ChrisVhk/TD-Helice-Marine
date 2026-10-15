@@ -195,8 +195,8 @@ vraie coupe volumique. Corrigés ci-dessous, image par image.
   depuis le 17/09, une vraie coupure de la ligne au niveau du trou — plus de segment
   droit reliant les deux bords), moyenne de chaque modèle sur la fenêtre commune en
   trait horizontal.
-- **Réserve amplitude** : les valeurs annotées (0,0176/0,0223/0,0242) sont les valeurs
-  COURANTES de `PARAMETRES_CAS.md` — PAS le rappel 0,0404/0,0373/0,0294 donné par la
+- **Réserve amplitude** : les valeurs annotées (valeurs retirées) sont les valeurs
+  COURANTES de `PARAMETRES_CAS.md` — PAS le rappel périmé (valeurs retirées) donné par la
   consigne de cette boucle, qui reprenait sans le savoir des chiffres pré-rééchelonnement
   déjà explicitement PÉRIMÉS depuis le 15/09 (voir JOURNAL).
 - **Généré par** : `_Setup/outils/tracer_series_temporelles.py` (matplotlib, lit

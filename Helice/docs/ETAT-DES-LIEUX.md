@@ -40,16 +40,16 @@ trancherait -- pas le détail.
   `Helice/Images/galerie/`.
 
 - **Amplitude crête à crête de K_T, dernier tour complet [0,119300 ; 0,159067] s (4,00 tours),
-  fenêtre COMMUNE aux trois modèles :** kEpsilon 0,0039 < kOmegaSST 0,0048 ≈ laminaire 0,0048
-  (5 chiffres : 0,00393 / 0,00478 / 0,00481 — les deux derniers ne se départagent pas).
-  **Corrigé le 20/09** : ce bloc donnait « laminaire 0,0242 > kOmegaSST 0,0223 > kEpsilon 0,0176 »,
+  fenêtre COMMUNE aux trois modèles :** kEpsilon < kOmegaSST ≈ laminaire
+  (valeurs retirées ; kOmegaSST et laminaire ne se départagent pas).
+  **Corrigé le 20/09** : ce bloc donnait un ordre laminaire > kOmegaSST > kEpsilon (valeurs retirées),
   mesuré à 1,5 tour sur [0,022 ; 0,06] s. Cette fenêtre recouvrait la mise en régime (K_T croît de
   +4 % entre les deux demi-tours de la fenêtre) : les amplitudes étaient gonflées d'un facteur 4 à 5,
   et l'ordre à trois niveaux n'est pas conservé (kOmegaSST et laminaire sont à égalité). On y croyait parce
   que la fenêtre était « commune » — elle l'était, mais commune ne veut pas dire en régime établi.
   Source : `Helice/docs/PARAMETRES_CAS.md`, `Helice/scripts/comparaison_modeles.py` (20/09).
 
-- **η₀ = 0,5457 / 0,5738 / 0,5873** (kEpsilon / kOmegaSST / laminaire), dernier tour à 4,00 tours,
+- **η₀** : valeurs retirées (kEpsilon / kOmegaSST / laminaire), dernier tour à 4,00 tours,
   calculé avec l'avance IMPOSÉE J = 0,8743 (à 1,5 tour : valeurs périmées, fenêtre non établie) — robuste à D et à ρ :
   invariant exact par construction (`η₀ = J·K_T/(K_Q·2π)`, les puissances de D et le
   facteur ρ s'annulent identiquement entre numérateur et dénominateur). **η₀ dépend en revanche de J** :
@@ -170,13 +170,13 @@ pas projeté) — ni l'une ni l'autre tentée à ce jour.
 ## OÙ ON VA
 
 - **Séance 2** : **le sens de l'argument s'est inversé le 20/09.** À 1,5 tour l'oscillation crête à
-  crête de K_T (0,018 à 0,024) dépassait l'écart entre modèles (ΔK_T ≈ 0,0096 à 4 tours) ; à 4 tours,
-  dernier tour établi, l'oscillation vaut 0,0039 à 0,0048 et c'est **l'écart entre modèles qui la dépasse de
+  crête de K_T (4 à 5 fois la valeur en régime établi) dépassait l'écart entre modèles (ΔK_T ≈ 0,0096 à 4 tours) ; à 4 tours,
+  dernier tour établi, l'oscillation est faible (valeurs retirées) et c'est **l'écart entre modèles qui la dépasse de
   2 à 2,5 fois**. Le message de séance devient : un écart entre modèles ne se lit qu'en régime établi et une fois
   les autres incertitudes bornées. Sur le COUPLE, le maillage de paroi (couches sur 63 % de l'aire des flancs, aucune sur la bande 0,804-0,925R) déplace 10K_Q de +4,2 % contre 3,1 %
   pour l'écart entre modèles ; sur K_T il ne se mesure pas (effet 6,6× plus petit que la borne du pas de temps).
   Résultat encore à défendre : la zone 0,80–0,925R sans couches reste ouverte
-  (`_Coulisses-depots-publics/TD-Helice-Marine/Helice/_hors-arborescence/comparaison-3-modeles/RAPPORT_comparaison_4tours_2026-09-20.md` §3.4 et §6).
+  (rapport de comparaison des trois modèles du 20/09, document enseignant non distribué, §3.4 et §6).
   Voir le deck de la séance 2.
 - **Séance 3** : Acte 1 — chaque binôme apporte un point de J (mesuré, pas nominal) →
   diagramme en eau libre collectif. Acte 2 — la courbe entrante dans un calcul

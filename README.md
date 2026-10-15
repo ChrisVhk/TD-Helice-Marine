@@ -1,5 +1,9 @@
 # TD Hélice marine — OpenFOAM (ENSM FON-S7)
 
+Droits : ENSM, publié avec l'accord de l'École.
+
+Licences : code Apache 2.0 ([LICENSE](LICENSE)), documentation CC BY 4.0 ([LICENSE-docs](LICENSE-docs)) ; les composants tiers gardent leur propre licence (OpenFOAM lui-même n'est pas redistribué).
+
 TD CFD couvrant les 2 attendus OpenFOAM du référentiel **FON-S7 — Mécanique des fluides – Hydrodynamique**
 (TD 6h, réf. ING-GM 2e cycle DMO-FISE p.17 / EGN-FISE p.19) :
 

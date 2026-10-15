@@ -42,8 +42,7 @@ fichiers) par rapport à l'état actuellement suivi.
 (`average_last_revolution`, moyenne sur le DERNIER TOUR COMPLET, voir §4). **Lit
 désormais `data/perf_*.csv`, plus le brut** (corrigé le 15/09 — lire le brut aurait
 reproduit exactement l'erreur qui a produit des bilans périmés). Vérifié : relancer ce
-script reproduit `bilan_helice.txt` à l'identique (**à 1,5 tour, PÉRIMÉ le 20/09, voir §6** : K_T 0,2170/0,2221/0,2261, η₀
-0,5599/0,5901/0,6033).
+script reproduit `bilan_helice.txt` à l'identique (**à 1,5 tour, PÉRIMÉ le 20/09, voir §6** : K_T et η₀ : valeurs retirées).
 
 **→ `Results/comparaison_performance.png` et `convergence_residus.png`** — même script,
 fonctions `plot_performance()`/`plot_residuals()`. `plot_performance()` exclut le tout
@@ -130,7 +129,7 @@ tombe sur un point arbitraire du cycle (`docs/STATUT.md`). `average_last_revolut
 = **[0,119300 ; 0,159067] s** (t_end=0,159067 s = 4,00 tours, T=0,039767 s ci-dessus) — le DERNIER
 tour complet écoulé, jamais une moyenne sur tout le calcul (qui inclurait le transitoire de
 démarrage) ni une valeur ponctuelle. **À 1,5 tour cette fenêtre, [0,020233 ; 0,06] s, recouvrait la mise
-en régime** : les moyennes K_T étaient sous-estimées de 1,2 à 1,5 % (0,2170 au lieu de 0,2199 pour kEpsilon). À 4 tours le régime est établi (la moyenne
+en régime** : les moyennes K_T étaient sous-estimées de 1,2 à 1,5 % (valeurs retirées). À 4 tours le régime est établi (la moyenne
 du 4ᵉ tour ne diffère plus de celle du 3ᵉ à plus de 0,05 %).
 
 ## 5. Les trois défauts de données, ensemble
@@ -180,16 +179,15 @@ lecture du solveur.
 trois séries y sont continues (le trou de kOmegaSST, §5, se situe avant 0,022 s). Une amplitude crête à crête
 mesurée sur des fenêtres différentes n'est PAS une grandeur comparable : plus la fenêtre est longue, plus elle a de
 chances de capter un maximum ET un minimum du cycle — et, pire, le transitoire de mise en régime. **C'est ce qui
-gonflait les amplitudes du 15/09 (0,018 à 0,024, fenêtre [0,022 ; 0,06] s à 1,5 tour) d'un facteur 4 à 5 par
-rapport à celles du dernier tour à 4 tours (0,0039 / 0,0048 / 0,0048).** Comparer les amplitudes de
+gonflait les amplitudes du 15/09 (fenêtre [0,022 ; 0,06] s à 1,5 tour) d'un facteur 4 à 5 par
+rapport à celles du dernier tour à 4 tours (valeurs retirées).** Comparer les amplitudes de
 kEpsilon/kOmegaSST/laminar (`PARAMETRES_CAS.md`) n'a de sens QUE sur cette même fenêtre — jamais sur
 `[0 ; t_end]` de chaque cas séparément.
 
 **Note du 20/09 — la phrase « relancer ce script reproduit `bilan_helice.txt` à l'identique (K_T
-0,2170/0,2221/0,2261, η₀ 0,5599/0,5901/0,6033) » (§ plus haut) décrit le jeu de données à 1,5 tour.**
-Depuis la régénération des CSV à 4,00 tours, le même script donne K_T 0,2198/0,2248/0,2294 et
-η₀ 0,5457/0,5738/0,5873 (avec l'avance imposée J = 0,8743 ; moyenne sur les lignes du dernier tour ; 0,2199/0,2248/0,2295 en moyenne
-pondérée par le temps, `Helice/scripts/comparaison_modeles.py`). Les anciennes valeurs sont conservées
+et η₀ à 1,5 tour, valeurs retirées) » (§ plus haut) décrit le jeu de données à 1,5 tour.**
+Depuis la régénération des CSV à 4,00 tours, le même script donne des K_T et η₀ à 4 tours (valeurs retirées ; avance imposée J = 0,8743 ; moyenne sur les lignes du dernier tour, ou moyenne
+pondérée par le temps dans `Helice/scripts/comparaison_modeles.py`). Les anciennes valeurs sont conservées
 dans `Helice/Results/bilan_helice_1p5tours.txt`. Le recollement des segments de reprise (fichiers
 `propellerPerformance_<t>.dat` suffixés, recouvrements) est décrit dans le docstring de
 `compare_turbulence.recoller`.
